@@ -28,10 +28,6 @@ Named list of documentation in extracted comments
 }
 \value{
 %%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
 }
 \references{
 %% ~put references to the literature/web site here ~

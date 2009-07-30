@@ -21,11 +21,7 @@ The function name (already imported by source)
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+Named list of character strings extracted from comments. Each name corresponds to an argument of the function or a special keyword (recognized by name.to.match.string) used to place the comments in the Rd file.
 }
 \references{
 %% ~put references to the literature/web site here ~

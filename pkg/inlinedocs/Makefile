@@ -3,4 +3,4 @@ all: docs check
 docs: R/package.skeleton.dx.R etc/make.R
 	cd R && R --no-save < ../etc/make.R
 check: 
-	R CMD check .
+	cd .. && R CMD check inlinedocs

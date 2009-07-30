@@ -9,7 +9,7 @@ package skeleton dx
 Automates more of the setup process for a new source package. After calling package.skeleton, it inspects the specified R code files to find inline documentation, which it adds to the Rd files. Should be called when the working directory is a packagename/R directory. It will overwrite files in the packagename/man directory.
 }
 \usage{
-package.skeleton.dx(name = gsub(".*/([^/]*)/R", "\\1", getwd(), fixed = FALSE), code_files = grep(".*\\.R$", dir(), val = TRUE))
+package.skeleton.dx(name = gsub(".*/([^/]*)/R", "\\\\1", getwd(), fixed = FALSE), code_files = grep(".*\\\\.R$", dir(), val = TRUE))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,10 +25,6 @@ character vector with the paths to the R code files, to be passed to package.ske
 }
 \value{
 %%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
 }
 \references{
 %% ~put references to the literature/web site here ~

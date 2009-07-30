@@ -1,7 +1,7 @@
-\name{inlinedocs.unver-package}
+\name{inlinedocs-package}
 \Rdversion{1.1}
-\alias{inlinedocs.unver-package}
-\alias{inlinedocs.unver}
+\alias{inlinedocs-package}
+\alias{inlinedocs}
 \docType{package}
 \title{
 What the package does (short line)
@@ -13,10 +13,10 @@ More about what it does (maybe more than one line)
 }
 \details{
 \tabular{ll}{
-Package: \tab inlinedocs.unver\cr
+Package: \tab inlinedocs\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2009-07-29\cr
+Date: \tab 2009-07-30\cr
 License: \tab What license is it under?\cr
 LazyLoad: \tab yes\cr
 }
@@ -32,8 +32,6 @@ Maintainer: Who to complain to <yourfault@somewhere.net>
 \references{
 ~~ Literature or other references for background information ~~
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~
-~~ the R documentation directory ~~
 \keyword{ package }
 \seealso{
 ~~ Optional links to other man pages, e.g. ~~
