@@ -5,13 +5,12 @@ package.skeleton.dx <- function
 ### files. Should be called when the working directory is a
 ### packagename/R directory. It will overwrite files in the
 ### packagename/man directory.
-(name=gsub(".*/([^/]*)/R","\\1",getwd(),fixed=FALSE),
-### the package name and directory name for your package, to be passed
-### to package.skeleton
- code_files=grep(".*\\.R$",dir(),val=TRUE)
+(code_files=Sys.glob("*.R")
 ### character vector with the paths to the R code files, to be passed
 ### to package.skeleton, and also inspected for inline documentation
  ){
+  desc <- read.dcf("../DESCRIPTION")
+  name <- desc[,"Package"]
   docs <- list()
   for(cf in code_files){
     L <- extract.docs.file(cf)
