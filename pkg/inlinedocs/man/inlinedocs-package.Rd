@@ -3,13 +3,9 @@
 \alias{inlinedocs-package}
 \alias{inlinedocs}
 \docType{package}
-\title{
-What the package does (short line)
-~~ package title ~~
-}
+\title{inlinedocs-package}
 \description{
 More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
 }
 \details{
 \tabular{ll}{
@@ -20,20 +16,10 @@ Date: \tab 2009-07-31\cr
 License: \tab What license is it under?\cr
 LazyLoad: \tab yes\cr
 }
-~~ An overview of how to use the package, including the most important ~~
-~~ functions ~~
 }
-\author{
-Who wrote it
-
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
-}
+\author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>}
 \references{
-~~ Literature or other references for background information ~~
 }
 \keyword{ package }
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 }
