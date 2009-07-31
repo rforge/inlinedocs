@@ -77,7 +77,7 @@ packagename/DESCRIPTION, start R, and do:</p>
 
 <pre>
 > install.packages("inlinedocs",repos="http://r-forge.r-project.org")
-> setwd("/path/to/your/packagename")
+> setwd("/path/to/your/packagename/R")
 > library(inlinedocs)
 > package.skeleton.dx()
 </pre>
@@ -94,7 +94,7 @@ packagename/DESCRIPTION, start R, and do:</p>
 adding a ### comment on the line before the variable is first
 declared.</li>
 
-<li>You still have to document your datasets manually, but these don't change often, so thats no problem to do by hand. To get started just use the prompt() function.</li>
+<li>You still have to manually document your datasets (the files in packagename/data), but these don't change often, so that's no problem to do by hand. To get started just use the prompt() function.</li>
 
 <li>Yes I realize that the format of the code is different from how
 you usually code. The idea here is "convention over configuration" ---
