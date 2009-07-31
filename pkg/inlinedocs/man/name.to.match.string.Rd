@@ -21,13 +21,13 @@ argument name from documentation list
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
+string
 }
 \references{
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Toby Dylan Hocking <toby.hocking@etu.upmc.fr>
 }
 \note{
 %%  ~~further notes~~

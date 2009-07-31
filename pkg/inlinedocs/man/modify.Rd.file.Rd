@@ -33,7 +33,7 @@ Named list of documentation in extracted comments
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Toby Dylan Hocking <toby.hocking@etu.upmc.fr>
 }
 \note{
 %%  ~~further notes~~

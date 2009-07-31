@@ -16,7 +16,7 @@ More about what it does (maybe more than one line)
 Package: \tab inlinedocs\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2009-07-30\cr
+Date: \tab 2009-07-31\cr
 License: \tab What license is it under?\cr
 LazyLoad: \tab yes\cr
 }

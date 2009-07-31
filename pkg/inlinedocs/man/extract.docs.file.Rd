@@ -21,13 +21,13 @@ The R code file to parse.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
+named list of lists. Each element is the result of a call to extract.docs.fun, with names corresponding to functions found in the R code file.
 }
 \references{
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Toby Dylan Hocking <toby.hocking@etu.upmc.fr>
 }
 \note{
 %%  ~~further notes~~
