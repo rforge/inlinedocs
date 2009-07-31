@@ -1,7 +1,6 @@
 \name{inlinedocs-package}
 \Rdversion{1.1}
 \alias{inlinedocs-package}
-\alias{inlinedocs}
 \docType{package}
 \title{inlinedocs-package}
 \description{

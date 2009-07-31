@@ -41,7 +41,6 @@ package.skeleton.dx <- function
   for(N in names(docs))modify.Rd.file(N,name,docs)
   NEW <- file.path(name,'man')
   DEST <- file.path('..')
-  unlink(Sys.glob(file.path("..","man","*.Rd")))
   file.copy(NEW,DEST,rec=TRUE)
   unlink(name,rec=TRUE)
 }
@@ -61,6 +60,11 @@ modify.Rd.file <- function
   d <- docs[[N]]
   dlines <- readLines(f)
 
+  ## cut out alias line if we are in the package file and there is a
+  ## matching function
+  if(length(grep("-package$",N)))
+    dlines <- dlines[-grep(paste("alias[{]",N,sep=""),dlines)-1]
+
   ## cut out all comments {} interferes with regex matching
   dlines <- dlines[-grep("^[%~]",dlines)]
 
@@ -79,9 +83,15 @@ modify.Rd.file <- function
 
   ## Fix usage
   m <- regexpr("usage[{][^}]*[}]",txt)
-  utxt <- substr(txt,m,m+attr(m,"match.length"))
+  Mend <- m+attr(m,"match.length")
+  utxt <- substr(txt,m,Mend)
+  if(length(grep("usage[{]data",utxt)))
+     utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
   ## add another backslash due to bug in package.skeleton
-  substr(txt,m,m+attr(m,"match.length")) <- gsub("\\\\","\\\\\\\\",utxt)
+  txt <- paste(substr(txt,1,m-1),
+               gsub("\\\\","\\\\\\\\",utxt),
+               substr(txt,Mend+1,nchar(txt)),
+               sep="")
   ## This doesn't work if there are quotes in the default values:
   ## gsub(",",paste("\n",paste(rep(" ",l=nchar(N)-1),collapse="")),utxt)
   
@@ -132,10 +142,12 @@ extract.docs.fun <- function
     end <- clines[ends[i]]
     lab <- if(end+1==length(code))"\\value"
     else if(start==2)"\\description"
-    else paste("\\item{",
-               gsub("^([^=,]*)[=,].*","\\1",
-                    gsub("^[ (]*","",code[start-1])),
-               "}",sep="")
+    else {
+      arg <- gsub("^[ (]*","",code[start-1])
+      arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
+      arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
+      paste("\\item{",arg,"}",sep="")
+    }
     res[[lab]] <- decomment(code[start:end])
   }
   res

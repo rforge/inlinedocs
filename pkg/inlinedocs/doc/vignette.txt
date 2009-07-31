@@ -9,4 +9,12 @@ directory of the same name. Thus your R code should live in
 pkg/R/file.R and the package documentation will go in
 pkg/man/fun.name.Rd
 
-Start up R in the pkg/R directory, then source
+Start up R in the pkg/R directory, then:
+> library(inlinedocs)
+> package.skeleton.dx()
+
+This should set everything up for you in the pkg/man directory so that
+your package passes R CMD check.
+
+However, you will need to document your data sets yourself (try using
+the prompt function).
