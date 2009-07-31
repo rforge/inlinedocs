@@ -6,14 +6,14 @@
 extract docs file
 }
 \description{
-Parse an R code file and extract inline documentation from comments around each function
+Parse an R code file and extract inline documentation from comments around each function.
 }
 \usage{
-extract.docs.file(cf)
+extract.docs.file(code.file)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{cf}{
+  \item{code.file}{
 The R code file to parse.
 }
 }

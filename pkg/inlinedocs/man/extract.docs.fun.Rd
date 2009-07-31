@@ -6,15 +6,15 @@
 extract docs fun
 }
 \description{
-Given a function name, return a list describing inline documentation in the source of that function
+Given a function name, return a list describing inline documentation in the source of that function.
 }
 \usage{
-extract.docs.fun(N)
+extract.docs.fun(fun)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{N}{
-The function name (already imported by source)
+  \item{fun}{
+The function.
 }
 }
 \details{

@@ -85,14 +85,15 @@ name.to.match.string <- function
 
 extract.docs.file <- function
 ### Parse an R code file and extract inline documentation from
-### comments around each function
-(cf
+### comments around each function.
+(code.file
 ### The R code file to parse.
  ){
   options(keep.source=TRUE)
-  source(cf,local=TRUE)
-  funs <- ls()[sapply(ls(),function(N)class(get(N)))=="function"]
-  res <- sapply(funs,extract.docs.fun)
+  source(code.file,local=TRUE)
+  objs <- sapply(ls(),function(N)get(N))
+  objs <- objs[sapply(objs,class)=="function"]
+  res <- sapply(objs,extract.docs.fun)
   res
 ### named list of lists. Each element is the result of a call to
 ### extract.docs.fun, with names corresponding to functions found in
@@ -101,11 +102,10 @@ extract.docs.file <- function
 
 extract.docs.fun <- function
 ### Given a function name, return a list describing inline
-### documentation in the source of that function
-(N
-### The function name (already imported by source)
+### documentation in the source of that function.
+(fun
+### The function.
  ){
-  fun <- get(N)
   code <- attr(fun,"source")
   clines <- grep("^#",code)
   bounds <- which(diff(clines)!=1)
