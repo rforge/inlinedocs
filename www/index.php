@@ -94,7 +94,7 @@ packagename/DESCRIPTION, start R, and do:</p>
 
 <li>inlinedocs:
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/DESCRIPTION?rev=2&root=inlinedocs&view=markup">DESCRIPTION</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?rev=8&root=inlinedocs&view=log">code</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?rev=12&root=inlinedocs&view=markup">code</a>
 </li>
 
 <li>sublogo:
