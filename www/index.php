@@ -84,7 +84,7 @@ packagename/DESCRIPTION, start R, and do:</p>
 
 <p>That's it, you will get Rd files in packagename/man that are guaranteed to pass R CMD check! Some notes/tips:</p>
 
-e<ul>
+<ul>
 
 <li>Use an editor where you can comment-fill easily, like <a href="http://www.gnu.org/software/emacs">Emacs</a> with <a href="http://ess.r-project.org">ESS</a>. Then you just type "###" and go on as long as you want with your comment. When you're done and you have a really long comment, do a M-q to automatically break lines and add ### prefixes.<li>
 
