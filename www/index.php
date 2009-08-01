@@ -127,17 +127,19 @@ declared.</li>
 <li>The DESCRIPTION file is used by inlinedocs for the Maintainer
 (this becomes the author secion of the Rd files) and Package (this is
 used as the name argument to package.skeleton). However R CMD check
-also makes you include: Version License Description Title Author. If
-you're really lazy,
-<a href="DESCRIPTION">here's a minimal DESCRIPTION file you can use as a template</a>.
+also makes you include: Version License Description Title Author. So
+if you're really lazy (like me), and you haven't written one yet,
+inlinedocs will create an empty DESCRIPTION file for you.
 
 </li>
 
-<li>You still have to manually document your datasets (the files in packagename/data), but these don't change often, so that's no problem to do by hand. To get started just use the prompt() function.</li>
+<li>You still have to manually document your datasets (the files in
+packagename/data), but these don't change often, so that's no problem
+to do by hand. To get started just use the prompt() function.</li>
 
 <li>Yes I realize that the format of the code is different from how
 you usually code. The idea here is "convention over configuration" ---
-learn to code this way, and then you don't have to worry about specifying all
+if you code this way, then you don't have to worry about specifying all
 the crap that makes using Roxygen a pain in the ass.</li>
 
 </ul>
