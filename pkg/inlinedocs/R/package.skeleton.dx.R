@@ -14,15 +14,22 @@ package.skeleton.dx <- function
 ### inline documentation, it calls the standard package.skeleton
 ### function, which creates bare Rd files. The inline documentation is
 ### added to these Rd files and then these files are copied to
-### ../man. Should be called when the working directory is a
-### packagename/R directory. It will overwrite files in the
-### packagename/man directory.
-(code_files=Sys.glob("*.R")
-### character vector with the paths to the R code files in the current
-### working directory, to be passed to package.skeleton, and also
-### inspected for inline documentation
+### ../man. It will overwrite files in the packagename/man directory.
+(chdir=".",
+### packagename/R directory where your code lives. We will switch to
+### this directory for the duration of the function, then switch back
+### to where you were previously.
+ code_files=NULL,
+### Character vector with the names of the R code files, to be passed
+### to package.skeleton, and also inspected for inline
+### documentation. NULL means all files ending in .R.
+ check=FALSE
+### Logical indicating whether or not to check the package after
+### documentation is built.
  ){
-  desc <- read.dcf("../DESCRIPTION")
+  old.wd <- setwd(chdir)
+  if(is.null(code_files))code_files <- Sys.glob("*.R")
+  desc <- read.dcf(file.path("..","DESCRIPTION"))
   name <- desc[,"Package"]
   docs <- list()
   for(cf in code_files){
@@ -43,6 +50,14 @@ package.skeleton.dx <- function
   DEST <- file.path('..')
   file.copy(NEW,DEST,rec=TRUE)
   unlink(name,rec=TRUE)
+
+  if(check){
+    Rdir <- setwd(file.path("..",".."))
+    cdir <- basename(dirname(Rdir))
+    system(paste("R CMD check",cdir))
+  }
+
+  setwd(old.wd)
 }
 
 modify.Rd.file <- function
