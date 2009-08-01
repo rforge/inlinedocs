@@ -70,6 +70,8 @@ publish that package and move on with your life. And when you make
 changes to that function, the docs are right next to the code so odds
 are you'll update the docs if they need to be.</li>
 
+</ul>
+
 <img src="inlinedocs-demo.png" />
 
 <p>Then put your code in packagename/R/code.file.R, write a
