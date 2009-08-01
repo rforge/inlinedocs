@@ -84,11 +84,33 @@ packagename/DESCRIPTION, start R, and do:</p>
 
 <p>That's it, you will get Rd files in packagename/man that are guaranteed to pass R CMD check! Some notes/tips:</p>
 
-<ul>
+e<ul>
 
 <li>Use an editor where you can comment-fill easily, like <a href="http://www.gnu.org/software/emacs">Emacs</a> with <a href="http://ess.r-project.org">ESS</a>. Then you just type "###" and go on as long as you want with your comment. When you're done and you have a really long comment, do a M-q to automatically break lines and add ### prefixes.<li>
 
-<li>None of these comments are necessary.</li>
+<li>Some examples:
+
+<ul>
+
+<li>inlinedocs:
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/DESCRIPTION?rev=2&root=inlinedocs&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?rev=8&root=inlinedocs&view=log">code</a>
+</li>
+
+<li>sublogo:
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?rev=3&root=sublogo&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sublogo.dendrogram.R?rev=17&root=sublogo&view=markup">code</a>
+</li>
+
+<li>Do you use inlinedocs? If so, 
+<a href="http://r-forge.r-project.org/sendmessage.php?touser=1571">
+send me an email</a>
+and I'll add your project to this list!
+</li>
+
+</ul>
+
+</li>
 
 <li>You can add a description of a data item declared in your code by
 adding a ### comment on the line before the variable is first
