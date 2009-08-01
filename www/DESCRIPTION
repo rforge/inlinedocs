@@ -1,0 +1,7 @@
+Package: mypkg
+Title: mypkg
+Description: does mypkg
+Version: 1.0
+License: GPL-3
+Author: foo
+Maintainer: foo <foo@bar.com>

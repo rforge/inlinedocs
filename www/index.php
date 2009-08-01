@@ -54,14 +54,18 @@ for them. Now how to go about doing that?
 <ul>
 
 <li><b>Option 1: do it yourself.</b> Fire up package.skeleton() and
-then edit the files by hand, following the directions in <a
+then edit the Rd files by hand, following the directions in <a
 href="http://cran.r-project.org/doc/manuals/R-exts.pdf">Writing R
 Extensions (135 pages)</a> --- good luck. <b>This sucks</b> because it
 takes a long time to edit all these files by hand, and if you change
 your code you'll end up with docs which do not agree. Unless you
 constantly update all those Rd files. (will you really?)</li> 
 
-<li><b>Option 2: <a href="http://roxygen.org/">Roxygen</a>.</b> You like the idea of combining source code with documentation, because then its easier to keep them in sync with each other. But <b>Roxygen sucks</b> because it makes you write huge bloated headers and repeat yourself in a weird syntax that you need to learn.</li>
+<li><b>Option 2: <a href="http://roxygen.org/">Roxygen</a>.</b> You
+like the idea of combining source code with documentation, because
+then it's easier to keep them in sync with each other. But <b>Roxygen
+sucks</b> because it makes you write huge bloated headers and repeat
+yourself in a weird syntax that you need to learn.</li>
 
 <li><b>Option 3: use the inlinedocs package.</b> No syntax to
 learn, never have to repeat yourself, just comment your code in
@@ -117,6 +121,17 @@ and I'll add your project to this list!
 <li>You can add a description of a data item declared in your code by
 adding a ### comment on the line before the variable is first
 declared.</li>
+
+<li>Function names are used for the title section of the Rd file. Dots in the function name are translated into spaces in the title.</li>
+
+<li>The DESCRIPTION file is used by inlinedocs for the Maintainer
+(this becomes the author secion of the Rd files) and Package (this is
+used as the name argument to package.skeleton). However R CMD check
+also makes you include: Version License Description Title Author. If
+you're really lazy,
+<a href="DESCRIPTION">here's a minimal DESCRIPTION file you can use as a template</a>.
+
+</li>
 
 <li>You still have to manually document your datasets (the files in packagename/data), but these don't change often, so that's no problem to do by hand. To get started just use the prompt() function.</li>
 
