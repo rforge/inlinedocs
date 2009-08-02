@@ -148,11 +148,18 @@ extract.docs.file <- function
   options(old)
   objs <- sapply(ls(e),get,e)
   extract.docs <- function(on){
-    o <- objs[[on]]
-    if(class(o)=="function")extract.docs.fun(o)
-    ## Take the line before the first occurence of the variable
-    else list(`\\description`=
-              decomment(code[grep(paste("^",on,sep=""),code)[1]-1]))
+    res <- try({
+      o <- objs[[on]]
+      if(class(o)=="function")extract.docs.fun(o)
+      ## Take the line before the first occurence of the variable
+      else list(`\\description`=
+                decomment(code[grep(paste("^",on,sep=""),code)[1]-1]))
+    },FALSE)
+    if(class(res)=="try-error"){
+      cat("Failed to extract docs for: ",on,"\n\n")
+      list()
+    }
+    else res
   }
   res <- sapply(names(objs),extract.docs)
   res
@@ -169,6 +176,7 @@ extract.docs.fun <- function
  ){
   code <- attr(fun,"source")
   clines <- grep("^#",code)
+  if(length(clines)==0)return(list()) ## no comments found
   bounds <- which(diff(clines)!=1)
   starts <- c(1,bounds+1)
   ends <- c(bounds,length(clines))
