@@ -89,8 +89,18 @@ modify.Rd.file <- function
  docs
 ### Named list of documentation in extracted comments
  ){
+  fb <- paste(N,".Rd",sep="")
+  f <- file.path(pkg,'man',fb)
+  ## if there are no significant docs in the comments then the object
+  ## should still be documented, by writing the file by hand in the
+  ## man directory. This will write a blank Rd file if none exists, so
+  ## its easy to get started.
+  if((length(docs[[N]])<3) &&
+     file.exists(file.path("..","man",fb))){
+    unlink(f)
+    return()
+  }
   cat(N,":",sep="")
-  f <- paste(file.path(pkg,'man',N),".Rd",sep="")
   d <- docs[[N]]
   dlines <- readLines(f)
 
@@ -146,11 +156,11 @@ extract.docs.file <- function
   if(class(r)=="try-error")
     stop("source ",code.file," failed with error:\n",r)
   options(old)
-  objs <- sapply(ls(e),get,e)
+  objs <- sapply(ls(e),get,e,simplify=FALSE)
   extract.docs <- function(on){
     res <- try({
       o <- objs[[on]]
-      if(class(o)=="function")extract.docs.fun(o)
+      if(class(o)=="function" && length(g <- extract.docs.fun(o)))g
       ## Take the line before the first occurence of the variable
       else list(`\\description`=
                 decomment(code[grep(paste("^",on,sep=""),code)[1]-1]))
@@ -161,7 +171,7 @@ extract.docs.file <- function
     }
     else res
   }
-  res <- sapply(names(objs),extract.docs)
+  res <- sapply(names(objs),extract.docs,simplify=FALSE)
   res
 ### named list of lists. Each element is the result of a call to
 ### extract.docs.fun, with names corresponding to functions found in
