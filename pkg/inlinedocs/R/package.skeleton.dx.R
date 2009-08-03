@@ -20,11 +20,11 @@ package.skeleton.dx <- function
 ### inline documentation, it calls the standard package.skeleton
 ### function, which creates bare Rd files. The inline documentation is
 ### added to these Rd files and then these files are copied to
-### ../man. It will overwrite files in the packagename/man directory.
-(chdir=".",
-### packagename/R directory where your code lives. We will switch to
-### this directory for the duration of the function, then switch back
-### to where you were previously.
+### ../man. It will overwrite files in the pkgdir/man directory.
+(pkgdir=".",
+### package directory where the DESCRIPTION file lives. Your code
+### should be in pkgdir/R. We will setwd to pkgdir/R for the duration
+### of the function, then switch back to where you were previously.
  code_files=NULL,
 ### Character vector with the names of the R code files, to be passed
 ### to package.skeleton, and also inspected for inline
@@ -33,7 +33,9 @@ package.skeleton.dx <- function
 ### Logical indicating whether or not to check the package after
 ### documentation is built.
  ){
+  chdir <- file.path(pkgdir,"R")
   old.wd <- setwd(chdir)
+  on.exit(setwd(old.wd))
 
   descfile <- file.path("..","DESCRIPTION")
   if(!file.exists(descfile)){
@@ -75,8 +77,6 @@ package.skeleton.dx <- function
     cdir <- basename(dirname(Rdir))
     system(paste("R CMD check",cdir))
   }
-
-  setwd(old.wd)
 }
 
 modify.Rd.file <- function
