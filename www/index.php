@@ -65,7 +65,8 @@ constantly update all those Rd files. (will you really?)</li>
 like the idea of combining source code with documentation, because
 then it's easier to keep them in sync with each other. But <b>Roxygen
 sucks</b> because it makes you write huge bloated headers and repeat
-yourself in a weird syntax that you need to learn.</li>
+yourself using its weird syntax (but to its credit, the call graphs
+are pretty cool).</li>
 
 <li><b>Option 3: use the inlinedocs package.</b> No syntax to
 learn, never have to repeat yourself, just comment your code in
