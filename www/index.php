@@ -79,17 +79,16 @@ are you'll update the docs if they need to be.</li>
 
 <img src="inlinedocs-demo.png" />
 
-<p>Then put your code in packagename/R/code.file.R, write a
-packagename/DESCRIPTION, start R, and do:</p>
+<p>Then put your code in pkgdir/R/code.file.R, write a
+pkgdir/DESCRIPTION, start R, and do:</p>
 
 <pre>
 > install.packages("inlinedocs",repos="http://r-forge.r-project.org")
-> setwd("/path/to/your/packagename/R")
 > library(inlinedocs)
-> package.skeleton.dx()
+> package.skeleton.dx("/path/to/your/pkgdir")
 </pre>
 
-<p>That's it, you will get Rd files in packagename/man that are guaranteed to pass R CMD check! Some notes/tips:</p>
+<p>That's it, you will get Rd files in pkgdir/man that are guaranteed to pass R CMD check! Some notes/tips:</p>
 
 <ul>
 
@@ -100,14 +99,21 @@ packagename/DESCRIPTION, start R, and do:</p>
 <ul>
 
 <li>inlinedocs:
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/DESCRIPTION?rev=2&root=inlinedocs&view=markup">DESCRIPTION</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?rev=12&root=inlinedocs&view=markup">code</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/DESCRIPTION?root=inlinedocs&view=markup">DESCRIPTION</a>
 </li>
 
 <li>sublogo:
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?rev=3&root=sublogo&view=markup">DESCRIPTION</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sublogo.dendrogram.R?rev=17&root=sublogo&view=markup">code</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sublogo.dendrogram.R?root=sublogo&view=markup">sublogo.dendrogram.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=sublogo&view=markup">DESCRIPTION</a>
 </li>
+
+<li>latticedl:
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/direct.labels.R?root=directlabels&view=markup">direct.labels.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/positioning.functions.R?root=directlabels&view=markup">positioning.functions.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/DESCRIPTION?root=directlabels&view=markup">DESCRIPTION</a>
+</li>
+
 
 <li>Do you use inlinedocs? If so, 
 <a href="http://r-forge.r-project.org/sendmessage.php?touser=1571">
@@ -136,11 +142,11 @@ inlinedocs will create an empty DESCRIPTION file for you.
 </li>
 
 <li>You still have to manually document your datasets (the files in
-packagename/data), but these don't change often, so that's no problem
+pkgdir/data), but these don't change often, so that's no problem
 to do by hand. To get started just use the prompt() function.</li>
 
 <li>To add examples for FUN, add a file FUN.R to your
-packagename/tests directory. This is more sustainable than putting
+pkgdir/tests directory. This is more sustainable than putting
 test code in R comments, since debugging/changing commented code is a
 pain.</li>
 
