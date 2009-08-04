@@ -123,7 +123,8 @@ and I'll add your project to this list!
 adding a ### comment on the line before the variable is first
 declared.</li>
 
-<li>Function names are used for the title section of the Rd file. Dots in the function name are translated into spaces in the title.</li>
+<li>Function names are used for the title section of the Rd file. Dots
+in the function name are translated into spaces in the title.</li>
 
 <li>The DESCRIPTION file is used by inlinedocs for the Maintainer
 (this becomes the author secion of the Rd files) and Package (this is
@@ -138,10 +139,16 @@ inlinedocs will create an empty DESCRIPTION file for you.
 packagename/data), but these don't change often, so that's no problem
 to do by hand. To get started just use the prompt() function.</li>
 
-<li>Yes I realize that the format of the code is different from how
-you usually code. The idea here is "convention over configuration" ---
-if you code this way, then you don't have to worry about specifying all
-the crap that makes using Roxygen a pain in the ass.</li>
+<li>To add examples for FUN, add a file FUN.R to your
+packagename/tests directory. This is more sustainable than putting
+test code in R comments, since debugging/changing commented code is a
+pain.</li>
+
+<li>Yes I realize that the code style is different from how you
+usually code (it's not how I usually code either). The idea here is
+"convention over configuration" --- if you code this way, then you
+don't have to worry about specifying all the crap that makes using
+Roxygen a pain in the ass.</li>
 
 </ul>
 
