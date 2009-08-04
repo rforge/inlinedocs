@@ -24,3 +24,4 @@ modify.Rd.file(N, pkg, docs)
 
 \seealso{
 }
+\examples{}

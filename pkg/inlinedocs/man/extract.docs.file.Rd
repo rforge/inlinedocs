@@ -21,3 +21,4 @@ extract.docs.file(code.file)
 
 \seealso{
 }
+\examples{}

@@ -21,7 +21,7 @@ package.skeleton.dx <- function
 ### function, which creates bare Rd files. The inline documentation is
 ### added to these Rd files and then these files are copied to
 ### ../man. It will overwrite files in the pkgdir/man directory.
-(pkgdir=".",
+(pkgdir="..",
 ### package directory where the DESCRIPTION file lives. Your code
 ### should be in pkgdir/R. We will setwd to pkgdir/R for the duration
 ### of the function, then switch back to where you were previously.
@@ -115,14 +115,20 @@ modify.Rd.file <- function
   ## cut out a couple of sections that cause warnings
   o <- grep("Optionally",dlines)
   if(length(o))dlines <- dlines[-(o:(o+1))]
+  ## delete examples til the end of the file (also includes keywords)
   dlines <- dlines[1:(tail(grep("\\examples[{]$",dlines),1)-1)]
+  ## add back a minimal examples section to find and replace
+  dlines <- c(dlines,"\\examples{}")
 
   ## Find and replace based on data in d
   txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
     cat(" ",torep,sep="")
-    txt <- gsub(paste(gsub("([{}])","\\\\\\1",torep),"[{][^}]*[}]",sep=""),
-                paste(torep,"{",d[[torep]],"}",sep=""),txt)
+    FIND <- paste(gsub("([{}])","\\\\\\1",torep),"[{][^}]*[}]",sep="")
+    ## need to escape backslashes for faithful copying of the comments
+    ## to the Rd file:
+    REP <- paste(torep,"{",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
+    txt <- gsub(FIND,REP,txt)
   }
 
   ## Fix usage
@@ -138,7 +144,6 @@ modify.Rd.file <- function
                sep="")
   ## This doesn't work if there are quotes in the default values:
   ## gsub(",",paste("\n",paste(rep(" ",l=nchar(N)-1),collapse="")),utxt)
-  
   cat(txt,file=f)
   cat("\n")
 }
@@ -160,10 +165,17 @@ extract.docs.file <- function
   extract.docs <- function(on){
     res <- try({
       o <- objs[[on]]
-      if(class(o)=="function" && length(g <- extract.docs.fun(o)))g
+      doc <- if(class(o)=="function"){
+        tdoc <- extract.docs.fun(o)
+        if(file.exists(tfile <- file.path("..","tests",paste(on,".R",sep=""))))
+          tdoc[["\\examples"]] <- paste(readLines(tfile),collapse="\n")
+        tdoc
+      }else list()
       ## Take the line before the first occurence of the variable
-      else list(`\\description`=
-                decomment(code[grep(paste("^",on,sep=""),code)[1]-1]))
+      if(!"\\description"%in%names(doc))
+        doc[["\\description"]] <- 
+          decomment(code[grep(paste("^",on,sep=""),code)[1]-1])
+      doc
     },FALSE)
     if(class(res)=="try-error"){
       cat("Failed to extract docs for: ",on,"\n\n")
@@ -179,18 +191,18 @@ extract.docs.file <- function
 }
 
 extract.docs.fun <- function
-### Given a function name, return a list describing inline
-### documentation in the source of that function.
+### Given a function, return a list describing inline documentation in
+### the source of that function (relies on source attr).
 (fun
 ### The function to examine.
  ){
+  res <- list()
   code <- attr(fun,"source")
   clines <- grep("^#",code)
-  if(length(clines)==0)return(list()) ## no comments found
+  if(length(clines)==0)return(res) ## no comments found
   bounds <- which(diff(clines)!=1)
   starts <- c(1,bounds+1)
   ends <- c(bounds,length(clines))
-  res <- list()
   for(i in seq_along(starts)){
     start <- clines[starts[i]]
     end <- clines[ends[i]]
@@ -205,9 +217,8 @@ extract.docs.fun <- function
     res[[lab]] <- decomment(code[start:end])
   }
   res
-### Named list of character strings extracted from comments. Each name
-### corresponds to an argument of the function or a special keyword
-### (recognized by name.to.match.string) used to place the comments in
-### the Rd file.
+### Named list of character strings extracted from comments. For each
+### name N we will look for N\{...\} in the Rd file and replace it
+### with the string in this list (implemented in modify.Rd.file).
 }
 

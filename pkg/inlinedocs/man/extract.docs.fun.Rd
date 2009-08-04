@@ -2,7 +2,7 @@
 \Rdversion{1.1}
 \alias{extract.docs.fun}
 \title{extract.docs.fun}
-\description{Given a function name, return a list describing inline documentation in the source of that function.}
+\description{Given a function, return a list describing inline documentation in the source of that function (relies on source attr).}
 \usage{
 extract.docs.fun(fun)
 }
@@ -11,7 +11,7 @@ extract.docs.fun(fun)
 }
 \details{
 }
-\value{Named list of character strings extracted from comments. Each name corresponds to an argument of the function or a special keyword (recognized by name.to.match.string) used to place the comments in the Rd file.}
+\value{Named list of character strings extracted from comments. For each name N we will look for N\{...\} in the Rd file and replace it with the string in this list (implemented in modify.Rd.file).}
 \references{
 }
 \author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>}
@@ -21,3 +21,4 @@ extract.docs.fun(fun)
 
 \seealso{
 }
+\examples{}

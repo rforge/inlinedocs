@@ -21,3 +21,4 @@ decomment(comments)
 
 \seealso{
 }
+\examples{}
