@@ -62,8 +62,13 @@ package.skeleton.dx <- function
     docs[[i]]$`\\title` <- i
   }
   name <- desc[,"Package"]
-  docs[[paste(name,"-package",sep="")]] <- list()
-
+  details <- paste(paste(colnames(desc),": \\tab ",desc,"\\cr",sep=""),
+                   collapse="\n")
+  docs[[paste(name,"-package",sep="")]] <-
+    list(`\\title`=desc[,"Title"],
+         `\\description`=desc[,"Description"],
+         `\\tabular{ll}`=details,
+         `\\author`=desc[,"Maintainer"])
   ## Make package skeleton and edit Rd files
   unlink(name,rec=TRUE)
   package.skeleton(name,code_files=code_files)
