@@ -99,19 +99,22 @@ pkgdir/DESCRIPTION, start R, and do:</p>
 <ul>
 
 <li>inlinedocs:
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.dx.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/DESCRIPTION?root=inlinedocs&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/man?root=inlinedocs&view=markup">generated Rd files</a>
 </li>
 
 <li>sublogo:
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sublogo.dendrogram.R?root=sublogo&view=markup">sublogo.dendrogram.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=sublogo&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/man?root=sublogo&view=markup">generated Rd files</a>
 </li>
 
 <li>latticedl:
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/direct.labels.R?root=directlabels&view=markup">direct.labels.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/positioning.functions.R?root=directlabels&view=markup">positioning.functions.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/DESCRIPTION?root=directlabels&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/man?root=directlabels&view=markup">generated Rd files</a>
 </li>
 
 
