@@ -101,20 +101,20 @@ pkgdir/DESCRIPTION, start R, and do:</p>
 <li>inlinedocs:
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.dx.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/DESCRIPTION?root=inlinedocs&view=markup">DESCRIPTION</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/man?root=inlinedocs&view=markup">generated Rd files</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/man?root=inlinedocs">generated Rd files</a>
 </li>
 
 <li>sublogo:
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sublogo.dendrogram.R?root=sublogo&view=markup">sublogo.dendrogram.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=sublogo&view=markup">DESCRIPTION</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/man?root=sublogo&view=markup">generated Rd files</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/man?root=sublogo">generated Rd files</a>
 </li>
 
 <li>latticedl:
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/direct.labels.R?root=directlabels&view=markup">direct.labels.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/positioning.functions.R?root=directlabels&view=markup">positioning.functions.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/DESCRIPTION?root=directlabels&view=markup">DESCRIPTION</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/man?root=directlabels&view=markup">generated Rd files</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/man?root=directlabels">generated Rd files</a>
 </li>
 
 
@@ -136,11 +136,12 @@ declared.</li>
 in the function name are translated into spaces in the title.</li>
 
 <li>The DESCRIPTION file is used by inlinedocs for the Maintainer
-(this becomes the author secion of the Rd files) and Package (this is
+(this becomes the author section of the Rd files) and Package (this is
 used as the name argument to package.skeleton). However R CMD check
-also makes you include: Version License Description Title Author. So
-if you're really lazy (like me), and you haven't written one yet,
-inlinedocs will create an empty DESCRIPTION file for you.
+also makes you include: Version License Description Title
+Author. DESCRIPTION is also used for constructing the pkgname-package
+Rd file. If you're really lazy (like me), and you haven't written one
+yet, inlinedocs will create an empty DESCRIPTION file for you.
 
 </li>
 
