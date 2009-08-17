@@ -56,24 +56,27 @@ for them. Now how to go about doing that?
 <li><b>Option 1: do it yourself.</b> Fire up package.skeleton() and
 then edit the Rd files by hand, following the directions in <a
 href="http://cran.r-project.org/doc/manuals/R-exts.pdf">Writing R
-Extensions (135 pages)</a> --- good luck. <b>This sucks</b> because it
-takes a long time to edit all these files by hand, and if you change
-your code you'll end up with docs which do not agree. Unless you
-constantly update all those Rd files. (will you really?)</li> 
+Extensions (135 pages)</a> --- good luck. It takes a long time to edit
+all these files by hand, and if you change your code you will end up
+with docs which do not agree. Unless you constantly update all those
+Rd files. (will you really?)</li>
 
 <li><b>Option 2: <a href="http://roxygen.org/">Roxygen</a>.</b> You
 like the idea of combining source code with documentation, because
-then it's easier to keep them in sync with each other. But <b>Roxygen
-sucks</b> because it makes you write huge bloated headers and repeat
-yourself using its weird syntax (but to its credit, the call graphs
-are pretty cool).</li>
+then you can do "literate programming" and moreover, it is practically
+easier to keep them in sync with each other. But ROxygen has a number
+of drawbacks, especially for documenting function arguments. The huge
+headers are usually far away from the actual code being documented,
+and you have to repeat yourself when you name the function arguments
+in the comment and the definition. (but to its credit, the call graphs
+that Roxygen makes are pretty cool).</li>
 
-<li><b>Option 3: use the inlinedocs package.</b> No syntax to
-learn, never have to repeat yourself, just comment your code in
-natural places, and you get Rd files that pass R CMD check so you can
-publish that package and move on with your life. And when you make
-changes to that function, the docs are right next to the code so odds
-are you'll update the docs if they need to be.</li>
+<li><b>Option 3: inlinedocs.</b> No syntax to learn, never have to
+repeat yourself, just comment your code in natural places, and you get
+Rd files that pass R CMD check so you can publish that package and
+move on with your life. And when you make changes to that function,
+the docs are right next to the code so odds are you will update the
+docs if they need to be.</li>
 
 </ul>
 
@@ -83,16 +86,22 @@ are you'll update the docs if they need to be.</li>
 pkgdir/DESCRIPTION, start R, and do:</p>
 
 <pre>
-> install.packages("inlinedocs",repos="http://r-forge.r-project.org")
-> library(inlinedocs)
-> package.skeleton.dx("/path/to/your/pkgdir")
+install.packages("inlinedocs",repos="http://r-forge.r-project.org")
+library(inlinedocs)
+package.skeleton.dx("/path/to/your/pkgdir")
 </pre>
 
-<p>That's it, you will get Rd files in pkgdir/man that are guaranteed to pass R CMD check! Some notes/tips:</p>
+<p>Then you are done! You will get Rd files in pkgdir/man that are
+guaranteed to pass R CMD check! Some notes/tips:</p>
 
 <ul>
 
-<li>Use an editor where you can comment-fill easily, like <a href="http://www.gnu.org/software/emacs">Emacs</a> with <a href="http://ess.r-project.org">ESS</a>. Then you just type "###" and go on as long as you want with your comment. When you're done and you have a really long comment, do a M-q to automatically break lines and add ### prefixes.<li>
+<li>Use an editor where you can comment-fill easily, like <a
+href="http://www.gnu.org/software/emacs">Emacs</a> with <a
+href="http://ess.r-project.org">ESS</a>. Then you just type "###" and
+go on as long as you want with your comment. When you're done and you
+have a really long comment, do a M-q to automatically break lines and
+add ### prefixes.<li>
 
 <li>Some examples:
 
@@ -154,11 +163,10 @@ pkgdir/tests directory. This is more sustainable than putting
 test code in R comments, since debugging/changing commented code is a
 pain.</li>
 
-<li>Yes I realize that the code style is different from how you
-usually code (it's not how I usually code either). The idea here is
-"convention over configuration" --- if you code this way, then you
-don't have to worry about specifying all the crap that makes using
-Roxygen a pain in the ass.</li>
+<li>inlinedocs is not as powerful as Roxygen, so if you want to use
+all the features of Rd, Roxygen may be a better choice. However
+inlinedocs is far simpler to learn and offers less repetitive
+syntax.</li>
 
 </ul>
 
