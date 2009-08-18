@@ -30,8 +30,11 @@ package.skeleton.dx <- function
 ### to package.skeleton, and also inspected for inline
 ### documentation. NULL means all files ending in .R.
  check=""
-### Logical indicating whether or not to check the package after
-### documentation is built.
+### Value indicating whether or not to check the package after
+### documentation is built. Anything other than "" (the default) will
+### check the package. "noex" means check the package without running
+### examples, only tests (useful for debugging if your tests/examples
+### take a long time).
  ){
   chdir <- file.path(pkgdir,"R")
   old.wd <- setwd(chdir)

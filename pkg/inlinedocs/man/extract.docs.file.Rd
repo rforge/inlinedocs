@@ -4,10 +4,11 @@
 \title{extract.docs.file}
 \description{Parse an R code file and extract inline documentation from comments around each function.}
 \usage{
-extract.docs.file(code.file)
+extract.docs.file(code.file, write.examples = TRUE)
 }
 \arguments{
   \item{code.file}{The R code file to parse.}
+  \item{write.examples}{Gather examples from test files?}
 }
 \details{
 }
