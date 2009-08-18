@@ -126,6 +126,13 @@ add ### prefixes.<li>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/man?root=directlabels">generated Rd files</a>
 </li>
 
+<li>nicholsonppp:
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sim.R?root=nicholsonppp&view=markup">sim.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/plot.R?root=nicholsonppp&view=markup">plot.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=nicholsonppp&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/man?root=nicholsonppp">generated Rd files</a>
+</li>
+
 
 <li>Do you use inlinedocs? If so, 
 <a href="http://r-forge.r-project.org/sendmessage.php?touser=1571">
@@ -141,17 +148,24 @@ and I'll add your project to this list!
 adding a ### comment on the line before the variable is first
 declared.</li>
 
-<li>Function names are used for the title section of the Rd file. Dots
-in the function name are translated into spaces in the title.</li>
+<li>For the title of the Rd file, function names are used. Dots in the
+function name are translated into spaces in the title. Or you can
+specify the title in a comment at the end of the first line of the
+function definition, like this:
+
+<pre>
+package.skeleton.dx <- function # Package skeleton deluxe
+</pre>
+
+</li>
 
 <li>The DESCRIPTION file is used by inlinedocs for the Maintainer
 (this becomes the author section of the Rd files) and Package (this is
-used as the name argument to package.skeleton). However R CMD check
-also makes you include: Version License Description Title
-Author. DESCRIPTION is also used for constructing the pkgname-package
-Rd file. If you're really lazy (like me), and you haven't written one
-yet, inlinedocs will create an empty DESCRIPTION file for you.
-
+used as the name argument to package.skeleton). DESCRIPTION is also
+used for constructing the pkgname-package Rd file, so you have to
+include these fields: Version License Description Title Author. If
+you're really lazy (like me), and you haven't written one yet,
+inlinedocs will create an empty DESCRIPTION file for you.
 </li>
 
 <li>You still have to manually document your datasets (the files in

@@ -1,7 +1,7 @@
 \name{package.skeleton.dx}
 \Rdversion{1.1}
 \alias{package.skeleton.dx}
-\title{package.skeleton.dx}
+\title{ Package skeleton deluxe}
 \description{Automates more of the setup process for a new source package. After inspecting the specified R code files to find inline documentation, it calls the standard package.skeleton function, which creates bare Rd files. The inline documentation is added to these Rd files and then these files are copied to ../man. It will overwrite files in the pkgdir/man directory.}
 \usage{
 package.skeleton.dx(pkgdir = "..", code_files = NULL, check = "")

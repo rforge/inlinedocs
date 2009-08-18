@@ -1,7 +1,7 @@
 \name{extract.docs.file}
 \Rdversion{1.1}
 \alias{extract.docs.file}
-\title{extract.docs.file}
+\title{ Extract documentation from a file}
 \description{Parse an R code file and extract inline documentation from comments around each function.}
 \usage{
 extract.docs.file(code.file, write.examples = TRUE)
