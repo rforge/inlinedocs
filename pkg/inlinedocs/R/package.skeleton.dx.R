@@ -133,6 +133,8 @@ modify.Rd.file <- function
     ## need to escape backslashes for faithful copying of the comments
     ## to the Rd file:
     REP <- paste(torep,"{",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
+    ## escape percent signs in R code:
+    REP <- gsub("\\%","\\\\%",REP)
     txt <- gsub(FIND,REP,txt)
   }
 
