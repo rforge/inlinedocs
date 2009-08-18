@@ -134,7 +134,7 @@ modify.Rd.file <- function
     ## to the Rd file:
     REP <- paste(torep,"{",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
     ## escape percent signs in R code:
-    REP <- gsub("\\%","\\\\%",REP)
+    REP <- gsub("%","\\\\\\\\%",REP)
     txt <- gsub(FIND,REP,txt)
   }
 
