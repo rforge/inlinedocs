@@ -29,7 +29,7 @@ package.skeleton.dx <- function
 ### Character vector with the names of the R code files, to be passed
 ### to package.skeleton, and also inspected for inline
 ### documentation. NULL means all files ending in .R.
- check=FALSE
+ check=""
 ### Logical indicating whether or not to check the package after
 ### documentation is built.
  ){
@@ -54,7 +54,7 @@ package.skeleton.dx <- function
   if(is.null(code_files))code_files <- Sys.glob("*.R")
   docs <- list()
   for(cf in code_files){
-    L <- extract.docs.file(cf)
+    L <- extract.docs.file(cf,check!="noex")
     for(N in names(L))docs[[N]] <- L[[N]]
   }
   for(i in names(docs)){
@@ -77,7 +77,7 @@ package.skeleton.dx <- function
   file.copy(file.path(name,'man'),"..",rec=TRUE)
   unlink(name,rec=TRUE)
 
-  if(check){
+  if(check!=""){
     Rdir <- setwd(file.path("..",".."))
     cdir <- basename(dirname(Rdir))
     system(paste("R CMD check",cdir))
@@ -158,8 +158,10 @@ modify.Rd.file <- function
 extract.docs.file <- function
 ### Parse an R code file and extract inline documentation from
 ### comments around each function.
-(code.file
+(code.file,
 ### The R code file to parse.
+ write.examples=TRUE
+### Gather examples from test files?
  ){
   code <- readLines(code.file)
   e <- new.env()
@@ -174,8 +176,11 @@ extract.docs.file <- function
       o <- objs[[on]]
       doc <- if(class(o)=="function"){
         tdoc <- extract.docs.fun(o)
-        if(file.exists(tfile <- file.path("..","tests",paste(on,".R",sep=""))))
-          tdoc[["\\examples"]] <- paste(readLines(tfile),collapse="\n")
+        if(write.examples){ ## do not get examples from test files.
+          tfile <- file.path("..","tests",paste(on,".R",sep=""))
+          if(file.exists(tfile))
+            tdoc[["\\examples"]] <- paste(readLines(tfile),collapse="\n")
+        }
         tdoc
       }else list()
       ## Take the line before the first occurence of the variable
