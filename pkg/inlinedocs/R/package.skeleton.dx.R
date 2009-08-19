@@ -62,7 +62,8 @@ package.skeleton.dx <- function # Package skeleton deluxe
   }
   for(i in names(docs)){
     docs[[i]]$`\\author` <- desc[,"Maintainer"]
-    if(! '\\title' %in% names(docs[[i]]))docs[[i]]$`\\title` <- i
+    if(! '\\title' %in% names(docs[[i]]))
+      docs[[i]]$`\\title` <- gsub("[._]"," ",i)
   }
   name <- desc[,"Package"]
   details <- paste(paste(colnames(desc),": \\tab ",desc,"\\cr",sep=""),
