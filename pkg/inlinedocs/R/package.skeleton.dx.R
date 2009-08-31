@@ -86,6 +86,8 @@ package.skeleton.dx <- function # Package skeleton deluxe
     cdir <- basename(dirname(Rdir))
     system(paste("R CMD check",cdir))
   }
+  ## rebuild examples if we didn't test them:
+  if(check=="noex")package.skeleton.dx(pkgdir,code_files,"")
 }
 
 modify.Rd.file <- function
