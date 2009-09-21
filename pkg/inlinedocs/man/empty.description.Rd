@@ -2,7 +2,7 @@
 \Rdversion{1.1}
 \alias{empty.description}
 \docType{data}
-\title{empty.description}
+\title{empty description}
 \description{Default DESCRIPTION, written if it doesn't exist.}
 \usage{empty.description}
 \format{

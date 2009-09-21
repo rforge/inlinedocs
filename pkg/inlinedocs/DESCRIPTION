@@ -5,7 +5,7 @@ Version: 1.0
 Date: 2009-07-29
 Author: Toby Dylan Hocking
 Maintainer: Toby Dylan Hocking <toby.hocking@etu.upmc.fr>
-Description: An alternative to Roxygen that focuses on the Don't Repeat Yourself principle and keeping code and documentation close together.
+Description: Generates Rd files from R source code with comments, providing for quick, sustainable package development. The syntax keeps code and documentation close together, and is inspired by the Don't Repeat Yourself principle.
 URL: http://inlinedocs.r-forge.r-project.org
 License: GPL-3
 LazyLoad: yes
