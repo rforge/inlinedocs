@@ -135,10 +135,11 @@ modify.Rd.file <- function
   txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
     cat(" ",torep,sep="")
-    FIND <- paste(gsub("([{}])","\\\\\\1",torep),"[{][^}]*[}]",sep="")
+    FIND1 <- gsub("\\\\","\\\\\\\\",torep)
+    FIND <- paste(gsub("([{}])","\\\\\\1",FIND1),"[{][^}]*[}]",sep="")
     ## need to escape backslashes for faithful copying of the comments
     ## to the Rd file:
-    REP <- paste(torep,"{",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
+    REP <- paste(FIND1,"{",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
     ## escape percent signs in R code:
     REP <- gsub("%","\\\\\\\\%",REP)
     txt <- gsub(FIND,REP,txt)
