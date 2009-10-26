@@ -1,10 +1,13 @@
+### Prefix for code comments used with grep and gsub.
+prefix <- "^### "
+
 decomment <- function
 ### Remove comment prefix and join lines of code to form a
 ### documentation string.
 (comments
 ### Character vector of prefixed comment lines.
  ){
-  paste(gsub("### ","",comments),collapse=" ")
+  paste(gsub(prefix,"",comments),collapse=" ")
 ### String without prefixes or newlines.
 }
 
@@ -171,6 +174,7 @@ extract.docs.file <- function # Extract documentation from a file
 ### Gather examples from test files?
  ){
   code <- readLines(code.file)
+  comment.lines <- grep(prefix,code)
   e <- new.env()
   old <- options(keep.source.pkgs=TRUE)
   r <- try(sys.source(code.file,e),TRUE)
@@ -181,7 +185,7 @@ extract.docs.file <- function # Extract documentation from a file
   extract.docs <- function(on){
     res <- try({
       o <- objs[[on]]
-      doc <- if(class(o)=="function"){
+      doc <- if("function"%in%class(o)){
         tdoc <- extract.docs.fun(o)
         if(write.examples){ ## do not get examples from test files.
           tfile <- file.path("..","tests",paste(on,".R",sep=""))
@@ -191,9 +195,15 @@ extract.docs.file <- function # Extract documentation from a file
         tdoc
       }else list()
       ## Take the line before the first occurence of the variable
-      if(!"\\description"%in%names(doc))
-        doc[["\\description"]] <- 
-          decomment(code[grep(paste("^",on,sep=""),code)[1]-1])
+      defined.on <- grep(paste("^",on,sep=""),code)[1]-1
+      if(!"description"%in%names(doc) && defined.on%in%comment.lines){
+        comments.before <- comment.lines[comment.lines<=defined.on]
+        these.comment.lines <- if(length(comments.before)==1)comments.before else{
+          diffs <- diff(comments.before)
+          comments.before[max(which(diffs>1))+1]:defined.on
+        }
+        doc$description <- decomment(code[these.comment.lines])
+      }
       doc
     },FALSE)
     if(class(res)=="try-error"){
