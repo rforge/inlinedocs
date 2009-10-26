@@ -1,0 +1,7 @@
+Package: inner.function
+Maintainer: tdh
+Author: tdh
+Version: 1.0
+License: GPL-3
+Title: test package for inner functions
+Description: test package for inner functions...
