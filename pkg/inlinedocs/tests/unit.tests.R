@@ -3,7 +3,7 @@ library(inlinedocs)
 test.pkg <- function(pkg){
   package.skeleton.dx(pkg)
   Rd.files <- Sys.glob(file.path(pkg,"man","*"))
-  print(lapply(Rd.files,readLines))
+  lapply(Rd.files,function(f)cat(paste(readLines(f),collapse="\n")))
 }
 pkgs <- rownames(subset(file.info(dir()),isdir==TRUE))
-suppressWarnings(lapply(pkgs,test.pkg))
+res <- suppressWarnings(lapply(pkgs,test.pkg))
