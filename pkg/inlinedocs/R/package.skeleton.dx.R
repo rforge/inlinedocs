@@ -64,18 +64,18 @@ package.skeleton.dx <- function # Package skeleton deluxe
     for(N in names(L))docs[[N]] <- L[[N]]
   }
   for(i in names(docs)){
-    docs[[i]]$`\\author` <- desc[,"Maintainer"]
-    if(! '\\title' %in% names(docs[[i]]))
-      docs[[i]]$`\\title` <- gsub("[._]"," ",i)
+    docs[[i]]$author <- desc[,"Maintainer"]
+    if(! 'title' %in% names(docs[[i]]))
+      docs[[i]]$title <- gsub("[._]"," ",i)
   }
   name <- desc[,"Package"]
   details <- paste(paste(colnames(desc),": \\tab ",desc,"\\cr",sep=""),
                    collapse="\n")
   docs[[paste(name,"-package",sep="")]] <-
-    list(`\\title`=desc[,"Title"],
-         `\\description`=desc[,"Description"],
-         `\\tabular{ll}`=details,
-         `\\author`=desc[,"Maintainer"])
+    list(title=desc[,"Title"],
+         description=desc[,"Description"],
+         `tabular{ll}`=details,
+         author=desc[,"Maintainer"])
   ## Make package skeleton and edit Rd files
   unlink(name,rec=TRUE)
   package.skeleton(name,code_files=code_files)
@@ -130,7 +130,7 @@ modify.Rd.file <- function
   o <- grep("Optionally",dlines)
   if(length(o))dlines <- dlines[-(o:(o+1))]
   ## delete examples til the end of the file (also includes keywords)
-  dlines <- dlines[1:(tail(grep("\\examples[{]$",dlines),1)-1)]
+  dlines <- dlines[1:(tail(grep("examples[{]$",dlines),1)-1)]
   ## add back a minimal examples section to find and replace
   dlines <- c(dlines,"\\examples{}")
 
@@ -190,7 +190,7 @@ extract.docs.file <- function # Extract documentation from a file
         if(write.examples){ ## do not get examples from test files.
           tfile <- file.path("..","tests",paste(on,".R",sep=""))
           if(file.exists(tfile))
-            tdoc[["\\examples"]] <- paste(readLines(tfile),collapse="\n")
+            tdoc[["examples"]] <- paste(readLines(tfile),collapse="\n")
         }
         tdoc
       }else list()
@@ -228,7 +228,7 @@ extract.docs.fun <- function # Extract documentation from a function
   res <- list()
   code <- attr(fun,"source")
   clines <- grep("^#",code)
-  if(length(grep("#",code[1])))res$`\\title` <- gsub("[^#]*#(.*)","\\1",code[1])
+  if(length(grep("#",code[1])))res$title <- gsub("[^#]*#(.*)","\\1",code[1])
   if(length(clines)==0)return(res) ## no comments found
   bounds <- which(diff(clines)!=1)
   starts <- c(1,bounds+1)
@@ -236,15 +236,77 @@ extract.docs.fun <- function # Extract documentation from a function
   for(i in seq_along(starts)){
     start <- clines[starts[i]]
     end <- clines[ends[i]]
-    lab <- if(end+1==length(code))"\\value"
-    else if(start==2)"\\description"
+    lab <- if(end+1==length(code))"value"
+    else if(start==2)"description"
     else {
       arg <- gsub("^[ (]*","",code[start-1])
       arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
       arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
-      paste("\\item{",arg,"}",sep="")
+      paste("item{",arg,"}",sep="")
     }
     res[[lab]] <- decomment(code[start:end])
+  }
+  ##<<details
+  ## For simple functions/arguments, the argument may also be documented by
+  ## appending ##<< comments on the same line as the argument. For those who
+  ## wish to become confused, any following ### comment lines will be appended.
+  arg.pat <- "^\\s*\\(?\\s*([\\w\\.]+).*##<<\\s*(\\S.*?)\\s*$"
+  for ( k in 2:length(code) ){
+    if ( 0 < length(grep(arg.pat,code[k],perl=TRUE)) ){
+      arg <- gsub(arg.pat,"\\\\item\\{\\1\\}",code[k],perl=TRUE)
+      comment <- gsub(arg.pat,"\\2",code[k],perl=TRUE);
+      res[[arg]] <-
+        if ( is.null(res[[arg]]) )comment
+        else paste(comment,res[[arg]],sep=" ")
+    }
+  }
+
+  skeleton.fields <- c("alias","details","keyword","references","author",
+                       "note","seealso","value")
+  ##<<details
+  ## Additionally, contiguous sections of ## comment lines beginning with
+  ##<<xxx (where xxx is one of the "other" fields: alias, details, keyword,
+  ## references, author, note, seealso or value) are accumulated and inserted in
+  ## the relevant part of the .Rd file.
+  ##
+  ## In the case of value, the extra information is appended to that from
+  ## any final ### comment lines.
+
+  ## but this should not appear, because separated by a blank line
+  extra.regexp <- paste("^\\s*##<<(",paste(skeleton.fields,collapse="|"),
+                        ")\\s*(.*)$",sep="")
+  starts.extra <- grep(extra.regexp,code,perl=TRUE)
+  cont.re <- "^\\s*##\\s*";
+  for ( start in starts.extra ){
+    line <- code[start]
+    field <- gsub(extra.regexp,"\\1",line,perl=TRUE)
+    payload <- gsub(extra.regexp,"\\2",line,perl=TRUE)
+    if ( start < length(code) ){
+      for ( k in (start+1):length(code) ){
+        if ( k %in% starts.extra        # go on to next extra section
+            || 0 == length(grep(cont.re,code[k])) ){ # blank line or code ends
+          if ( "alias" == field ){
+            ##<<note Alias extras are automatically split at new lines.
+            payload <- gsub("\\n+",paste("\\}\n\\",field,"\\{",sep=""),
+                            payload,perl=TRUE)
+          } else if ("keyword" == field ){
+            ##<<keyword documentation utilities
+            ##<<note Keyword extras are auto-split at white space.
+            payload <- gsub("\\s+",paste("\\}\n\\",field,"\\{",sep=""),
+                            payload,perl=TRUE)
+          }
+          ##<<details Each separate extra section appears as a new paragraph
+          ## except that empty sections (no matter how many lines) are ignored.
+          if ( 0 == length(grep("^\\s*$",payload,perl=TRUE)) )
+            res[[field]] <-
+              if ( is.null(res[[field]]) )payload
+              else res[[field]] <- paste(res[[field]], payload, sep="\n\n")
+          break;
+        } else {
+          payload <- paste(payload,sub(cont.re,"",code[k],perl=TRUE),sep="\n")
+        }
+      }
+    }
   }
   res
 ### Named list of character strings extracted from comments. For each
