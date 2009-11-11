@@ -55,19 +55,33 @@ package.skeleton.dx <- function # Package skeleton deluxe
     if(! f %in% colnames(desc))stop("Need ",f," in ",descfile)
     if(desc[,f]=="")stop("Need a value for ",f," in ",descfile)
   }
+
+  ## Load necessary packages before loading pkg code
+  if("Depends" %in% colnames(desc)){
+    required <- strsplit(desc[,"Depends"],split=",")[[1]]
+    ## This may need some refining, basically I just tried to take the
+    ## first word from each vector element, stripping of whitespace in
+    ## front and anything after:
+    pkgnames <- gsub("\\W*(\\w+)\\b.*","\\1",required)
+    for(pkg in pkgnames)try(library(pkg,character.only=TRUE),TRUE)
+  }
   
   ## extract docs from each file
   if(is.null(code_files))code_files <- Sys.glob("*.R")
   docs <- list()
   for(cf in code_files){
     L <- extract.docs.file(cf,check!="noex")
-    for(N in names(L))docs[[N]] <- L[[N]]
+    docs <- c(docs,L)
   }
+
+  ## Fill in author from DESCRIPTION and titles if unspecified
   for(i in names(docs)){
     docs[[i]]$author <- desc[,"Maintainer"]
     if(! 'title' %in% names(docs[[i]]))
       docs[[i]]$title <- gsub("[._]"," ",i)
   }
+
+  ## Make -package Rd file
   name <- desc[,"Package"]
   details <- paste(paste(colnames(desc),": \\tab ",desc,"\\cr",sep=""),
                    collapse="\n")
@@ -76,6 +90,7 @@ package.skeleton.dx <- function # Package skeleton deluxe
          description=desc[,"Description"],
          `tabular{ll}`=details,
          author=desc[,"Maintainer"])
+  
   ## Make package skeleton and edit Rd files
   unlink(name,rec=TRUE)
   package.skeleton(name,code_files=code_files)
