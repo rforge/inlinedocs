@@ -28,7 +28,7 @@ except that empty sections (no matter how many lines) are ignored.}
 \value{Named list of character strings extracted from comments. For each name N we will look for N\{...\} in the Rd file and replace it with the string in this list (implemented in modify.Rd.file).}
 \references{
 }
-\author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>}
+\author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>, Keith Ponting <k.ponting@aurix.com>}
 \note{Alias extras are automatically split at new lines.
 
 Keyword extras are auto-split at white space.}

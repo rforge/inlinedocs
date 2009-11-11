@@ -15,7 +15,7 @@ extract.docs.file(code.file, write.examples = TRUE)
 \value{named list of lists. Each element is the result of a call to extract.docs.fun, with names corresponding to functions found in the R code file.}
 \references{
 }
-\author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>}
+\author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>, Keith Ponting <k.ponting@aurix.com>}
 \note{
 }
 

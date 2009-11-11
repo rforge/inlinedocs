@@ -17,7 +17,7 @@ package.skeleton.dx(pkgdir = "..", code_files = NULL, check = "")
 }
 \references{
 }
-\author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>}
+\author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>, Keith Ponting <k.ponting@aurix.com>}
 \note{
 }
 
