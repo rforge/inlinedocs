@@ -1,5 +1,4 @@
 \name{extract.docs.fun}
-\Rdversion{1.1}
 \alias{extract.docs.fun}
 \title{ Extract documentation from a function}
 \description{Given a function, return a list describing inline documentation in the source of that function (relies on source attr).}

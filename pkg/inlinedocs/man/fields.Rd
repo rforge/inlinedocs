@@ -1,5 +1,4 @@
 \name{fields}
-\Rdversion{1.1}
 \alias{fields}
 \docType{data}
 \title{fields}
