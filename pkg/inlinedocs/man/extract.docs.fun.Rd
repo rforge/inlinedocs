@@ -1,7 +1,8 @@
 \name{extract.docs.fun}
 \alias{extract.docs.fun}
 \title{ Extract documentation from a function}
-\description{Given a function, return a list describing inline documentation in the source of that function (relies on source attr).}
+\description{Given a function, return a list describing inline documentation in
+the source of that function (relies on source attr).}
 \usage{
 extract.docs.fun(fun)
 }
@@ -24,7 +25,9 @@ any final ### comment lines.
 
 Each separate extra section appears as a new paragraph
 except that empty sections (no matter how many lines) are ignored.}
-\value{Named list of character strings extracted from comments. For each name N we will look for N\{...\} in the Rd file and replace it with the string in this list (implemented in modify.Rd.file).}
+\value{Named list of character strings extracted from comments. For each
+name N we will look for N\{...\} in the Rd file and replace it
+with the string in this list (implemented in modify.Rd.file).}
 \references{
 }
 \author{Toby Dylan Hocking <toby.hocking@etu.upmc.fr>, Keith Ponting <k.ponting@aurix.com>}

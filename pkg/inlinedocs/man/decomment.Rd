@@ -1,7 +1,8 @@
 \name{decomment}
 \alias{decomment}
 \title{decomment}
-\description{Remove comment prefix and join lines of code to form a documentation string.}
+\description{Remove comment prefix and join lines of code to form a
+documentation string.}
 \usage{
 decomment(comments)
 }

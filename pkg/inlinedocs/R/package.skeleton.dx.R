@@ -7,7 +7,7 @@ decomment <- function
 (comments
 ### Character vector of prefixed comment lines.
  ){
-  paste(gsub(prefix,"",comments),collapse=" ")
+  paste(gsub(prefix,"",comments),collapse="\n")
 ### String without prefixes or newlines.
 }
 
