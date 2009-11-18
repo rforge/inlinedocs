@@ -80,6 +80,7 @@ package.skeleton.dx <- function # Package skeleton deluxe
     if(! 'title' %in% names(docs[[i]]))
       docs[[i]]$title <- gsub("[._]"," ",i)
   }
+  ##browser()
 
   ## Make -package Rd file
   name <- desc[,"Package"]
@@ -209,14 +210,16 @@ extract.docs.file <- function # Extract documentation from a file
         }
         tdoc
       }else list()
-      ## Take the line before the first occurence of the variable
+      ## Take the line(s) before the first definition of the variable
       defined.on <- grep(paste("^",on,sep=""),code)[1]-1
       if(!"description"%in%names(doc) && defined.on%in%comment.lines){
         comments.before <- comment.lines[comment.lines<=defined.on]
-        these.comment.lines <- if(length(comments.before)==1)comments.before else{
-          diffs <- diff(comments.before)
-          comments.before[max(which(diffs>1))+1]:defined.on
-        }
+        these.comment.lines <-
+          if(length(comments.before)==1)comments.before
+          else{
+            diffs <- diff(comments.before)
+            comments.before[max(which(diffs>1))+1]:defined.on
+          }
         doc$description <- decomment(code[these.comment.lines])
       }
       doc
