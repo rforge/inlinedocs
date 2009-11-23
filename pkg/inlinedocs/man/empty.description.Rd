@@ -1,4 +1,5 @@
 \name{empty.description}
+\Rdversion{1.1}
 \alias{empty.description}
 \docType{data}
 \title{empty description}

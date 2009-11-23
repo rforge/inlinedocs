@@ -1,4 +1,5 @@
 \name{prefix}
+\Rdversion{1.1}
 \alias{prefix}
 \docType{data}
 \title{prefix}

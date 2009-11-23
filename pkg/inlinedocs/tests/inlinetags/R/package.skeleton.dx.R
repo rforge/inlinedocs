@@ -55,7 +55,7 @@ package.skeleton.dx <- function # Package skeleton deluxe
     if(! f %in% colnames(desc))stop("Need ",f," in ",descfile)
     if(desc[,f]=="")stop("Need a value for ",f," in ",descfile)
   }
-  
+
   ## extract docs from each file
   if(is.null(code_files))code_files <- Sys.glob("*.R")
   docs <- list()
@@ -246,7 +246,7 @@ extract.docs.fun <- function # Extract documentation from a function
     }
     res[[lab]] <- decomment(code[start:end])
   }
-  ##<<details
+  ##details<<
   ## For simple functions/arguments, the argument may also be documented by
   ## appending ##<< comments on the same line as the argument. For those who
   ## wish to become confused, any following ### comment lines will be appended.
@@ -263,9 +263,9 @@ extract.docs.fun <- function # Extract documentation from a function
 
   skeleton.fields <- c("alias","details","keyword","references","author",
                        "note","seealso","value")
-  ##<<details
+  ##details<<
   ## Additionally, contiguous sections of ## comment lines beginning with
-  ##<<xxx (where xxx is one of the "other" fields: alias, details, keyword,
+  ## xxx<< (where xxx is one of the "other" fields: alias, details, keyword,
   ## references, author, note, seealso or value) are accumulated and inserted in
   ## the relevant part of the .Rd file.
   ##
@@ -286,16 +286,16 @@ extract.docs.fun <- function # Extract documentation from a function
         if ( k %in% starts.extra        # go on to next extra section
             || 0 == length(grep(cont.re,code[k])) ){ # blank line or code ends
           if ( "alias" == field ){
-            ##<<note Alias extras are automatically split at new lines.
+            ##note<< Alias extras are automatically split at new lines.
             payload <- gsub("\\n+",paste("\\}\n\\",field,"\\{",sep=""),
                             payload,perl=TRUE)
           } else if ("keyword" == field ){
-            ##<<keyword documentation utilities
-            ##<<note Keyword extras are auto-split at white space.
+            ##keyword<< documentation utilities
+            ##note<< Keyword extras are auto-split at white space.
             payload <- gsub("\\s+",paste("\\}\n\\",field,"\\{",sep=""),
                             payload,perl=TRUE)
           }
-          ##<<details Each separate extra section appears as a new paragraph
+          ##details<< Each separate extra section appears as a new paragraph
           ## except that empty sections (no matter how many lines) are ignored.
           if ( 0 == length(grep("^\\s*$",payload,perl=TRUE)) )
             res[[field]] <-

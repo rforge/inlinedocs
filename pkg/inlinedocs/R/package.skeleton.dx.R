@@ -65,7 +65,7 @@ package.skeleton.dx <- function # Package skeleton deluxe
     pkgnames <- gsub("\\W*(\\w+)\\b.*","\\1",required)
     for(pkg in pkgnames)try(library(pkg,character.only=TRUE),TRUE)
   }
-  
+
   ## extract docs from each file
   if(is.null(code_files))code_files <- Sys.glob("*.R")
   docs <- list()
@@ -76,7 +76,8 @@ package.skeleton.dx <- function # Package skeleton deluxe
 
   ## Fill in author from DESCRIPTION and titles if unspecified
   for(i in names(docs)){
-    docs[[i]]$author <- desc[,"Maintainer"]
+    if(! 'author' %in% names(docs[[i]]))
+      docs[[i]]$author <- desc[,"Maintainer"]
     if(! 'title' %in% names(docs[[i]]))
       docs[[i]]$title <- gsub("[._]"," ",i)
   }
@@ -84,14 +85,15 @@ package.skeleton.dx <- function # Package skeleton deluxe
 
   ## Make -package Rd file
   name <- desc[,"Package"]
-  details <- paste(paste(colnames(desc),": \\tab ",desc,"\\cr",sep=""),
+  in.details <- setdiff(colnames(desc),"Description")
+  details <- paste(paste(in.details,": \\tab ",desc[,in.details],"\\cr",sep=""),
                    collapse="\n")
   docs[[paste(name,"-package",sep="")]] <-
     list(title=desc[,"Title"],
          description=desc[,"Description"],
          `tabular{ll}`=details,
          author=desc[,"Maintainer"])
-  
+
   ## Make package skeleton and edit Rd files
   unlink(name,rec=TRUE)
   package.skeleton(name,code_files=code_files)
@@ -138,6 +140,13 @@ modify.Rd.file <- function
   ## matching function
   if(length(grep("-package$",N)))
     dlines <- dlines[-grep(paste("alias[{]",N,sep=""),dlines)-1]
+  else if ( "alias" %in% names(d) ){
+    ## allowing alias changes have to make sure that original alias remains
+    ## note that the contents of this go inside \alias{}, so the separator
+    ## has to terminate one and start the next
+    d[["alias"]] <- paste(paste(N,"}\n\\alias{",sep=""),
+                            d[["alias"]],sep="")
+  }
 
   ## cut out all comments {} interferes with regex matching
   dlines <- dlines[-grep("^[%~]",dlines)]
@@ -148,7 +157,11 @@ modify.Rd.file <- function
   ## delete examples til the end of the file (also includes keywords)
   dlines <- dlines[1:(tail(grep("examples[{]$",dlines),1)-1)]
   ## add back a minimal examples section to find and replace
-  dlines <- c(dlines,"\\examples{}")
+  dlines <- c(dlines,"\\examples{}\n")
+  ## and replace keyword section if keywords are present.
+  if ( "keyword" %in% names(d) ){
+    dlines <- c(dlines,"\\keyword{}\n")
+  }
 
   ## Find and replace based on data in d
   txt <- paste(dlines,collapse="\n")
@@ -202,7 +215,7 @@ extract.docs.file <- function # Extract documentation from a file
     res <- try({
       o <- objs[[on]]
       doc <- if("function"%in%class(o)){
-        tdoc <- extract.docs.fun(o)
+        tdoc <- extract.docs.fun(o,on)
         if(write.examples){ ## do not get examples from test files.
           tfile <- file.path("..","tests",paste(on,".R",sep=""))
           if(file.exists(tfile))
@@ -240,14 +253,28 @@ extract.docs.file <- function # Extract documentation from a file
 extract.docs.fun <- function # Extract documentation from a function
 ### Given a function, return a list describing inline documentation in
 ### the source of that function (relies on source attr).
-(fun
+(fun,
 ### The function to examine.
- ){
+ name.fun
+### The name of the function for use in warning messages.
+ )
+{
   res <- list()
   code <- attr(fun,"source")
   clines <- grep("^#",code)
-  if(length(grep("#",code[1])))res$title <- gsub("[^#]*#(.*)","\\1",code[1])
+  if(length(grep("#",code[1]))){
+    res$title <- gsub("[^#]*#\\s*(.*)","\\1",code[1],perl=TRUE)
+  }
   if(length(clines)==0)return(res) ## no comments found
+  ##details<<
+  ## The primary mechanism is that consecutive groups of lines matching
+  ## the specified prefix regular expression "\code{^### }" (i.e. lines
+  ## beginning with "\code{### }") are collected
+  ## as follows into documentation sections:\describe{
+  ## \item{description}{group starting at line 2 in the code}
+  ## \item{arguments}{group following each function argument}
+  ## \item{value}{group ending at the penultimate line of the code}}
+  ## These may be added to by use of the \code{##<<} constructs described below.
   bounds <- which(diff(clines)!=1)
   starts <- c(1,bounds+1)
   ends <- c(bounds,length(clines))
@@ -256,76 +283,204 @@ extract.docs.fun <- function # Extract documentation from a function
     end <- clines[ends[i]]
     lab <- if(end+1==length(code))"value"
     else if(start==2)"description"
-    else {
+    else if ( 0 == length(grep("^\\s*#",code[start-1],perl=TRUE)) ){
       arg <- gsub("^[ (]*","",code[start-1])
       arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
       arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
       paste("item{",arg,"}",sep="")
+    } else {
+      next;
     }
     res[[lab]] <- decomment(code[start:end])
   }
-  ##<<details
-  ## For simple functions/arguments, the argument may also be documented by
-  ## appending ##<< comments on the same line as the argument. For those who
-  ## wish to become confused, any following ### comment lines will be appended.
-  arg.pat <- "^\\s*\\(?\\s*([\\w\\.]+).*##<<\\s*(\\S.*?)\\s*$"
-  for ( k in 2:length(code) ){
-    if ( 0 < length(grep(arg.pat,code[k],perl=TRUE)) ){
-      arg <- gsub(arg.pat,"\\\\item\\{\\1\\}",code[k],perl=TRUE)
-      comment <- gsub(arg.pat,"\\2",code[k],perl=TRUE);
-      res[[arg]] <-
-        if ( is.null(res[[arg]]) )comment
-        else paste(comment,res[[arg]],sep=" ")
-    }
-  }
+  ##details<< For simple functions/arguments, the argument may also be
+  ## documented by appending \code{##<<} comments on the same line as the
+  ## argument name. Mixing this mechanism with \code{###} comment lines for
+  ## the same argument is likely to lead to confusion, as the \code{###}
+  ## lines are processed first.
+  arg.pat <- paste("^[^=,#]*?([\\w\\.]+)\\s*([=,].*|\\)\\s*)?",
+                   "<<\\s*(\\S.*?)\\s*$",
+                   sep="##") # paste avoids embedded trigger fooling the system
 
   skeleton.fields <- c("alias","details","keyword","references","author",
-                       "note","seealso","value")
-  ##<<details
-  ## Additionally, contiguous sections of ## comment lines beginning with
-  ##<<xxx (where xxx is one of the "other" fields: alias, details, keyword,
-  ## references, author, note, seealso or value) are accumulated and inserted in
-  ## the relevant part of the .Rd file.
+                       "note","seealso","value","title","description",
+                       "describe","end")
+  ##details<< Additionally, consecutive sections of \code{##} comment
+  ## lines beginning with \code{##}\emph{xxx}\code{<<} (where
+  ## \emph{xxx} is one of the fields: \code{alias}, \code{details},
+  ## \code{keyword}, \code{references}, \code{author}, \code{note},
+  ## \code{seealso}, \code{value}, \code{title} or \code{description})
+  ## are accumulated and inserted in the relevant part of the .Rd
+  ## file.
   ##
-  ## In the case of value, the extra information is appended to that from
-  ## any final ### comment lines.
+  ## For \code{value}, \code{title}, \code{description} and function
+  ## arguments, these \emph{append} to any text from "prefix"
+  ## (\code{^### }) comment lines, irrespective of the order in the
+  ## source.
 
   ## but this should not appear, because separated by a blank line
-  extra.regexp <- paste("^\\s*##<<(",paste(skeleton.fields,collapse="|"),
-                        ")\\s*(.*)$",sep="")
-  starts.extra <- grep(extra.regexp,code,perl=TRUE)
-  cont.re <- "^\\s*##\\s*";
-  for ( start in starts.extra ){
-    line <- code[start]
-    field <- gsub(extra.regexp,"\\1",line,perl=TRUE)
-    payload <- gsub(extra.regexp,"\\2",line,perl=TRUE)
-    if ( start < length(code) ){
-      for ( k in (start+1):length(code) ){
-        if ( k %in% starts.extra        # go on to next extra section
-            || 0 == length(grep(cont.re,code[k])) ){ # blank line or code ends
-          if ( "alias" == field ){
-            ##<<note Alias extras are automatically split at new lines.
-            payload <- gsub("\\n+",paste("\\}\n\\",field,"\\{",sep=""),
-                            payload,perl=TRUE)
-          } else if ("keyword" == field ){
-            ##<<keyword documentation utilities
-            ##<<note Keyword extras are auto-split at white space.
-            payload <- gsub("\\s+",paste("\\}\n\\",field,"\\{",sep=""),
-                            payload,perl=TRUE)
-          }
-          ##<<details Each separate extra section appears as a new paragraph
-          ## except that empty sections (no matter how many lines) are ignored.
-          if ( 0 == length(grep("^\\s*$",payload,perl=TRUE)) )
-            res[[field]] <-
-              if ( is.null(res[[field]]) )payload
-              else res[[field]] <- paste(res[[field]], payload, sep="\n\n")
-          break;
+  extra.regexp <- paste("^\\s*##(",paste(skeleton.fields,collapse="|"),
+                        ")<<\\s*(.*)$",sep="")
+  cont.re <- "^\\s*##\\s*"
+  in.describe <- 0
+  first.describe <- FALSE
+  k <- 1
+  in.chunk <- FALSE
+  end.chunk <- function(field,payload)
+    {
+      if ( "alias" == field ){
+        ##note<< \code{alias} extras are automatically split at new lines.
+        payload <- gsub("\\n+","\\}\n\\\\alias\\{",payload,perl=TRUE)
+        chunk.sep <- "}\n\\alias{"
+      } else if ( "keyword" == field ){
+        ##keyword<< documentation utilities
+        ##note<< \code{keyword} extras are automatically split at white space,
+        ## as all the valid keywords are single words.
+        payload <- gsub("\\s+","\\}\n\\\\keyword\\{",payload,perl=TRUE)
+        chunk.sep <- "}\n\\keyword{"
+      } else if ( "title" == field ){
+        chunk.sep <- " "
+      } else if ( "description" == field ){
+        chunk.sep <- "\n"
+      } else {
+        ##details<< Each separate extra section appears as a new
+        ## paragraph except that: \itemize{\item empty sections (no
+        ## matter how many lines) are ignored;\item \code{alias} and
+        ## \code{keyword} sections have special rules;\item
+        ## \code{description} should be brief, so all such sections
+        ## are concatenated as one paragraph;\item \code{title} should
+        ## be one line, so any extra \code{title} sections are
+        ## concatenated as a single line with spaces separating the
+        ## sections.}
+        chunk.sep <- "\n\n"
+      }
+      chunk.res <- NULL
+      if ( 0 == length(grep("^\\s*$",payload,perl=TRUE)) )
+        chunk.res <-
+          if ( is.null(res[[field]]) ) payload
+          else paste(res[[field]], payload, sep=chunk.sep)
+      invisible(chunk.res)
+    }
+  while ( k <= length(code) ){
+    line <- code[k]
+    if ( 0 < length(grep(extra.regexp,line,perl=TRUE) ) ){
+      ## we have a new extra chunk - first get field name and any payload
+      new.field <- gsub(extra.regexp,"\\1",line,perl=TRUE)
+      new.contents <- gsub(extra.regexp,"\\2",line,perl=TRUE)
+
+      ##details<< As a special case, the construct \code{##describe<<} causes
+      ## similar processing to the main function arguments to be
+      ## applied in order to construct a describe block within the
+      ## documentation, for example to describe the members of a
+      ## list. All subsequent "same line" \code{##<<} comments go into that
+      ## block until terminated by a subsequent \code{##}\emph{xxx}\code{<<} line.
+      ##
+      if ( "describe" == new.field ){
+        ##details<< Such regions may be nested, but not in such a way
+        ## that the first element in a \code{describe} is another \code{describe}.
+        ## Thus there must be at least one \code{##<<} comment between each
+        ## pair of \code{##describe<<} comments.
+        if ( first.describe ){
+          stop("consecutive ##describe<< at line",k,"in",name.fun)
         } else {
-          payload <- paste(payload,sub(cont.re,"",code[k],perl=TRUE),sep="\n")
+          if ( nzchar(new.contents) ){
+            if ( is.null(payload) || 0 == nzchar(payload) ){
+              payload <- paste(payload,new.contents,sep="\n\n")
+            } else {
+              payload <- paste(payload,new.contents,sep="\n\n")
+            }
+          }
+          first.describe <- TRUE
+        }
+      } else if ( "end" == new.field ){
+        ##details<< When nested \code{describe} blocks are used, a comment-only
+        ## line with \code{##end<<} terminates the current level only; any
+        ## other valid \code{##}\emph{xxx}\code{<<} line terminates
+        ## all open describe blocks.
+        if ( in.describe>0 ){
+          ## terminate current \item and \describe block only
+          payload <- paste(payload,"}\n}",sep="")
+          in.describe <- in.describe-1;
+        } else {
+          warning("mismatched ##end<< at line ",k," in ",name.fun)
+        }
+        if ( nzchar(new.contents) ){
+          if ( nzchar(payload) ){
+            payload <- paste(payload,new.contents,sep="\n")
+          } else {
+            payload <- new.contents
+          }
+        }
+      } else {
+        ## terminate all open \describe blocks (+1 because of open item)
+        if ( 0 < in.describe ){
+          payload <- paste(payload,"}",sep="")
+          while ( in.describe>0 ){
+            payload <- paste(payload,"}",sep="\n")
+            in.describe <- in.describe-1;
+          }
+        }
+        ## finishing any existing payload
+        if ( in.chunk ) res[[cur.field]] <- end.chunk(cur.field,payload)
+        in.chunk <- TRUE
+        cur.field <- new.field
+        payload <- new.contents
+      }
+    } else if ( in.chunk && 0<length(grep(cont.re,line,perl=TRUE)) ){
+      ## append this line to current chunk
+      if ( 0 == length(grep(prefix,line,perl=TRUE)) ){
+        ##describe<< Any lines with "\code{### }" at the left hand
+        ## margin within the included chunks are handled separately,
+        ## so if they appear in the documentation they will appear
+        ## before the \code{##}\emph{xxx}\code{<}\code{<} chunks.
+### This one should not appear.
+        stripped <- gsub(cont.re,"",line,perl=TRUE)
+        if ( nzchar(payload) ){
+          payload <- paste(payload,stripped,sep="\n")
+        } else {
+          payload <- stripped
         }
       }
+    } else if ( 0 < length(grep(arg.pat,line,perl=TRUE)) ){
+      not.describe <- (0==in.describe && !first.describe)
+      if ( in.chunk && not.describe){
+        res[[cur.field]] <- end.chunk(cur.field,payload)
+      }
+      comment <- gsub(arg.pat,"\\3",line,perl=TRUE);
+      arg <- gsub(arg.pat,"\\\\item\\{\\1\\}",line,perl=TRUE)
+      in.chunk <- TRUE
+      if ( not.describe ){
+        cur.field <- arg
+        payload <- comment
+      } else {
+        ## this is a describe block, so we need to paste with existing
+        ## payload as a new \item.
+        if ( first.describe ){
+          ## for first item, need to add describe block starter
+          payload <- paste(payload,"\\describe{\n",arg,"{",sep="")
+          first.describe <- FALSE
+          in.describe <- in.describe+1
+        } else {
+          ## subsequent item - terminate existing and start new
+          payload <- paste(payload,"}\n",arg,"{",sep="")
+        }
+        if ( nzchar(comment) ){
+          payload <- paste(payload,comment,sep="")
+        }
+      }
+    } else if ( in.chunk ){
+      if ( 0 == in.describe ){
+        ## reached an end to current field, but need to wait if in.describe
+        res[[cur.field]] <- end.chunk(cur.field,payload)
+        in.chunk <- FALSE
+        cur.field <- NULL
+        payload <- NULL
+      }
     }
+    k <- k+1
   }
+  ## finishing any existing payload
+  if ( in.chunk ) res[[cur.field]] <- end.chunk(cur.field,payload)
   res
 ### Named list of character strings extracted from comments. For each
 ### name N we will look for N\{...\} in the Rd file and replace it

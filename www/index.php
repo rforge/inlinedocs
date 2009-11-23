@@ -101,7 +101,43 @@ href="http://www.gnu.org/software/emacs">Emacs</a> with <a
 href="http://ess.r-project.org">ESS</a>. Then you just type "###" and
 go on as long as you want with your comment. When you're done and you
 have a really long comment, do a M-q to automatically break lines and
-add ### prefixes.<li>
+add ### prefixes.</li>
+
+<li>For additional flexibility, inlinedocs now includes additional
+triggers based on the string "##<<". This means that most of the
+standard documentation sections can be filled in from wherever is
+relevant in the source code, as follows:
+
+<ul>
+
+<li> ##<< at the end of a line can be used to add function
+argument descriptions on the same line as an argument name - any
+immediately following ## comment lines will also be included.  </li>
+
+<li> ##xxx<< as the first non-white space element on a line introduces
+a section of consecutive ## comment lines which will be placed in the
+"xxx" section of the documentation, where xxx is one of: alias,
+details, keyword, references, author, note, seealso, value, title or
+description. Multiple such chunks are concatenated appropriately - you
+can think of this as something like the C++ "put" operator putting
+chunks into that section.  For further details and examples of these
+look for << in the source file <a
+href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.dx.R</a>
+</li>
+
+<li> ##describe<< within such a documentation chunk allows a
+"describe" block within that chunk to be constructed using same-line
+##<< comments (as for the function arguments). All the following
+source lines until another ##xxx<< line will be scanned for such
+same-line comments. (##end<< may be used to end such a block and
+return to the same documentation chunk.) This allows named lists to be
+documented using the names actually in the code so that it is less
+easy to forget to document when you add an element.</li>
+
+</ul>
+The package includes a <a
+href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&view=markup">silly example</a>, which (as the file name suggests) is a very silly function indeed but exercises most of these facilities.
+</li>
 
 <li>Some examples:
 
@@ -134,7 +170,7 @@ add ### prefixes.<li>
 </li>
 
 
-<li>Do you use inlinedocs? If so, 
+<li>Do you use inlinedocs? If so,
 <a href="http://r-forge.r-project.org/sendmessage.php?touser=1571">
 send me an email</a>
 and I'll add your project to this list!
@@ -148,10 +184,10 @@ and I'll add your project to this list!
 adding a ### comment on the line before the variable is first
 declared.</li>
 
-<li>For the title of the Rd file, function names are used. Dots in the
-function name are translated into spaces in the title. Or you can
-specify the title in a comment at the end of the first line of the
-function definition, like this:
+<li>For the title of the Rd file, function names are used. Dots and
+underscores in the function name are translated into spaces in the
+title. Or you can specify the title in a comment at the end of the
+first line of the function definition, like this:
 
 <pre>
 package.skeleton.dx <- function # Package skeleton deluxe

@@ -1,4 +1,5 @@
 \name{modify.Rd.file}
+\Rdversion{1.1}
 \alias{modify.Rd.file}
 \title{modify Rd file}
 \description{Add inline documentation from comments to an Rd file

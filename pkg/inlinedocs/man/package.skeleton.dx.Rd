@@ -1,6 +1,7 @@
 \name{package.skeleton.dx}
+\Rdversion{1.1}
 \alias{package.skeleton.dx}
-\title{ Package skeleton deluxe}
+\title{Package skeleton deluxe}
 \description{Automates more of the setup process for a new source
 package. After inspecting the specified R code files to find
 inline documentation, it calls the standard package.skeleton
