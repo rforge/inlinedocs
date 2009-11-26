@@ -261,7 +261,7 @@ extract.docs.fun <- function # Extract documentation from a function
 {
   res <- list()
   code <- attr(fun,"source")
-  clines <- grep("^#",code)
+  clines <- grep(prefix,code)
   if(length(grep("#",code[1]))){
     res$title <- gsub("[^#]*#\\s*(.*)","\\1",code[1],perl=TRUE)
   }
