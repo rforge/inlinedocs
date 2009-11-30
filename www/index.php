@@ -103,44 +103,6 @@ go on as long as you want with your comment. When you're done and you
 have a really long comment, do a M-q to automatically break lines and
 add ### prefixes.</li>
 
-<li>For additional flexibility, inlinedocs now allows similar
-documentation of S4 class definitions (i.e. those which use
-<pre>setClass</pre>) and includes additional triggers based on the
-string "##<<". This means that most of the standard documentation
-sections can be filled in from wherever is relevant in the source
-code, as follows:
-
-<ul>
-
-<li> ##<< at the end of a line can be used to add function
-argument descriptions on the same line as an argument name - any
-immediately following ## comment lines will also be included.  </li>
-
-<li> ##xxx<< as the first non-white space element on a line introduces
-a section of consecutive ## comment lines which will be placed in the
-"xxx" section of the documentation, where xxx is one of: alias,
-details, keyword, references, author, note, seealso, value, title or
-description. Multiple such chunks are concatenated appropriately - you
-can think of this as something like the C++ "put" operator putting
-chunks into that section.  For further details and examples of these
-look for << in the source file <a
-href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.dx.R</a>
-</li>
-
-<li> ##describe<< within such a documentation chunk allows a
-"describe" block within that chunk to be constructed using same-line
-##<< comments (as for the function arguments). All the following
-source lines until another ##xxx<< line will be scanned for such
-same-line comments. (##end<< may be used to end such a block and
-return to the same documentation chunk.) This allows named lists to be
-documented using the names actually in the code so that it is less
-easy to forget to document when you add an element.</li>
-
-</ul>
-The package includes a <a
-href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&view=markup">silly example</a>, which (as the file name suggests) is a very silly function indeed but exercises most of these facilities.
-</li>
-
 <li>Some examples:
 
 <ul>
@@ -164,21 +126,20 @@ href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tes
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/man?root=directlabels">generated Rd files</a>
 </li>
 
+<!-- disabled TDH 30 nov 2009
 <li>nicholsonppp:
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sim.R?root=nicholsonppp&view=markup">sim.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/plot.R?root=nicholsonppp&view=markup">plot.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=nicholsonppp&view=markup">DESCRIPTION</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/man?root=nicholsonppp">generated Rd files</a>
 </li>
-
-
-<li>Do you use inlinedocs? If so,
-<a href="http://r-forge.r-project.org/sendmessage.php?touser=1571">
-send me an email</a>
-and I'll add your project to this list!
-</li>
+-->
 
 </ul>
+
+<li>Do you use inlinedocs? If so, please send the developers email at
+inlinedocs-support AT lists.r-forge.r-project.org to tell us what you
+think! (or <a href="https://lists.r-forge.r-project.org/cgi-bin/mailman/listinfo/inlinedocs-support">subscribe</a>) </li>
 
 </li>
 
@@ -214,6 +175,44 @@ to do by hand. To get started just use the prompt() function.</li>
 pkgdir/tests directory. This is more sustainable than putting
 test code in R comments, since debugging/changing commented code is a
 pain.</li>
+
+<li>For additional flexibility, inlinedocs now allows similar
+documentation of S4 class definitions (i.e. those which use
+<tt>setClass</tt>) and includes additional triggers based on the
+string "##<<". This means that most of the standard documentation
+sections can be filled in from wherever is relevant in the source
+code, as follows:
+
+<ul>
+
+<li> ##<< at the end of a line can be used to add function
+argument descriptions on the same line as an argument name - any
+immediately following ## comment lines will also be included.  </li>
+
+<li> ##xxx<< as the first non-white space element on a line introduces
+a section of consecutive ## comment lines which will be placed in the
+"xxx" section of the documentation, where xxx is one of: alias,
+details, keyword, references, author, note, seealso, value, title or
+description. Multiple such chunks are concatenated appropriately - you
+can think of this as something like the C++ "put" operator putting
+chunks into that section.  For further details and examples of these
+look for << in the source file <a
+href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.dx.R</a>
+</li>
+
+<li> ##describe<< within such a documentation chunk allows a
+"describe" block within that chunk to be constructed using same-line
+##<< comments (as for the function arguments). All the following
+source lines until another ##xxx<< line will be scanned for such
+same-line comments. (##end<< may be used to end such a block and
+return to the same documentation chunk.) This allows named lists to be
+documented using the names actually in the code so that it is less
+easy to forget to document when you add an element.</li>
+
+</ul>
+The package includes a <a
+href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&view=markup">silly example</a>, which (as the file name suggests) is a very silly function indeed but exercises most of these facilities.
+</li>
 
 <li>inlinedocs is not as powerful as Roxygen, so if you want to use
 all the features of Rd, Roxygen may be a better choice. However
