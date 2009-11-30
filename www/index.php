@@ -103,10 +103,12 @@ go on as long as you want with your comment. When you're done and you
 have a really long comment, do a M-q to automatically break lines and
 add ### prefixes.</li>
 
-<li>For additional flexibility, inlinedocs now includes additional
-triggers based on the string "##<<". This means that most of the
-standard documentation sections can be filled in from wherever is
-relevant in the source code, as follows:
+<li>For additional flexibility, inlinedocs now allows similar
+documentation of S4 class definitions (i.e. those which use
+<pre>setClass</pre>) and includes additional triggers based on the
+string "##<<". This means that most of the standard documentation
+sections can be filled in from wherever is relevant in the source
+code, as follows:
 
 <ul>
 

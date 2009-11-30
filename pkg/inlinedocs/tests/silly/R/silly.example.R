@@ -41,3 +41,11 @@ silly.example <- function
   invisible(res)
 ### invisible something not unrelated to first
 }
+
+setClass("Silly", # S4 classes can be documented as well
+### The Silly class does nothing much either
+         ##details<< but you can put what you like in documentation details
+         representation(forwards="function", ##<< forward operation
+                        reverse="function", ##<< how to go backward
+                        crashes="integer") ##<< how many crashes
+         ) ##<< this comment is ignored as it is outside setClass expression

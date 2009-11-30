@@ -1,5 +1,4 @@
 \name{fields}
-\Rdversion{1.1}
 \alias{fields}
 \docType{data}
 \title{fields}
@@ -7,7 +6,7 @@
 \usage{fields}
 \format{
   The format is:
- chr [1:7] "Package" "Maintainer" "Author" "Version" "License" "Title" "Description"
+ chr [1:7] "Package" "Maintainer" "Author" "Version" "License" ...
 }
 \details{
 }

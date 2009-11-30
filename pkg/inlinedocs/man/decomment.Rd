@@ -1,5 +1,4 @@
 \name{decomment}
-\Rdversion{1.1}
 \alias{decomment}
 \title{decomment}
 \description{Remove comment prefix and join lines of code to form a

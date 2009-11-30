@@ -72,6 +72,8 @@ package.skeleton.dx <- function # Package skeleton deluxe
   for(cf in code_files){
     L <- extract.docs.file(cf,check!="noex")
     docs <- c(docs,L)
+    L <- extract.docs.setClass(cf)
+    docs <- c(docs,L)
   }
 
   ## Fill in author from DESCRIPTION and titles if unspecified
@@ -149,7 +151,15 @@ modify.Rd.file <- function
   }
 
   ## cut out all comments {} interferes with regex matching
-  dlines <- dlines[-grep("^[%~]",dlines)]
+  comments <- grep("^[%~]",dlines)
+  ## gotcha! if no comment lines, then -(nothing) kills everything
+  if ( 0 < length(comments) ) dlines <- dlines[-comments]
+  ## and class skeletons have a different way of using ~
+  dlines <- gsub("\\s*~.*~\\s*","",dlines,perl=TRUE)
+  ## and the "Objects can be created..." boilerplate also breaks perl REs
+  dlines <- gsub("Objects can be created by calls.*\\)\\}","",dlines,perl=TRUE)
+  ## ditto the "or \code{\linkS4class{CLASSNAME}} for links to other classes"
+  dlines <- gsub("or \\\\code\\{\\\\linkS4class.*classes","",dlines,perl=TRUE)
 
   ## cut out a couple of sections that cause warnings
   o <- grep("Optionally",dlines)
@@ -175,6 +185,20 @@ modify.Rd.file <- function
     ## escape percent signs in R code:
     REP <- gsub("%","\\\\\\\\%",REP)
     txt <- gsub(FIND,REP,txt)
+    classrep <- sub("item{(.*)}","item{\\\\code{\\1}:}",torep,perl=TRUE)
+    if ( classrep != torep ){
+      ## in xxx-class files, slots are documented with:
+      ## \item{\code{name}:}{Object of class \code{"function"} ~~ }
+      ## which requires slightly different processing
+      FIND1 <- gsub("\\\\","\\\\\\\\",classrep)
+      FIND <- paste(gsub("([{}])","\\\\\\1",FIND1),"\\{Object of class \\\\code\\{\\\"(\\S+)\\\"\\}[^}]*[}]",sep="")
+      ## need to escape backslashes for faithful copying of the comments
+      ## to the Rd file and also put the class type in parentheses.
+      REP <- paste(FIND1,"{(\\\\code{\\1}) ",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
+      ## escape percent signs in R code:
+      REP <- gsub("%","\\\\\\\\%",REP)
+      txt <- gsub(FIND,REP,txt)
+    }
   }
 
   ## Fix usage
@@ -259,8 +283,19 @@ extract.docs.fun <- function # Extract documentation from a function
 ### The name of the function for use in warning messages.
  )
 {
+  extract.docs.chunk(attr(fun,"source"),name.fun)
+}
+
+extract.docs.chunk <- function # Extract documentation from a function
+### Given a chunk of source code, return a list describing inline
+### documentation in that source code.
+(code,
+### The function to examine.
+ name.fun
+### The name of the function/chunk to use in warning messages.
+ )
+{
   res <- list()
-  code <- attr(fun,"source")
   clines <- grep(prefix,code)
   if(length(grep("#",code[1]))){
     res$title <- gsub("[^#]*#\\s*(.*)","\\1",code[1],perl=TRUE)
@@ -317,6 +352,12 @@ extract.docs.fun <- function # Extract documentation from a function
   ## arguments, these \emph{append} to any text from "prefix"
   ## (\code{^### }) comment lines, irrespective of the order in the
   ## source.
+  ##
+  ## When documenting S4 classes, documentation from \code{details}
+  ## sections will appear under a section \code{Objects from the Class}. That
+  ## section typically includes information about construction methods
+  ## as well as other description of class objects (but note that the
+  ## class Slots are documented in a separate section).
 
   ## but this should not appear, because separated by a blank line
   extra.regexp <- paste("^\\s*##(",paste(skeleton.fields,collapse="|"),
@@ -487,3 +528,59 @@ extract.docs.fun <- function # Extract documentation from a function
 ### with the string in this list (implemented in modify.Rd.file).
 }
 
+extract.docs.setClass <- function # S4 class inline documentation
+### Using the same conventions as for functions, definitions of S4 classes
+### in the form \code{setClass("classname",\dots)} are also located and
+### scanned for inline comments.
+(code.file)
+### Name of the file containing the source code - note that any nested
+### \code{source} statements are \emph{ignored} when scanning for
+### class definitions.
+{
+  res <- list()
+  old.opt <- options(keep.source=TRUE)
+  parsed <- try(parse(file=code.file))
+  options(old.opt)
+  if ( inherits(parsed,"try-error") ){
+    stop("parse ",code.file," failed with error:\n",parsed)
+  }
+  chunks <- attr(parsed,"srcref")
+  for ( chunk in chunks ){
+    chunk.source <- as.character(chunk)
+    ##details<<
+    ## Extraction of S4 class documentation is currently limited to expressions
+    ## within the source code which have first line starting with
+    ## \code{setClass("classname"}. These are located from the source file
+    ## (allowing also for white space around the \code{setClass} and \code{(}).
+    ## Note that \code{"classname"} must be a quoted character string;
+    ## expressions returning such a string are not matched.
+    class.name <- sub("^\\s*setClass\\s*\\(\\s*([\"\'])([^\"\']+)\\1.*$","\\2",
+                      chunk.source[1],perl=TRUE)
+    if ( class.name != chunk.source[1] ){ # i.e. we have matched setClass
+      ##details<< For class definitions, the slots (elements of the
+      ## \code{representation} list) fill the role of function
+      ## arguments, so may be documented by \code{##<<} comments on
+      ## the same line or \code{### } comments at the beginning of the
+      ## following line.
+      f.n <- paste(class.name,"class",sep="-")
+      docs <- extract.docs.chunk(chunk.source,f.n)
+      ##details<<
+      ## The class definition skeleton includes an \code{Objects from the Class}
+      ## section, to which any \code{##details<<} documentation chunks are
+      ## written. It is given a vanilla content if there are no specific
+      ## \code{##details<<} documentation chunks.
+      if ( is.null(docs[["details"]]) ){
+        docs[["details"]] <-
+          paste("Objects can be created by calls of the form \\code{new(",
+                class.name," ...)}",sep="")
+      }
+      docs[["section{Objects from the Class}"]] <- docs[["details"]]
+      ## seealso has a skeleton line not marked by ~ .. ~, so have to suppress
+      if ( is.null(docs[["seealso"]]) ){
+        docs[["seealso"]] <- ""
+      }
+      res[[f.n]] <- docs
+    }
+  }
+  invisible(res)
+}

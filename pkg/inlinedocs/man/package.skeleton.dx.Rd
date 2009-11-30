@@ -1,5 +1,4 @@
 \name{package.skeleton.dx}
-\Rdversion{1.1}
 \alias{package.skeleton.dx}
 \title{Package skeleton deluxe}
 \description{Automates more of the setup process for a new source

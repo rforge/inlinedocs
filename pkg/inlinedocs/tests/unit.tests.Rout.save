@@ -1,5 +1,5 @@
 
-R version 2.10.0 (2009-10-26)
+R version 2.10.0 Patched (2009-11-23 r50548)
 Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -20,6 +20,11 @@ Type 'q()' to quit R.
 > test.pkg <- function(pkg){
 +   package.skeleton.dx(pkg)
 +   Rd.files <- Sys.glob(file.path(pkg,"man","*"))
++   ## now sort these in locale-independent manner
++   loc <- Sys.getlocale(category = "LC_COLLATE")
++   Sys.setlocale(category="LC_COLLATE","C")
++   Rd.files <- sort(Rd.files)
++   Sys.setlocale(category="LC_COLLATE",loc)
 +   lapply(Rd.files,function(f)cat(paste(readLines(f),collapse="\n")))
 + }
 > pkgs <- rownames(subset(file.info(dir()),isdir==TRUE))
@@ -31,7 +36,7 @@ Attaching package: 'ggplot2'
 
 	The following object(s) are masked from package:grid :
 
-	 nullGrob
+	 nullGrob 
 
 Creating directories ...
 Creating DESCRIPTION ...
@@ -73,7 +78,30 @@ trans.density: description author title
 trans.densityplot: description author title
 trans.qqmath: description author title
 directlabels-package: title description tabular{ll} author
-\name{bottom.points}
+\name{PositionDl}
+\alias{PositionDl}
+\docType{data}
+\title{PositionDl}
+\description{Position class for direct label placement.}
+\usage{PositionDl}
+\format{
+  The format is:
+proto object 
+ $ objname: chr "dl" 
+ $ adjust :function (., data, scales)   
+ $ new    :function (., method = NULL, debug = FALSE)   
+ $ debug  : logi FALSE 
+ $ method : NULL 
+ parent: proto object 
+ .. parent: proto object 
+}
+\details{
+}
+\source{
+}
+\references{
+}
+\examples{}\name{bottom.points}
 \alias{bottom.points}
 \title{bottom points}
 \description{Positioning Function for the bottom of a group of points.}
@@ -90,30 +118,6 @@ bottom.points(d, ...)
 }
 \value{
 }
-\references{
-}
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
-\note{
-}
-
-
-\seealso{
-}
-\examples{}\name{direct.label.ggplot}
-\alias{direct.label.ggplot}
-\title{direct label ggplot}
-\description{Direct label a ggplot2 grouped plot.}
-\usage{
-direct.label.ggplot(p, method = NULL, debug = FALSE)
-}
-\arguments{
-  \item{p}{The ggplot object.}
-  \item{method}{Method for direct labeling as described in ?label.positions.}
-  \item{debug}{Show debug output?}
-}
-\details{
-}
-\value{The ggplot object with direct labels added.}
 \references{
 }
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>}
@@ -149,30 +153,28 @@ direct.label(p, method = NULL, debug = FALSE)
 
 \seealso{
 }
-\examples{}\name{directlabels-package}
-\alias{directlabels-package}
-\docType{package}
-\title{Direct labels for plots}
-\description{Direct labeling functions meant to be used with several plotting packages, including lattice and ggplot2.}
-\details{
-\tabular{ll}{Package: \tab directlabels\cr
-Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>\cr
-Author: \tab Toby Dylan Hocking\cr
-Version: \tab 1.0\cr
-License: \tab GPL-3\cr
-Title: \tab Direct labels for plots\cr
-Description: \tab Direct labeling functions meant to be used with several plotting packages, including lattice and ggplot2.\cr
-Imports: \tab proto, plyr, lattice, grid, ggplot2\cr
-Depends: \tab proto, plyr, lattice, grid, ggplot2\cr
-URL: \tab http://directlabels.r-forge.r-project.org/\cr
-LazyLoad: \tab false\cr
-LazyData: \tab true\cr
-Suggests: \tab nlme, mlmRev\cr}
+\examples{}\name{direct.label.ggplot}
+\alias{direct.label.ggplot}
+\title{direct label ggplot}
+\description{Direct label a ggplot2 grouped plot.}
+\usage{
+direct.label.ggplot(p, method = NULL, debug = FALSE)
 }
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\arguments{
+  \item{p}{The ggplot object.}
+  \item{method}{Method for direct labeling as described in ?label.positions.}
+  \item{debug}{Show debug output?}
+}
+\details{
+}
+\value{The ggplot object with direct labels added.}
 \references{
 }
-\keyword{ package }
+\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\note{
+}
+
+
 \seealso{
 }
 \examples{}\name{direct.label.trellis}
@@ -203,41 +205,34 @@ function).}
 
 \seealso{
 }
-\examples{}\name{dlcompare}
-\alias{dlcompare}
-\title{dlcompare}
-\description{Compare several plots and/or label placement methods. This creates
-a custom grid graphics display based on lattice and/or ggplot2
-output. This is possible because the direct.label function is
-generic. The result will be a plot matrix with plots on the
-columns and positioning methods on the rows. Names from the lists
-will be used to annotate the plot. If label placement method list
-elements are not named, but are given as a character string
-designating a Positioning Function, we will use this name for the
-label.}
-\usage{
-dlcompare(plots, pos.funs)
-}
-\arguments{
-  \item{plots}{List of ggplot2 or lattice plots.}
-  \item{pos.funs}{List of label placement methods to apply to each plot.}
-}
+\examples{}\name{directlabels-package}
+\alias{directlabels-package}
+\docType{package}
+\title{Direct labels for plots}
+\description{Direct labeling functions meant to be used with several plotting packages, including lattice and ggplot2.}
 \details{
-}
-\value{
-}
-\references{
+\tabular{ll}{Package: \tab directlabels\cr
+Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>\cr
+Author: \tab Toby Dylan Hocking\cr
+Version: \tab 1.0\cr
+License: \tab GPL-3\cr
+Title: \tab Direct labels for plots\cr
+Imports: \tab proto, plyr, lattice, grid, ggplot2\cr
+Depends: \tab proto, plyr, lattice, grid, ggplot2\cr
+URL: \tab http://directlabels.r-forge.r-project.org/\cr
+LazyLoad: \tab false\cr
+LazyData: \tab true\cr
+Suggests: \tab nlme, mlmRev\cr}
 }
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>}
-\note{
+\references{
 }
-
-
+\keyword{ package }
 \seealso{
 }
 \examples{}\name{dl.indep}
 \alias{dl.indep}
-\title{ Direct label groups independently}
+\title{Direct label groups independently}
 \description{Makes a function you can use to specify the location of each group
 independently.}
 \usage{
@@ -293,7 +288,7 @@ dl.text(labs, group.number, col.line = NULL, col.points = NULL, col = NULL, col.
 }
 \examples{}\name{dl.trans}
 \alias{dl.trans}
-\title{ Direct label data transform}
+\title{Direct label data transform}
 \description{Make a function that transforms the data. This is for conveniently
 making a function that calls transform on the data frame, with the
 arguments provided. See examples.}
@@ -306,6 +301,38 @@ dl.trans(...)
 \details{
 }
 \value{A Positioning Function.}
+\references{
+}
+\author{Toby Dylan Hocking <toby.hocking@inria.fr>}
+\note{
+}
+
+
+\seealso{
+}
+\examples{}\name{dlcompare}
+\alias{dlcompare}
+\title{dlcompare}
+\description{Compare several plots and/or label placement methods. This creates
+a custom grid graphics display based on lattice and/or ggplot2
+output. This is possible because the direct.label function is
+generic. The result will be a plot matrix with plots on the
+columns and positioning methods on the rows. Names from the lists
+will be used to annotate the plot. If label placement method list
+elements are not named, but are given as a character string
+designating a Positioning Function, we will use this name for the
+label.}
+\usage{
+dlcompare(plots, pos.funs)
+}
+\arguments{
+  \item{plots}{List of ggplot2 or lattice plots.}
+  \item{pos.funs}{List of label placement methods to apply to each plot.}
+}
+\details{
+}
+\value{
+}
 \references{
 }
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>}
@@ -629,22 +656,6 @@ maxvar.points(d, ...)
 
 \seealso{
 }
-\examples{}\name{need.trans.ggplot}
-\alias{need.trans.ggplot}
-\docType{data}
-\title{need trans ggplot}
-\description{Geoms which need translation before applying Positioning Function.}
-\usage{need.trans.ggplot}
-\format{
-  The format is:
- chr "density"
-}
-\details{
-}
-\source{
-}
-\references{
-}
 \examples{}\name{need.trans}
 \alias{need.trans}
 \docType{data}
@@ -654,6 +665,22 @@ maxvar.points(d, ...)
 \format{
   The format is:
  chr [1:2] "qqmath" "densityplot"
+}
+\details{
+}
+\source{
+}
+\references{
+}
+\examples{}\name{need.trans.ggplot}
+\alias{need.trans.ggplot}
+\docType{data}
+\title{need trans ggplot}
+\description{Geoms which need translation before applying Positioning Function.}
+\usage{need.trans.ggplot}
+\format{
+  The format is:
+ chr "density"
 }
 \details{
 }
@@ -754,29 +781,6 @@ position_dl(method = NULL, debug = FALSE, ...)
 
 \seealso{
 }
-\examples{}\name{PositionDl}
-\alias{PositionDl}
-\docType{data}
-\title{PositionDl}
-\description{Position class for direct label placement.}
-\usage{PositionDl}
-\format{
-  The format is:
-proto object
- $ objname: chr "dl"
- $ adjust :function (., data, scales)
- $ new    :function (., method = NULL, debug = FALSE)
- $ debug  : logi FALSE
- $ method : NULL
- parent: proto object
- .. parent: proto object
-}
-\details{
-}
-\source{
-}
-\references{
-}
 \examples{}\name{right.points}
 \alias{right.points}
 \title{right points}
@@ -858,12 +862,12 @@ top.points(d, ...)
 
 \seealso{
 }
-\examples{}\name{trans.densityplot}
-\alias{trans.densityplot}
-\title{trans densityplot}
+\examples{}\name{trans.density}
+\alias{trans.density}
+\title{trans density}
 \description{Transformation function for 1d densityplots.}
 \usage{
-trans.densityplot(d, ...)
+trans.density(d, ...)
 }
 \arguments{
   \item{d}{
@@ -884,12 +888,12 @@ trans.densityplot(d, ...)
 
 \seealso{
 }
-\examples{}\name{trans.density}
-\alias{trans.density}
-\title{trans density}
+\examples{}\name{trans.densityplot}
+\alias{trans.densityplot}
+\title{trans densityplot}
 \description{Transformation function for 1d densityplots.}
 \usage{
-trans.density(d, ...)
+trans.densityplot(d, ...)
 }
 \arguments{
   \item{d}{
@@ -1289,6 +1293,7 @@ Keyword extras are auto-split at white space.}
 \seealso{
 }
 \examples{}
+
 \keyword{documentation}
 \keyword{utilities}\name{fields}
 \alias{fields}
@@ -1409,40 +1414,7 @@ take a long time).}
 }
 \references{
 }
-\examples{}Loading required package: XML
-Loading required package: IRanges
-
-Attaching package: 'IRanges'
-
-
-	The following object(s) are masked from package:plyr :
-
-	 reduce
-
-
-	The following object(s) are masked from package:base :
-
-	 cbind,
-	 Map,
-	 mapply,
-	 order,
-	 pmax,
-	 pmax.int,
-	 pmin,
-	 pmin.int,
-	 rbind,
-	 rep.int,
-	 table
-
-
-Attaching package: 'Biostrings'
-
-
-	The following object(s) are masked from package:plyr :
-
-	 compact
-
-Creating directories ...
+\examples{}Creating directories ...
 Creating DESCRIPTION ...
 Creating Read-and-delete-me ...
 Copying code files ...
@@ -1451,8 +1423,34 @@ Done.
 Further steps are described in './silly/Read-and-delete-me'.
 Modifying files automatically generated by package.skeleton:
 silly.example: description value title \item{first} \item{second} \item{third} details alias note references seealso keyword author
+Silly-class: title description details \item{forwards} \item{reverse} \item{crashes} section{Objects from the Class} seealso author
 silly-package: title description tabular{ll} author
-\name{silly-package}
+\name{Silly-class}
+\Rdversion{1.1}
+\docType{class}
+\alias{Silly-class}
+
+\title{S4 classes can be documented as well}
+\description{The Silly class does nothing much either}
+\section{Objects from the Class}{but you can put what you like in documentation details}
+\section{Slots}{
+  \describe{
+    \item{\code{forwards}:}{(\code{function}) forward operation}
+    \item{\code{reverse}:}{(\code{function}) how to go backward}
+    \item{\code{crashes}:}{(\code{integer}) how many crashes}
+  }
+}
+\section{Methods}{
+No methods defined with class "Silly" in the signature.
+}
+\references{}
+\author{Keith Ponting <k.ponting@aurix.com>}
+\note{}
+
+
+
+\seealso{}
+\examples{}\name{silly-package}
 \alias{silly-package}
 \docType{package}
 \title{Exhaustive example of inlinedocs extended tags}
@@ -1516,8 +1514,10 @@ and this line should get into documentation for z}
 
 \seealso{\code{\link{test}}}
 \examples{}
+
 \keyword{documentation}
-\keyword{utilities}Creating directories ...
+\keyword{utilities}Loading required package: XML
+Creating directories ...
 Creating DESCRIPTION ...
 Creating Read-and-delete-me ...
 Copying code files ...
@@ -1704,12 +1704,17 @@ for a full description).}
 sublogo.dendrogram(M, main = "", subtit = NULL, base = tempfile(), cutline = 150, dend.width = 30, cex = 1)
 }
 \arguments{
-  \item{M}{difference matrix as constructed by seqs.to.mat (although in principle any object with a valid as.dist method could be used)}
+  \item{M}{difference matrix as constructed by seqs.to.mat (although in
+principle any object with a valid as.dist method could be used)}
   \item{main}{plot title}
   \item{subtit}{plot subtitle}
   \item{base}{base file name for temporary logo files}
-  \item{cutline}{Distance for cutting the tree. Draw a sublogo for each leaf. Normally you will plot once, then inspect the dendrogram to determine which is a good value for cutline, then plot again using your chosen cutline.}
-  \item{dend.width}{Percent of the plot to be occupied by the dendrogram. The logos will be displayed with equal widths on either side.}
+  \item{cutline}{Distance for cutting the tree. Draw a sublogo for each
+leaf. Normally you will plot once, then inspect the dendrogram to
+determine which is a good value for cutline, then plot again using
+your chosen cutline.}
+  \item{dend.width}{Percent of the plot to be occupied by the dendrogram. The logos
+will be displayed with equal widths on either side.}
   \item{cex}{character expansion factor for the dendrogram}
 }
 \details{
@@ -1724,4 +1729,4 @@ sublogo.dendrogram(M, main = "", subtit = NULL, base = tempfile(), cutline = 150
 
 \seealso{
 }
-\examples{}>
+\examples{}> 

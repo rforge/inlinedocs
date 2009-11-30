@@ -1,5 +1,4 @@
 \name{inlinedocs-package}
-\Rdversion{1.1}
 \alias{inlinedocs-package}
 \docType{package}
 \title{Convert inline comments to documentation}
