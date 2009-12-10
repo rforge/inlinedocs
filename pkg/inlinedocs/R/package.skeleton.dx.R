@@ -249,6 +249,11 @@ extract.docs.file <- function # Extract documentation from a file
       }else list()
       ## Take the line(s) before the first definition of the variable
       defined.on <- grep(paste("^",on,sep=""),code)[1]-1
+      end <- defined.on+grep("^$",code[(defined.on+1):length(code)])[1]-1
+      if(is.na(end))end <- length(code)
+      ## In fact this only works if the item's definition ends with an
+      ## empty line.
+      doc$definition <- paste(code[(defined.on+1):end],collapse="\n")
       if(!"description"%in%names(doc) && defined.on%in%comment.lines){
         comments.before <- comment.lines[comment.lines<=defined.on]
         these.comment.lines <-
