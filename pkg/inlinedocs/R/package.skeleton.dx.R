@@ -173,6 +173,15 @@ modify.Rd.file <- function
     dlines <- c(dlines,"\\keyword{}\n")
   }
 
+  ## erase curly braces in format section, which appear sporadically
+  ## and can cause errors in R CMD check.
+  fstart <- grep("^\\\\format[{]$",dlines)+1
+  if(length(fstart)){
+    closing <- grep("^[}]$",dlines)
+    fend <- closing[closing>fstart][1]-1
+    dlines[fstart:fend] <- gsub("[{}]","",dlines[fstart:fend])
+  }
+
   ## Find and replace based on data in d
   txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
