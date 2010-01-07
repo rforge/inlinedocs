@@ -44,8 +44,12 @@ silly.example <- function
 
 setClass("Silly", # S4 classes can be documented as well
 ### The Silly class does nothing much either
-         ##details<< but you can put what you like in documentation details
+         ##details<< Put what you like in documentation details,
+         ## but ideally reference construction methods.
          representation(forwards="function", ##<< forward operation
                         reverse="function", ##<< how to go backward
                         crashes="integer") ##<< how many crashes
          ) ##<< this comment is ignored as it is outside setClass expression
+
+## creates "show" generic function. Documentation of this not yet supported.
+setMethod("show","Silly",function(object){cat("crashed ",object@crashes," times\n")})

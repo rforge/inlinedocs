@@ -193,7 +193,13 @@ modify.Rd.file <- function
     REP <- paste(FIND1,"{",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
     ## escape percent signs in R code:
     REP <- gsub("%","\\\\\\\\%",REP)
-    txt <- gsub(FIND,REP,txt)
+    ## alias (in particular) need to change only the first one generated
+    ## (generic methods in classes add to standard skeleton alias set)
+    if ( torep %in% c("alias") ){
+      txt <- sub(FIND,REP,txt)
+    } else {
+      txt <- gsub(FIND,REP,txt)
+    }
     classrep <- sub("item{(.*)}","item{\\\\code{\\1}:}",torep,perl=TRUE)
     if ( classrep != torep ){
       ## in xxx-class files, slots are documented with:
@@ -278,10 +284,16 @@ extract.docs.file <- function # Extract documentation from a file
     if(class(res)=="try-error"){
       cat("Failed to extract docs for: ",on,"\n\n")
       list()
-    }
-    else res
+    } else if(0 == length(res) && inherits(objs[[on]],"standardGeneric")){
+      NULL
+    } else res
   }
   res <- sapply(names(objs),extract.docs,simplify=FALSE)
+  ## now strip out any generics (which have value NULL in res):
+  res.not.null <- sapply(res,function(x){!is.null(x)})
+  if ( 0 < length(res.not.null) && length(res.not.null) < length(res) ){
+    res <- res[res.not.null]
+  }
   res
 ### named list of lists. Each element is the result of a call to
 ### extract.docs.fun, with names corresponding to functions found in
@@ -592,6 +604,9 @@ extract.docs.setClass <- function # S4 class inline documentation
       ## seealso has a skeleton line not marked by ~ .. ~, so have to suppress
       if ( is.null(docs[["seealso"]]) ){
         docs[["seealso"]] <- ""
+      }
+      if ( is.null(docs[["alias"]]) ){
+        docs[["alias"]] <- class.name
       }
       res[[f.n]] <- docs
     }
