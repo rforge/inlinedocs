@@ -327,33 +327,35 @@ extract.docs.chunk <- function # Extract documentation from a function
   if(length(grep("#",code[1]))){
     res$title <- gsub("[^#]*#\\s*(.*)","\\1",code[1],perl=TRUE)
   }
-  if(length(clines)==0)return(res) ## no comments found
-  ##details<<
-  ## The primary mechanism is that consecutive groups of lines matching
-  ## the specified prefix regular expression "\code{^### }" (i.e. lines
-  ## beginning with "\code{### }") are collected
-  ## as follows into documentation sections:\describe{
-  ## \item{description}{group starting at line 2 in the code}
-  ## \item{arguments}{group following each function argument}
-  ## \item{value}{group ending at the penultimate line of the code}}
-  ## These may be added to by use of the \code{##<<} constructs described below.
-  bounds <- which(diff(clines)!=1)
-  starts <- c(1,bounds+1)
-  ends <- c(bounds,length(clines))
-  for(i in seq_along(starts)){
-    start <- clines[starts[i]]
-    end <- clines[ends[i]]
-    lab <- if(end+1==length(code))"value"
-    else if(start==2)"description"
-    else if ( 0 == length(grep("^\\s*#",code[start-1],perl=TRUE)) ){
-      arg <- gsub("^[ (]*","",code[start-1])
-      arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
-      arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
-      paste("item{",arg,"}",sep="")
-    } else {
-      next;
+  if(length(clines) > 0){
+    ##details<<
+    ## The primary mechanism is that consecutive groups of lines matching
+    ## the specified prefix regular expression "\code{^### }" (i.e. lines
+    ## beginning with "\code{### }") are collected
+    ## as follows into documentation sections:\describe{
+    ## \item{description}{group starting at line 2 in the code}
+    ## \item{arguments}{group following each function argument}
+    ## \item{value}{group ending at the penultimate line of the code}}
+    ## These may be added to by use of the \code{##<<} constructs described
+    ## below.
+    bounds <- which(diff(clines)!=1)
+    starts <- c(1,bounds+1)
+    ends <- c(bounds,length(clines))
+    for(i in seq_along(starts)){
+      start <- clines[starts[i]]
+      end <- clines[ends[i]]
+      lab <- if(end+1==length(code))"value"
+      else if(start==2)"description"
+      else if ( 0 == length(grep("^\\s*#",code[start-1],perl=TRUE)) ){
+         arg <- gsub("^[ (]*","",code[start-1])
+         arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
+         arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
+         paste("item{",arg,"}",sep="")
+       } else {
+         next;
+       }
+      res[[lab]] <- decomment(code[start:end])
     }
-    res[[lab]] <- decomment(code[start:end])
   }
   ##details<< For simple functions/arguments, the argument may also be
   ## documented by appending \code{##<<} comments on the same line as the
@@ -518,7 +520,7 @@ extract.docs.chunk <- function # Extract documentation from a function
       arg <- gsub(arg.pat,"\\\\item\\{\\1\\}",line,perl=TRUE)
       in.chunk <- TRUE
       if ( not.describe ){
-        cur.field <- arg
+        cur.field <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
         payload <- comment
       } else {
         ## this is a describe block, so we need to paste with existing
