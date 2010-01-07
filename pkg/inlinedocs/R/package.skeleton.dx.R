@@ -310,6 +310,7 @@ extract.docs.fun <- function # Extract documentation from a function
  )
 {
   extract.docs.chunk(attr(fun,"source"),name.fun)
+### as for \code{\link{extract.docs.chunk}}
 }
 
 extract.docs.chunk <- function # Extract documentation from a function
