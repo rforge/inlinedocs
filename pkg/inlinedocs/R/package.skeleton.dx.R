@@ -250,10 +250,9 @@ extract.docs.file <- function # Extract documentation from a file
     stop("source ",code.file," failed with error:\n",r)
   options(old)
   objs <- sapply(ls(e),get,e,simplify=FALSE)
-  extract.docs <- function(on){
-    res <- try({
-      o <- objs[[on]]
-      doc <- if("function"%in%class(o)){
+  extract.docs.try <- function(o,on)
+    {
+      doc <- if(!is.null(attr(o,"source"))){
         tdoc <- extract.docs.fun(o,on)
         if(write.examples){ ## do not get examples from test files.
           tfile <- file.path("..","tests",paste(on,".R",sep=""))
@@ -264,27 +263,53 @@ extract.docs.file <- function # Extract documentation from a file
       }else list()
       ## Take the line(s) before the first definition of the variable
       defined.on <- grep(paste("^",on,sep=""),code)[1]-1
-      end <- defined.on+grep("^$",code[(defined.on+1):length(code)])[1]-1
-      if(is.na(end))end <- length(code)
-      ## In fact this only works if the item's definition ends with an
-      ## empty line.
-      doc$definition <- paste(code[(defined.on+1):end],collapse="\n")
-      if(!"description"%in%names(doc) && defined.on%in%comment.lines){
-        comments.before <- comment.lines[comment.lines<=defined.on]
-        these.comment.lines <-
-          if(length(comments.before)==1)comments.before
-          else{
-            diffs <- diff(comments.before)
-            comments.before[max(which(diffs>1))+1]:defined.on
-          }
-        doc$description <- decomment(code[these.comment.lines])
+      ## but with S3 classes from R.oo there are three other cases:
+      ## A) SetConstructorS3("ClassName",function ...
+      ## B) SetMethodS3("select","ClassName",function ...
+      ## C) implicit in B is an S3 generic select which has trivial definition
+      ## for now, just suppress the "lines before" functionality - we could
+      ## attempt to capture those using parse function and srcref attributes
+      ## of the expressions (which would also work around the "empty line"
+      ## caveat below, but will leave that for now.
+      if ( !is.na(defined.on) ){
+        end <- defined.on+grep("^$",code[(defined.on+1):length(code)])[1]-1
+        if(is.na(end))end <- length(code)
+        ## In fact this only works if the item's definition ends with an
+        ## empty line.
+        doc$definition <- paste(code[(defined.on+1):end],collapse="\n")
+        if(!"description"%in%names(doc) && defined.on%in%comment.lines){
+          comments.before <- comment.lines[comment.lines<=defined.on]
+          these.comment.lines <-
+            if(length(comments.before)==1)comments.before
+            else{
+              diffs <- diff(comments.before)
+              comments.before[max(which(diffs>1))+1]:defined.on
+            }
+          doc$description <- decomment(code[these.comment.lines])
+        }
+      }
+      if("title" %in% names(doc) && !"description" %in% names(doc) ){
+        ## For short functions having both would duplicate, and
+        ## description is required. Therefore automatically copy title
+        ## across to avoid errors at package build time.
+        doc$description <- doc$title
       }
       doc
-    },FALSE)
+    }
+  extract.docs <- function(on){
+    res <- try({o <- objs[[on]]
+                extract.docs.try(o, on)},FALSE)
     if(class(res)=="try-error"){
       cat("Failed to extract docs for: ",on,"\n\n")
       list()
     } else if(0 == length(res) && inherits(objs[[on]],"standardGeneric")){
+      NULL
+    } else if(0 == length(res) && "function" %in% class(o)
+              && 1 == length(osource <- attr(o,"source"))
+              && 1 == length(grep(paste("UseMethod(",on,")",sep="\""),osource))
+              ){
+      ## phew - this should only pick up R.oo S3 generic definitions like:
+      ## attr(*, "source")= chr "function(...) UseMethod(\"select\")"
       NULL
     } else res
   }
