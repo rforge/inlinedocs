@@ -6,7 +6,7 @@
 \usage{fields}
 \format{
   The format is:
- chr [1:7] "Package" "Maintainer" "Author" "Version" "License" ...
+ chr [1:7] "Package" "Maintainer" "Author" "Version" "License" "Title" "Description"
 }
 \details{
 }

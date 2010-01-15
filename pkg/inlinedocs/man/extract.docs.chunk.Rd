@@ -17,7 +17,8 @@ as follows into documentation sections:\describe{
 \item{description}{group starting at line 2 in the code}
 \item{arguments}{group following each function argument}
 \item{value}{group ending at the penultimate line of the code}}
-These may be added to by use of the \code{##<<} constructs described below.
+These may be added to by use of the \code{##<<} constructs described
+below.
 
 For simple functions/arguments, the argument may also be
 documented by appending \code{##<<} comments on the same line as the
@@ -61,7 +62,6 @@ documentation, for example to describe the members of a
 list. All subsequent "same line" \code{##<<} comments go into that
 block until terminated by a subsequent \code{##}\emph{xxx}\code{<<} line.
 
-
 Such regions may be nested, but not in such a way
 that the first element in a \code{describe} is another \code{describe}.
 Thus there must be at least one \code{##<<} comment between each
@@ -80,7 +80,11 @@ with the string in this list (implemented in modify.Rd.file).}
 \note{\code{alias} extras are automatically split at new lines.
 
 \code{keyword} extras are automatically split at white space,
-as all the valid keywords are single words.}
+as all the valid keywords are single words.
+
+The "value" section of a .Rd file is implicitly a describe block
+and \code{##}\code{value}\code{<<} acts accordingly therefore automatically
+enables the describe block itemization (##<< after list entries).}
 
 
 \seealso{

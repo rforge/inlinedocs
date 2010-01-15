@@ -12,8 +12,7 @@ extract.docs.fun(fun, name.fun)
 }
 \details{
 }
-\value{
-}
+\value{as for \code{\link{extract.docs.chunk}}}
 \references{
 }
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}

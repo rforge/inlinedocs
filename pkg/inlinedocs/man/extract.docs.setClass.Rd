@@ -5,10 +5,10 @@
 in the form \code{setClass("classname",\dots)} are also located and
 scanned for inline comments.}
 \usage{
-extract.docs.setClass(code.file)
+extract.docs.setClass(doc.link)
 }
 \arguments{
-  \item{code.file}{
+  \item{doc.link}{
 }
 }
 \details{Extraction of S4 class documentation is currently limited to expressions

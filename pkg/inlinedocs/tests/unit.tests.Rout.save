@@ -63,15 +63,15 @@ empty.grid: description item{d} item{debug} item{loc.fun} item{\dots} value defi
 empty.grid.2: description item{d} item{debug} item{\dots} definition author title
 first.points: definition description author title
 get.means: definition description author title
-high.points: definition author title
+high.points: definition description author title
 label.positions: description item{x} item{y} item{subscripts} item{groups} item{debug} item{method} item{\dots} value definition author title
 last.points: definition description author title
-left.points: definition author title
+left.points: definition description author title
 lines2: description item{d} item{offset} item{\dots} definition author title
-low.points: definition author title
+low.points: definition description author title
 maxvar.points: definition description author title
 perpendicular.lines: description item{d} item{debug} item{\dots} value definition author title
-right.points: definition author title
+right.points: definition description author title
 rug.mean: definition description author title
 top.points: definition description author title
 trans.density: definition description author title
@@ -455,8 +455,7 @@ get.means(d, ...)
 \examples{}\name{high.points}
 \alias{high.points}
 \title{high points}
-\description{
-}
+\description{Positioning Function for the top of a group of points.}
 \usage{
 high.points(d, ...)
 }
@@ -548,8 +547,7 @@ last.points(d, ...)
 \examples{}\name{left.points}
 \alias{left.points}
 \title{left points}
-\description{
-}
+\description{Positioning Function for the first of a group of points.}
 \usage{
 left.points(d, ...)
 }
@@ -606,8 +604,7 @@ lines2(d, offset = 0.3, ...)
 \examples{}\name{low.points}
 \alias{low.points}
 \title{low points}
-\description{
-}
+\description{Positioning Function for the bottom of a group of points.}
 \usage{
 low.points(d, ...)
 }
@@ -784,8 +781,7 @@ position_dl(method = NULL, debug = FALSE, ...)
 \examples{}\name{right.points}
 \alias{right.points}
 \title{right points}
-\description{
-}
+\description{Positioning Function for the last of a group of points.}
 \usage{
 right.points(d, ...)
 }

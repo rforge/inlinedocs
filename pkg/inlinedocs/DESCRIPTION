@@ -7,6 +7,7 @@ Author: Toby Dylan Hocking, Keith Ponting
 Maintainer: Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>
 Description: Generates Rd files from R source code with comments, providing for quick, sustainable package development. The syntax keeps code and documentation close together, and is inspired by the Don't Repeat Yourself principle.
 URL: http://inlinedocs.r-forge.r-project.org
+Depends: methods
 License: GPL-3
 LazyLoad: yes
 
