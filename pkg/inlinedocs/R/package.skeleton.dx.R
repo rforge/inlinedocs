@@ -237,6 +237,8 @@ modify.Rd.file <- function
                gsub("\\\\([^%])","\\\\\\\\\\1",utxt),
                substr(txt,Mend+1,nchar(txt)),
                sep="")
+  ## delete empty sections to suppress warnings in R CMD check
+  txt <- gsub("\\\\[a-z]+[{]\\W*[}]","",txt)
   ## This doesn't work if there are quotes in the default values:
   ## gsub(",",paste("\n",paste(rep(" ",l=nchar(N)-1),collapse="")),utxt)
   cat(txt,file=f)
