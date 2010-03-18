@@ -55,11 +55,11 @@ for them. Now how to go about doing that?
 
 <li><b>Option 1: do it yourself.</b> Fire up package.skeleton() and
 then edit the Rd files by hand, following the directions in <a
-href="http://cran.r-project.org/doc/manuals/R-exts.pdf">Writing R
-Extensions (135 pages)</a> --- good luck. It takes a long time to edit
-all these files by hand, and if you change your code you will end up
-with docs which do not agree. Unless you constantly update all those
-Rd files. (will you really?)</li>
+href="http://cran.r-project.org/doc/manuals/R-exts.html">Writing R
+Extensions (over 150 pages in PDF form)</a> --- good luck. It takes a
+long time to edit all these files by hand, and if you change your code
+you will end up with docs which do not agree. Unless you constantly
+update all those Rd files. (will you really?)</li>
 
 <li><b>Option 2: <a href="http://roxygen.org/">Roxygen</a>.</b> You
 like the idea of combining source code with documentation, because
@@ -71,12 +71,12 @@ and you have to repeat yourself when you name the function arguments
 in the comment and the definition. (but to its credit, the call graphs
 that Roxygen makes are pretty cool).</li>
 
-<li><b>Option 3: inlinedocs.</b> No syntax to learn, never have to
-repeat yourself, just comment your code in natural places, and you get
-Rd files that pass R CMD check so you can publish that package and
-move on with your life. And when you make changes to that function,
-the docs are right next to the code so odds are you will update the
-docs if they need to be.</li>
+<li><b>Option 3: inlinedocs.</b> You will never have to repeat
+yourself, just comment your code in natural places, and you get Rd
+files that pass R CMD check so you can publish that package and move
+on with your life. And when you make changes to that function, the
+docs are right next to the code so odds are you will update the docs
+if they need to be.</li>
 
 </ul>
 
