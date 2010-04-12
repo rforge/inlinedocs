@@ -2,14 +2,6 @@
 <!-- This is the project specific website template -->
 <!-- It can be changed as liked or replaced by other content -->
 
-<?php
-
-$domain=ereg_replace('[^\.]*\.(.*)$','\1',$_SERVER['HTTP_HOST']);
-$group_name=ereg_replace('([^\.]*)\..*$','\1',$_SERVER['HTTP_HOST']);
-$themeroot='http://r-forge.r-project.org/themes/rforge/';
-
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-?>
 <!DOCTYPE html
 	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -17,31 +9,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 
   <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title><?php echo $group_name; ?></title>
-	<link href="<?php echo $themeroot; ?>styles/estilo1.css" rel="stylesheet" type="text/css" />
+	<title>inlinedocs</title>
+	<link href="http://r-forge.r-project.org/themes/rforge/styles/estilo1.css" rel="stylesheet" type="text/css" />
   </head>
 
 <body>
 
-<!-- R-Forge Logo
-<table border="0" width="100%" cellspacing="0" cellpadding="0">
-<tr><td>
-<a href="/"><img src="<?php echo $themeroot; ?>/images/logo.png" border="0" alt="R-Forge Logo" /> </a> </td> </tr>
-</table>
- -->
-
-<!-- get project title  -->
-<!-- own website starts here, the following may be changed as you like -->
-
-<?php if ($handle=fopen('http://'.$domain.'/export/projtitl.php?group_name='.$group_name,'r')){
-$contents = '';
-while (!feof($handle)) {
-	$contents .= fread($handle, 8192);
-}
-fclose($handle);
-echo $contents; } ?>
-
-<!-- end of project description -->
 
 <h1>Simple and sustainable R packaging using inlinedocs</h1>
 
@@ -126,14 +99,12 @@ add ### prefixes.</li>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/man?root=directlabels">generated Rd files</a>
 </li>
 
-<!-- disabled TDH 30 nov 2009
 <li>nicholsonppp:
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sim.R?root=nicholsonppp&view=markup">sim.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/plot.R?root=nicholsonppp&view=markup">plot.R</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=nicholsonppp&view=markup">DESCRIPTION</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/man?root=nicholsonppp">generated Rd files</a>
 </li>
--->
 
 </ul>
 
@@ -182,6 +153,15 @@ documentation of S4 class definitions (i.e. those which use
 string "##<<". This means that most of the standard documentation
 sections can be filled in from wherever is relevant in the source
 code, as follows:
+</li>
+
+<table>
+<tr>
+<td>
+  <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/fermat/?root=inlinedocs">
+    <img src="fermat.png" alt="how to use inlinedocs to implement the
+fermat example from roxygen" /></a></td>
+<td>
 
 <ul>
 
@@ -209,10 +189,12 @@ return to the same documentation chunk.) This allows named lists to be
 documented using the names actually in the code so that it is less
 easy to forget to document when you add an element.</li>
 
+<li>The package includes a <a
+href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&view=markup">silly example</a>, which (as the file name suggests) is a very silly function indeed but exercises most of these facilities.</li>
+
 </ul>
-The package includes a <a
-href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&view=markup">silly example</a>, which (as the file name suggests) is a very silly function indeed but exercises most of these facilities.
-</li>
+
+</td></tr></table>
 
 <li>inlinedocs is not as powerful as Roxygen, so if you want to use
 all the features of Rd, Roxygen may be a better choice. However
@@ -221,7 +203,29 @@ syntax.</li>
 
 </ul>
 
-<p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
+<p> Return to
+the <a href="http://r-forge.r-project.org/projects/inlinedocs/">project
+summary page</a>. </p>
+
+<center>
+<table>
+<tr>
+
+<td>Please send email
+to <a href="mailto:inlinedocs-support@lists.r-forge.r-project.org">the
+support list</a> if you are using inlinedocs or have ideas to
+contribute, thanks!</td>
+
+</tr>
+<tr>
+<td align="center">
+    <a href="http://validator.w3.org/check?uri=referer">validate</a>
+</td>
+</tr>
+</table>
+
+</center>
+
 
 </body>
 </html>
