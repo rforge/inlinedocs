@@ -692,7 +692,7 @@ extract.file.parse <- function # File content analysis
     }
     ##details<< Class and method definitions can take several forms,
     ## determined by expression type: \describe{
-    ## \item{<-}{Ordinary assignment of value/function;}
+    ## \item{assignment (<-)}{Ordinary assignment of value/function;}
     ## \item{setClass}{Definition of S4 class;}
     ## \item{setConstructorS3}{Definition of S3 class using R.oo package;}
     ## \item{setMethodS3}{Definition of method for S3 class using R.oo package.}}

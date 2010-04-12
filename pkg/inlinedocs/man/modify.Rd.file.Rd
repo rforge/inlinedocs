@@ -11,17 +11,12 @@ modify.Rd.file(N, pkg, docs)
   \item{pkg}{Package name.}
   \item{docs}{Named list of documentation in extracted comments.}
 }
-\details{
-}
-\value{
-}
-\references{
-}
+
+
+
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
-\note{
-}
 
 
-\seealso{
-}
-\examples{}
+
+
+

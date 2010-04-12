@@ -4,14 +4,8 @@
 \title{prefix}
 \description{Prefix for code comments used with grep and gsub.}
 \usage{prefix}
-\format{
-  The format is:
- chr "^### "
-}
-\details{
-}
-\source{
-}
-\references{
-}
-\examples{}
+
+
+
+
+

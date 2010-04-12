@@ -19,7 +19,7 @@ description, any immediately preceding sequence consecutive
 
 Class and method definitions can take several forms,
 determined by expression type: \describe{
-\item{<-}{Ordinary assignment of value/function;}
+\item{assignment (<-)}{Ordinary assignment of value/function;}
 \item{setClass}{Definition of S4 class;}
 \item{setConstructorS3}{Definition of S3 class using R.oo package;}
 \item{setMethodS3}{Definition of method for S3 class using R.oo package.}}
@@ -35,13 +35,10 @@ documentation. A previously unseen generic is linked to the
 first defining instances, subsequent definitions of that generic
 also link back to the first defining instance.}
 \value{Returns an invisible list of .DocLink objects.}
-\references{
-}
+
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
-\note{
-}
 
 
-\seealso{
-}
-\examples{}
+
+
+

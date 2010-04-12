@@ -23,17 +23,12 @@ check the package. "noex" means check the package without running
 examples, only tests (useful for debugging if your tests/examples
 take a long time).}
 }
-\details{
-}
-\value{
-}
-\references{
-}
+
+
+
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
-\note{
-}
 
 
-\seealso{
-}
-\examples{}
+
+
+

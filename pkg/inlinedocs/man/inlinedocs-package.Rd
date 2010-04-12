@@ -17,9 +17,7 @@ License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr}
 }
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
-\references{
-}
+
 \keyword{ package }
-\seealso{
-}
-\examples{}
+
+

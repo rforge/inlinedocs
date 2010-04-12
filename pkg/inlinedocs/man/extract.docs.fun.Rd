@@ -10,16 +10,12 @@ extract.docs.fun(fun, name.fun)
   \item{fun}{The function to examine.}
   \item{name.fun}{The name of the function for use in warning messages.}
 }
-\details{
-}
+
 \value{as for \code{\link{extract.docs.chunk}}}
-\references{
-}
+
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
-\note{
-}
 
 
-\seealso{
-}
-\examples{}
+
+
+
