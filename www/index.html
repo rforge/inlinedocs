@@ -53,7 +53,7 @@ if they need to be.</li>
 
 </ul>
 
-<img src="inlinedocs-demo.png" />
+<img src="inlinedocs-demo.png" alt="simple example of inlinedocs usage" />
 
 <p>Then put your code in pkgdir/R/code.file.R, write a
 pkgdir/DESCRIPTION, start R, and do:</p>
@@ -76,43 +76,35 @@ go on as long as you want with your comment. When you're done and you
 have a really long comment, do a M-q to automatically break lines and
 add ### prefixes.</li>
 
-<li>Some examples:
-
-<ul>
+<li>Some more examples:<ul>
 
 <li>inlinedocs:
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.dx.R</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/DESCRIPTION?root=inlinedocs&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&amp;view=markup">package.skeleton.dx.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/DESCRIPTION?root=inlinedocs&amp;view=markup">DESCRIPTION</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/man?root=inlinedocs">generated Rd files</a>
 </li>
 
 <li>sublogo:
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sublogo.dendrogram.R?root=sublogo&view=markup">sublogo.dendrogram.R</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=sublogo&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sublogo.dendrogram.R?root=sublogo&amp;view=markup">sublogo.dendrogram.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=sublogo&amp;view=markup">DESCRIPTION</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/man?root=sublogo">generated Rd files</a>
 </li>
 
 <li>latticedl:
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/direct.labels.R?root=directlabels&view=markup">direct.labels.R</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/positioning.functions.R?root=directlabels&view=markup">positioning.functions.R</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/DESCRIPTION?root=directlabels&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/direct.labels.R?root=directlabels&amp;view=markup">direct.labels.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/R/positioning.functions.R?root=directlabels&amp;view=markup">positioning.functions.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/DESCRIPTION?root=directlabels&amp;view=markup">DESCRIPTION</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/latticedirectlabels/man?root=directlabels">generated Rd files</a>
 </li>
 
 <li>nicholsonppp:
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sim.R?root=nicholsonppp&view=markup">sim.R</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/plot.R?root=nicholsonppp&view=markup">plot.R</a>
-<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=nicholsonppp&view=markup">DESCRIPTION</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/sim.R?root=nicholsonppp&amp;view=markup">sim.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/R/plot.R?root=nicholsonppp&amp;view=markup">plot.R</a>
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/DESCRIPTION?root=nicholsonppp&amp;view=markup">DESCRIPTION</a>
 <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/man?root=nicholsonppp">generated Rd files</a>
 </li>
 
-</ul>
-
-<li>Do you use inlinedocs? If so, please send the developers email at
-inlinedocs-support AT lists.r-forge.r-project.org to tell us what you
-think! (or <a href="https://lists.r-forge.r-project.org/cgi-bin/mailman/listinfo/inlinedocs-support">subscribe</a>) </li>
-
-</li>
+</ul></li>
 
 <li>You can add a description of a data item declared in your code by
 adding a ### comment on the line before the variable is first
@@ -124,7 +116,7 @@ title. Or you can specify the title in a comment at the end of the
 first line of the function definition, like this:
 
 <pre>
-package.skeleton.dx <- function # Package skeleton deluxe
+package.skeleton.dx &lt;- function # Package skeleton deluxe
 </pre>
 
 </li>
@@ -155,8 +147,7 @@ sections can be filled in from wherever is relevant in the source
 code, as follows:
 </li>
 
-<table>
-<tr>
+<li><table><tr>
 <td>
   <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/fermat/?root=inlinedocs">
     <img src="fermat.png" alt="how to use inlinedocs to implement the
@@ -177,7 +168,7 @@ description. Multiple such chunks are concatenated appropriately - you
 can think of this as something like the C++ "put" operator putting
 chunks into that section.  For further details and examples of these
 look for &lt;&lt; in the source file <a
-href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&view=markup">package.skeleton.dx.R</a>
+href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&amp;view=markup">package.skeleton.dx.R</a>
 </li>
 
 <li> ##describe&lt;&lt; within such a documentation chunk allows a
@@ -190,11 +181,11 @@ documented using the names actually in the code so that it is less
 easy to forget to document when you add an element.</li>
 
 <li>The package includes a <a
-href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&view=markup">silly example</a>, which (as the file name suggests) is a very silly function indeed but exercises most of these facilities.</li>
+href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&amp;view=markup">silly example</a>, which (as the file name suggests) is a very silly function indeed but exercises most of these facilities.</li>
 
 </ul>
 
-</td></tr></table>
+</td></tr></table></li>
 
 <li>inlinedocs is not as powerful as Roxygen, so if you want to use
 all the features of Rd, Roxygen may be a better choice. However
@@ -213,8 +204,9 @@ summary page</a>. </p>
 
 <td>Please send email
 to <a href="mailto:inlinedocs-support@lists.r-forge.r-project.org">the
-support list</a> if you are using inlinedocs or have ideas to
-contribute, thanks!</td>
+support list</a>
+(or <a href="https://lists.r-forge.r-project.org/cgi-bin/mailman/listinfo/inlinedocs-support">subscribe</a>)
+if you are using inlinedocs or have ideas to contribute, thanks!</td>
 
 </tr>
 <tr>
