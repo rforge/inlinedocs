@@ -1,0 +1,7 @@
+Package: fermat
+Maintainer: Toby Dylan Hocking <toby.hocking@inria.fr>
+Author: Toby Dylan Hocking, adapted from Peter Danenberg
+Version: 1.0
+License: GPL-3
+Title: Tests pseudoprimality by Fermat's little theorem.
+Description: Using the Fermat primality test, pseudoprime checks for primes probabalistically; the test is fooled every time by Carmichael numbers.
