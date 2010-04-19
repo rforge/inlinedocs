@@ -1,7 +1,7 @@
 Package: inlinedocs
 Title: Convert inline comments to documentation
 Type: Package
-Version: 1.1
+Version: 1.2
 Date: 2009-11-30
 Author: Toby Dylan Hocking, Keith Ponting
 Maintainer: Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>
