@@ -1,0 +1,12 @@
+Package: indent
+Title: example of inlinedocs with indented items and tabs
+Type: Package
+Version: 1.0
+Date: 2010-04-20
+Author: Thomas Wutzler
+Maintainer: Thomas Wutzler <thomas.wutzler@web.de>
+Description: Test working inlinedocs with tab-indented comments and function arguments
+URL: http://inlinedocs.r-forge.r-project.org
+License: GPL-3
+LazyLoad: yes
+

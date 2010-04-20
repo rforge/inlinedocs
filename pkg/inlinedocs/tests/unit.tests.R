@@ -1,4 +1,5 @@
 library(inlinedocs)
+library(ggplot2)	#tw: used in test directlabels, add to suggests?
 ## will be run from the tests/ directory:
 test.pkg <- function(pkg){
   package.skeleton.dx(pkg)

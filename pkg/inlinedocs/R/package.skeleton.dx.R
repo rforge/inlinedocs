@@ -408,9 +408,13 @@ extract.docs.chunk <- function # Extract documentation from a function
       lab <- if(end+1==length(code))"value"
       else if(start==2)"description"
       else if ( 0 == length(grep("^\\s*#",code[start-1],perl=TRUE)) ){
-         arg <- gsub("^[ (]*","",code[start-1])
-         arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
-         arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
+         #arg <- gsub("^[ (]*","",code[start-1])
+         #arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
+         #arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
+ 		 arg <- gsub("^[ \t(,]*", "", code[start - 1])	#twutz: strip leading white spaces and brackets and ,
+		 arg <- gsub("^([^=,]*)[=,].*", "\\1", arg)		
+		 arg <- gsub("^([^ \t]*)([ \t]+)$","\\1",arg)	#twutz: remove trailing whitespaces		
+		 arg <- gsub("...", "\\dots", arg, fix = TRUE)
          paste("item{",arg,"}",sep="")
        } else {
          next;
@@ -423,10 +427,14 @@ extract.docs.chunk <- function # Extract documentation from a function
   ## argument name. Mixing this mechanism with \code{###} comment lines for
   ## the same argument is likely to lead to confusion, as the \code{###}
   ## lines are processed first.
-  arg.pat <- paste("^[^=,#]*?([\\w\\.]+)\\s*([=,].*|\\)\\s*)?",
-                   "<<\\s*(\\S.*?)\\s*$",
-                   sep="##") # paste avoids embedded trigger fooling the system
-
+  #arg.pat <- paste("^[^=,#]*?([\\w\\.]+)\\s*([=,].*|\\)\\s*)?",
+  #                 "<<\\s*(\\S.*?)\\s*$",
+  #                 sep="##") # paste avoids embedded trigger fooling the system
+   #tw: removed first comma				   
+   arg.pat <- paste("^[^=#]*?([\\w\\.]+)\\s*([=,].*|\\)\\s*)?",
+	   "<<\\s*(\\S.*?)\\s*$",
+   		sep="##") # paste avoids embedded trigger fooling the system
+			   
   skeleton.fields <- c("alias","details","keyword","references","author",
                        "note","seealso","value","title","description",
                        "describe","end")
