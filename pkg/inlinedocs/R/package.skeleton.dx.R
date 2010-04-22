@@ -129,7 +129,16 @@ modify.Rd.file <- function
 ### Named list of documentation in extracted comments.
  ){
   fb <- paste(N,".Rd",sep="")
+  ## For some functions, such as `[[.object`, package.skeleton (as used
+  ## within this package but not when used standalone) seems to generate
+  ## with a preceding z ("z[[.object.Rd"), so the z form is tested for and
+  ## used if it exists and the first does not.
+  zfb <- paste("z",N,".Rd",sep="")
   f <- file.path(pkg,'man',fb)
+  if ( (!file.exists(f)) && file.exists(file.path(pkg,'man',zfb)) ){
+    fb <- zfb
+    f <- file.path(pkg,'man',zfb)
+  }
   ## If there are no significant docs in the comments then the object
   ## should still be documented, by writing the file by hand in the
   ## man directory. This will write a blank Rd file if none exists, so
@@ -195,6 +204,9 @@ modify.Rd.file <- function
   ## Find and replace based on data in d
   txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
+    if ( "s3method" == torep ){         # s3method is a flag handled later
+      next
+    }
     cat(" ",torep,sep="")
     FIND1 <- gsub("\\\\","\\\\\\\\",torep)
     FIND <- paste(gsub("([{}])","\\\\\\1",FIND1),"[{][^}]*[}]",sep="")
@@ -230,8 +242,15 @@ modify.Rd.file <- function
   m <- regexpr("usage[{][^}]*[}]",txt)
   Mend <- m+attr(m,"match.length")
   utxt <- substr(txt,m,Mend)
-  if(length(grep("usage[{]data",utxt)))
+  if(length(grep("usage[{]data",utxt))){
      utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
+   }
+  ## fix \method version if s3method
+  if ( !is.null(d$s3method) ){
+    pat <- paste(d$s3method,collapse=".")
+    rep <- paste("\\method{xx",d$s3method[1],"}{",d$s3method[2],"}",sep="")
+    utxt <- gsub(pat,rep,utxt,fixed=TRUE)
+  }
   ## add another backslash due to bug in package.skeleton
   ## but only if not before % character due to another bug if % in usage
   ## arguments - see above
@@ -241,6 +260,11 @@ modify.Rd.file <- function
                sep="")
   ## delete empty sections to suppress warnings in R CMD check
   txt <- gsub("\\\\[a-z]+[{]\\W*[}]","",txt)
+  if ( !is.null(d$s3method) ){
+    ## and now remove the xx inserted above to prevent \method{[[}{...} falling
+    ## foul of the above replacement!
+    txt <- gsub("\\\\method{xx","\\method{",txt,fixed=TRUE)
+  }
   ## This doesn't work if there are quotes in the default values:
   ## gsub(",",paste("\n",paste(rep(" ",l=nchar(N)-1),collapse="")),utxt)
   cat(txt,file=f)
@@ -282,6 +306,15 @@ extract.docs.file <- function # Extract documentation from a file
         }
         if(!"description"%in%names(doc) && !is.na(parsed[[on]]@description) ){
           doc$description <- parsed[[on]]@description
+        }
+        if ( "setMethodS3" == parsed[[on]]@created ){
+          pattern <- "^([^\\.]+)\\.(.*)$"
+          doc$s3method=c(m1 <- gsub(pattern,"\\1",on,perl=TRUE),
+              m2 <- gsub(pattern,"\\2",on,perl=TRUE))
+          if ( 0 < length(grep("\\W",m1,perl=TRUE)) ){
+            m1 <- paste("`",m1,"`",sep="")
+          }
+          cat("S3method(",m1,",",m2,")\n",sep="")
         }
       }
       if("title" %in% names(doc) && !"description" %in% names(doc) ){
@@ -412,8 +445,8 @@ extract.docs.chunk <- function # Extract documentation from a function
          #arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
          #arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
  		 arg <- gsub("^[ \t(,]*", "", code[start - 1])	#twutz: strip leading white spaces and brackets and ,
-		 arg <- gsub("^([^=,]*)[=,].*", "\\1", arg)		
-		 arg <- gsub("^([^ \t]*)([ \t]+)$","\\1",arg)	#twutz: remove trailing whitespaces		
+		 arg <- gsub("^([^=,]*)[=,].*", "\\1", arg)
+		 arg <- gsub("^([^ \t]*)([ \t]+)$","\\1",arg)	#twutz: remove trailing whitespaces
 		 arg <- gsub("...", "\\dots", arg, fix = TRUE)
          paste("item{",arg,"}",sep="")
        } else {
@@ -430,11 +463,11 @@ extract.docs.chunk <- function # Extract documentation from a function
   #arg.pat <- paste("^[^=,#]*?([\\w\\.]+)\\s*([=,].*|\\)\\s*)?",
   #                 "<<\\s*(\\S.*?)\\s*$",
   #                 sep="##") # paste avoids embedded trigger fooling the system
-   #tw: removed first comma				   
+   #tw: removed first comma
    arg.pat <- paste("^[^=#]*?([\\w\\.]+)\\s*([=,].*|\\)\\s*)?",
 	   "<<\\s*(\\S.*?)\\s*$",
    		sep="##") # paste avoids embedded trigger fooling the system
-			   
+
   skeleton.fields <- c("alias","details","keyword","references","author",
                        "note","seealso","value","title","description",
                        "describe","end")
