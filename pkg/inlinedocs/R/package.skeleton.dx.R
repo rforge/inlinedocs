@@ -1,5 +1,6 @@
 ### Prefix for code comments used with grep and gsub.
-prefix <- "^### "
+prefix <- "^[ \t]*###[ \t]"	#changed the pattern to handle tabs and white spaces at the beginning
+#prefix <- "^### "
 
 decomment <- function
 ### Remove comment prefix and join lines of code to form a
