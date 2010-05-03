@@ -96,7 +96,8 @@ package.skeleton.dx <- function # Package skeleton deluxe
   ## need to do is write a new parser function and add it to the list.
 
   ## concatenate code files and parse them
-  code_files <- Sys.glob("*.R")
+  code_files <- if(!"Collate"%in%colnames(desc))Sys.glob("*.R")
+  else strsplit(gsub("\\s+"," ",desc[,"Collate"]),split=" ")[[1]]
   code <- do.call(c,lapply(code_files,readLines))
 
   ## write code to a file and parse it to r objs
