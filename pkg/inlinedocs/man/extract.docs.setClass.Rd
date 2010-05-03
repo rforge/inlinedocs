@@ -8,8 +8,9 @@ scanned for inline comments.}
 extract.docs.setClass(doc.link)
 }
 \arguments{
-  \item{doc.link}{
-}
+  \item{doc.link}{DocLink object as created by \code{\link{extract.file.parse}}.
+Note that \code{source} statements are \emph{ignored} when scanning for
+class definitions.}
 }
 \details{Extraction of S4 class documentation is currently limited to expressions
 within the source code which have first line starting with

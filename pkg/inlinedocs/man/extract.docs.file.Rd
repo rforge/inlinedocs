@@ -1,19 +1,21 @@
 \name{extract.docs.file}
 \alias{extract.docs.file}
 \title{Extract documentation from a file}
-\description{Parse an R code file and extract inline documentation from
-comments around each function.}
+\description{Parse R code to extract inline documentation from comments around
+each function. These are not able to be retreived simply by
+looking at the "source" attribute. This is a Parser Function that
+can be used in the parser list of package.skeleton.dx().}
 \usage{
-extract.docs.file(code.file, write.examples = TRUE)
+extract.docs.file(code, objs, ...)
 }
 \arguments{
-  \item{code.file}{The R code file to parse.}
-  \item{write.examples}{Gather examples from test files?}
+  \item{code}{Code lines in a character vector containing multiple R objects to
+parse for documentation.}
+  \item{objs}{The objects defined in the code.}
+  \item{\dots}{ignored}
 }
 
-\value{named list of lists. Each element is the result of a call to
-extract.docs.fun, with names corresponding to functions found in
-the R code file.}
+\value{named list of lists, one for each object to document.}
 
 \author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
 
