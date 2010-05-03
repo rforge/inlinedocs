@@ -12,7 +12,7 @@ forall <- function
   function(objs,docs,...){
     objs <- objs[sapply(objs,subfun)]
     L <- list()
-    for(N in names(objs)){
+    for(N in names(docs)){
       o <- objs[[N]]
       L[[N]] <- FUN(src=attr(o,"source"),
                     name=N,objs=objs,o=o,docs=docs,doc=docs[[N]],...)
@@ -180,8 +180,8 @@ extract.docs.file <- function # Extract documentation from a file
 }
 
 ### List of parsers to use by default with package.skeleton.dx.
-default.parsers <- c(sapply(forall.parsers,function(L)L[[1]](L[[2]])),
-                     extract.docs.file=extract.docs.file)
+default.parsers <- c(extract.docs.file=extract.docs.file,
+                     sapply(forall.parsers,function(L)L[[1]](L[[2]])))
 
 extract.docs.fun <- function # Extract documentation from a function
 ### Given source code of a function, return a list describing inline
@@ -577,11 +577,11 @@ extract.docs.setClass <- function # S4 class inline documentation
 ### Using the same conventions as for functions, definitions of S4 classes
 ### in the form \code{setClass("classname",\dots)} are also located and
 ### scanned for inline comments.
-(doc.link)
+(doc.link
 ### DocLink object as created by \code{\link{extract.file.parse}}.
 ### Note that \code{source} statements are \emph{ignored} when scanning for
 ### class definitions.
-{
+ ){
   chunk.source <- doc.link@code
   ##details<<
   ## Extraction of S4 class documentation is currently limited to expressions
