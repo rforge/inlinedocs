@@ -110,17 +110,6 @@ add ### prefixes.</li>
 adding a ### comment on the line before the variable is first
 declared.</li>
 
-<li>For the title of the Rd file, function names are used. Dots and
-underscores in the function name are translated into spaces in the
-title. Or you can specify the title in a comment at the end of the
-first line of the function definition, like this:
-
-<pre>
-package.skeleton.dx &lt;- function # Package skeleton deluxe
-</pre>
-
-</li>
-
 <li>The DESCRIPTION file is used by inlinedocs for the Maintainer
 (this becomes the author section of the Rd files) and Package (this is
 used as the name argument to package.skeleton). DESCRIPTION is also
@@ -134,27 +123,27 @@ inlinedocs will create an empty DESCRIPTION file for you.
 pkgdir/data), but these don't change often, so that's no problem
 to do by hand. To get started just use the prompt() function.</li>
 
-<li>To add examples for FUN, add a file FUN.R to your
-pkgdir/tests directory. This is more sustainable than putting
-test code in R comments, since debugging/changing commented code is a
-pain.</li>
+<li>To add examples for FUN, add a file FUN.R to your pkgdir/tests
+directory. This is more sustainable than putting test code in R
+comments, since debugging/changing commented code is a pain. You can
+also add inline examples by putting code at the end of FUN (see
+example below).</li>
 
-<li>For additional flexibility, inlinedocs now allows similar
-documentation of S4 class definitions (i.e. those which use
+<li>For additional flexibility, inlinedocs now allows documentation of
+S4 class definitions (i.e. those which use
 <tt>setClass</tt>) and includes additional triggers based on the
 string "##&lt;&lt;". This means that most of the standard documentation
 sections can be filled in from wherever is relevant in the source
 code, as follows:
+
+<br />
+
+<a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/fermat/?root=inlinedocs">
+
+  <img src="fermat.png" alt="how to use inlinedocs to implement the
+fermat example from roxygen" /></a>
+
 </li>
-
-<li><table><tr>
-<td>
-  <a href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tests/fermat/?root=inlinedocs">
-    <img src="fermat.png" alt="how to use inlinedocs to implement the
-fermat example from roxygen" /></a></td>
-<td>
-
-<ul>
 
 <li> ##&lt;&lt; at the end of a line can be used to add function
 argument descriptions on the same line as an argument name - any
@@ -185,14 +174,86 @@ href="http://r-forge.r-project.org/plugins/scmsvn/viewcvs.php/pkg/inlinedocs/tes
 
 </ul>
 
-</td></tr></table></li>
+<h1>NEW in version 1.2! Extending inlinedocs!</h1>
 
-<li>inlinedocs is not as powerful as Roxygen, so if you want to use
-all the features of Rd, Roxygen may be a better choice. However
-inlinedocs is far simpler to learn and offers less repetitive
-syntax.</li>
+<p>inlinedocs operates using a modular system of source code parsers,
+so it is very simple to extend. To do this, you need to write a custom
+parser function that takes takes your source as input and returns a
+list of documentation objects. For example, by default inlinedocs
+copies the Maintainer line of the DESCRIPTION file to the author
+section of the Rd file. To use the Author line from DESCRIPTION
+instead, do this:</p>
 
-</ul>
+<pre>
+### This function will be applied to every object in your package.
+author.from.author &lt;- function(desc,...){
+  list(author=desc[,"Author"])
+### Returns a list with named values that will be used to add
+### documentation to Rd files.
+}
+
+## author.from.description is the name of the default parser for the
+## author section. We copy all the other parsers functions in the
+## list, then add our custom author parser to the end of the list.
+my.parsers &lt;-
+  c(default.parsers["author.from.description"!=names(default.parsers)],
+    forall(author.from.author))
+## forall(FUN) returns a function that will apply FUN to all
+## documentation objects in your package. Likewise, forfun(FUN) will
+## apply FUN to all functions in your package.
+
+package.skeleton.dx("/path/to/my/pkgdir",my.parsers)
+</pre>
+
+<p>This is just a simple example, but you can write a parser function
+that does anything you like! Here is the list of arguments each parser
+function receives, when it is used in conjunction with
+forall/forfun:</p>
+
+<table>
+  <tr>
+    <td>o</td>
+    <td>The R object.</td>
+  </tr>
+  <tr>
+    <td>name</td>
+    <td>The name of the object.</td>
+  </tr>
+  <tr>
+    <td>src</td>
+    <td>For a function, the source lines of the function as a
+    character vector.</td>
+  </tr>
+  <tr>
+    <td>doc</td>
+    <td>The list of documentation strings already constructed for this
+    object.</td>
+  </tr>
+  <tr>
+    <td>objs</td>
+    <td>The named list of all objects in the package.</td>
+  </tr>
+  <tr>
+    <td>docs</td>
+    <td>The named list of all documentation lists already
+    constructed.</td>
+  </tr>
+  <tr>
+    <td>code</td>
+    <td>All of the source code in the package's *.R files.</td>
+  </tr>
+  <tr>
+    <td>desc</td>
+    <td>The DESCRIPTION as read by read.dcf.</td>
+  </tr>
+</table>
+
+<p>If you don't specify a parser list for package.skeleton.dx, then it
+will first check for the variable "parsers" in pkgdir/R/.inlinedocs.R,
+then options("inlinedocs.parsers") (which you could define in your
+~/.Rprofile). If neither of these is found, it will use
+inlinedocs::default.parsers. So you can use this feature to have
+project- and user-specific inlinedocs parsers!</p>
 
 <p> Return to
 the <a href="http://r-forge.r-project.org/projects/inlinedocs/">project
