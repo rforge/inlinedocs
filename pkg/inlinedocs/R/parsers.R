@@ -68,11 +68,12 @@ forall.parsers <-
          REP <- paste("\\1",SEP,"\\2",sep="")
          r <- strsplit(gsub(FIND,REP,after,perl=TRUE),split=SEP)[[1]]
          l <- strsplit(r,split="\n")
-         excode <- paste(l[[2]],"\n")
+         ##if(name=="dl.combine")browser()
+         excode <- c(l[[2]],"")
          prefixes <- gsub("(\\s*).*","\\1",excode,perl=TRUE)[grep("\\w",excode)]
          FIND <- prefixes[which.min(nchar(prefixes))]
-         list(examples=paste(sub(FIND,"",excode),collapse=""),
-              value=decomment(l[[1]]))
+         list(examples=paste(sub(FIND,"",excode),collapse="\n"),
+              value=decomment(l[[1]][-1]))
        }))
 
 ### List of parser functions that operate on single objects. This list
