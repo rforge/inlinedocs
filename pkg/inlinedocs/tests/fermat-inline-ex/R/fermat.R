@@ -13,7 +13,6 @@ fermat.test <- function#Test an integer for primality with Fermat's little theor
 ### Whether the integer passes the Fermat test for a randomized
 ### \eqn{0<a<n}
 }
-
 is.pseudoprime <- function#Check an integer for pseudo-primality to an arbitrary precision.
 ### A number is pseudo-prime if it is probably prime, the basis of
 ### which is the probabalistic Fermat test; if it passes two such

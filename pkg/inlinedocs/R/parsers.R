@@ -25,7 +25,10 @@ forall <- function
 ### For each function in the package, do something.
 forfun <- function(FUN)forall(FUN,is.function)
 
-### Default parsers to use with package.skeleton.dx
+### Parsers for each object/function that are constructed
+### automatically. This is a named list, each element is a list of 2
+### elements: forfun/forall, then a parser function for an individual
+### object.
 forall.parsers <-
   list(## Extract lots of info from normal functions.
        parsefun=list(forfun,function(src,name,...){
@@ -78,7 +81,7 @@ forall.parsers <-
 
 ### List of parser functions that operate on single objects. This list
 ### is useful for testing these functions, ie
-### lonely$parsefuns(attr(extract.docs.file,"src"),"extract.docs.file")
+### lonely$parsefun(attr(extract.docs.file,"source"),"extract.docs.file")
 lonely <- sapply(forall.parsers,function(L)L[[2]])
 
 extract.docs.file <- function # Extract documentation from a file
