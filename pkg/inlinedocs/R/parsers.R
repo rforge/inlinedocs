@@ -190,8 +190,7 @@ extract.docs.fun <- function # Extract documentation from a function
 ### The function to examine.
  name.fun
 ### The name of the function/chunk to use in warning messages.
- )
-{
+ ){
   res <- list()
   clines <- grep(prefix,code)
   if(length(grep("#",code[1]))){
