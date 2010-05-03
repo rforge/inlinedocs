@@ -3,12 +3,12 @@
 \title{combine}
 \description{combine lists or character strings}
 \usage{
-combine(x, ...)
+combine(x, y)
 }
 \arguments{
   \item{x}{
 }
-  \item{\dots}{
+  \item{y}{
 }
 }
 

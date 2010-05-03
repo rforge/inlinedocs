@@ -1,5 +1,5 @@
 ### combine lists or character strings
-combine <- function(x,...)UseMethod("combine")
+combine <- function(x,y)UseMethod("combine")
 ### combine character strings by pasting them together
 combine.character <- function(x,y)paste(x,y,sep="\n")
 ### combine lists by adding elements or adding to existing elements
