@@ -52,15 +52,27 @@ forall.parsers <-
          else list()
        }),
        ## Get examples from inline definitions after return()
-       examples.after.return=list(forfun,function(src,...){
-         rline <- grep("^\\W*return[(]",src)
-         if(length(rline)==0)return(list())
-         rline <- rline[length(rline)]
-         comment.line.nums <- grep(prefix,src)
-         if(!(comment.end <- rline+1)%in%comment.line.nums)return(list())
-         while(comment.end%in%comment.line.nums)comment.end <- comment.end+1
-         excode <- src[comment.end:(length(src)-1)]
-         list(examples=paste(gsub("^\\W*","",excode),collapse="\n"))
+       examples.after.return=list(forfun,function(name,src,...){
+         coll <- paste(src,collapse="\n")
+         thispre <- gsub("^[\\^]","",prefix)
+         FIND <- paste("(return|UseMethod)[(][^\\n]*\\n",thispre,sep="")
+         m <- regexpr(FIND,coll)
+         if(m[1]==-1)return(list())
+         after <- substr(coll,m[1],nchar(coll))
+         FIND <-
+           paste("[^\\n]*",# rest of the return line
+                 "((?:\\n###[^\\n]*)+)",#comment value lines \\1
+                 "([\\w\\W]*)[}]",#examples \\2
+                 sep="")
+         SEP <- "----------"
+         REP <- paste("\\1",SEP,"\\2",sep="")
+         r <- strsplit(gsub(FIND,REP,after,perl=TRUE),split=SEP)[[1]]
+         l <- strsplit(r,split="\n")
+         excode <- paste(l[[2]],"\n")
+         prefixes <- gsub("(\\s*).*","\\1",excode,perl=TRUE)[grep("\\w",excode)]
+         FIND <- prefixes[which.min(nchar(prefixes))]
+         list(examples=paste(sub(FIND,"",excode),collapse=""),
+              value=decomment(l[[1]]))
        }))
 
 ### List of parser functions that operate on single objects. This list

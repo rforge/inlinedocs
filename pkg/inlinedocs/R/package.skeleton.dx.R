@@ -12,7 +12,7 @@ combine.list <- function(x,y){
 }
 
 ### Prefix for code comments used with grep and gsub.
-prefix <- "^[ \t]*###[ \t]"	#changed the pattern to handle tabs and white spaces at the beginning
+prefix <- "^[ \t]*###[ \t]"
 
 decomment <- function
 ### Remove comment prefix and join lines of code to form a
