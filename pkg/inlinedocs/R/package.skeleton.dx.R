@@ -41,9 +41,14 @@ package.skeleton.dx <- function # Package skeleton deluxe
 ### package directory where the DESCRIPTION file lives. Your code
 ### should be in pkgdir/R. We will setwd to pkgdir/R for the duration
 ### of the function, then switch back to where you were previously.
- parsers=default.parsers,
+ parsers=NULL,
 ### List of Parser functions, which will be applied in sequence to
-### extract documentation from your code.
+### extract documentation from your code. Default NULL means to first
+### search for a definition in the variable "parsers" in
+### pkgdir/R/.inlinedocs.R, if that file exists. If not, we use the
+### list defined in options("inlinedocs.parsers"), if that is
+### defined. If not, we use the package global default in the variable
+### default.parsers.
  ...
 ### Parameters to pass to Parser functions.
  ){
@@ -60,10 +65,10 @@ package.skeleton.dx <- function # Package skeleton deluxe
 
   ## Read description and check for errors
   desc <- read.dcf(descfile)
-  for(f in fields){
-    if(! f %in% colnames(desc))stop("Need ",f," in ",descfile)
-    if(desc[,f]=="")stop("Need a value for ",f," in ",descfile)
-  }
+  if(any(f <- !sapply(fields,is.element,colnames(desc))))
+    stop("Need ",names(f)[f]," in ",descfile)
+  if(any(f <- sapply(fields,function(f)desc[,f]=="")))
+    stop("Need a value for ",names(f)[f]," in ",descfile)
 
   ## Load necessary packages before loading pkg code
   if("Depends" %in% colnames(desc)){
@@ -99,19 +104,37 @@ package.skeleton.dx <- function # Package skeleton deluxe
   writeLines(code,code.file)
   e <- new.env()
   old <- options(keep.source.pkgs=TRUE)
-  r <- try(sys.source(code.file,e),TRUE)
-  if(class(r)=="try-error")
-    stop("source ",code.file," failed with error:\n",r)
+  tryCatch(suppressWarnings(sys.source(code.file,e)),error=function(e){
+    stop("source ",code.file," failed with error:\n",e)
+  })
   options(old)
   objs <- sapply(ls(e),get,e,simplify=FALSE)
 
+  ## for the parser list, first try reading package-specific
+  ## configuration file
+  if(is.null(parsers))parsers <- tryCatch({
+    cfg <- new.env()
+    sys.source(cfile <- ".inlinedocs.R",cfg)
+    L <- cfg$parsers
+    if(!is.null(L))cat("Using parsers in ",cfile,"\n",sep="")
+    L
+  },error=function(e)NULL)
+  ## then try the global options()
+  opt <- "inlinedocs.parsers"
+  if(is.null(parsers)&&!is.null(parsers <- getOption(opt))){
+    cat("Using parsers in option ",opt,"\n")
+  }
+  ## if nothing configured, just use the pkg default
+  if(is.null(parsers))parsers <- default.parsers
+  
   ## apply parsers in sequence to code and objs
   docs <- list()
-  for(p in parsers){
-    if(is.character(p)){
-      cat(p," ",sep="")
-      p <- get(p)
+  for(i in seq_along(parsers)){
+    N <- names(parsers[i])
+    if(is.character(N) && N!=""){
+      cat(N," ",sep="")
     }else cat('. ')
+    p <- parsers[[i]]
     ## This is the argument list that each parser receives:
     L <- p(code=code,objs=objs,desc=desc,docs=docs,...)
     docs <- combine(docs,L)

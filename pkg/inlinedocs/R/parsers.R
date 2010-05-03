@@ -14,7 +14,8 @@ forall <- function
     L <- list()
     for(N in names(objs)){
       o <- objs[[N]]
-      L[[N]] <- FUN(src=attr(o,"source"),name=N,objs=objs,o=o,docs=docs,doc=docs[[N]],...)
+      L[[N]] <- FUN(src=attr(o,"source"),
+                    name=N,objs=objs,o=o,docs=docs,doc=docs[[N]],...)
     }
     L
   }
@@ -24,45 +25,48 @@ forall <- function
 ### For each function in the package, do something.
 forfun <- function(FUN)forall(FUN,is.function)
 
-### Get last line (test)
-parsefuns <- forfun(function(src,name,...){
-  extract.docs.fun(src,name)
-})
+### Default parsers to use with package.skeleton.dx
+forall.parsers <-
+  list(## Extract lots of info from normal functions.
+       parsefun=list(forfun,function(src,name,...){
+         extract.docs.fun(src,name)
+       }),
+       ## Fill in author from DESCRIPTION and titles.
+       author.from.description=list(forall,function(desc,...){
+         list(author=desc[,"Maintainer"])
+       }),
+       ## The format section sometimes causes problems, so erase it.
+       erase.format=list(forall,function(...){
+         list(format="")
+       }),
+       ## Convert the function name to a title.
+       title.from.name=list(forall,function(name,doc,...){
+         if("title"%in%names(doc))list() else
+         list(title=gsub("[._]"," ",name))
+       }),
+       ## Get examples for FUN from the file test/FUN.R
+       examples.from.testfile=list(forfun,function(name,...){
+         tfile <- file.path("..","tests",paste(name,".R",sep=""))
+         if(file.exists(tfile))
+           list(examples=paste(readLines(tfile),collapse="\n"))
+         else list()
+       }),
+       ## Get examples from inline definitions after return()
+       examples.after.return=list(forfun,function(src,...){
+         rline <- grep("^\\W*return[(]",src)
+         if(length(rline)==0)return(list())
+         rline <- rline[length(rline)]
+         comment.line.nums <- grep(prefix,src)
+         if(!(comment.end <- rline+1)%in%comment.line.nums)return(list())
+         while(comment.end%in%comment.line.nums)comment.end <- comment.end+1
+         excode <- src[comment.end:(length(src)-1)]
+         list(examples=paste(gsub("^\\W*","",excode),collapse="\n"))
+       }))
 
-### Fill in author from DESCRIPTION and titles.
-author.from.description <- forall(function(desc,...){
-  list(author=desc[,"Maintainer"])
-})
-
-### The format section sometimes causes problems, so erase it.
-erase.format <- forall(function(...){
-  list(format="")
-})
-
-### Convert the function name to a title.
-title.from.name <- forall(function(name,...){
-  list(title=gsub("[._]"," ",name))
-})
-
-### Get examples for FUN from the file test/FUN.R
-examples.from.testfile <- forfun(function(name,...){
-  tfile <- file.path("..","tests",paste(name,".R",sep=""))
-  if(file.exists(tfile))
-    list(examples=paste(readLines(tfile),collapse="\n"))
-  else list()
-})
-
-### Get examples from inline definitions after return()
-examples.after.return <- forfun(function(src,...){
-  rline <- grep("return([^)]*)",src)
-  if(length(rline)==0)return(list())
-  rline <- rline[length(rline)]
-  comment.line.nums <- grep(prefix,src)
-  if(!(comment.end <- rline+1)%in%comment.line.nums)return(list())
-  while(comment.end%in%comment.line.nums)comment.end <- comment.end+1
-  excode <- src[comment.end:(length(src)-1)]
-  list(examples=paste(gsub("^\\W*","",excode),collapse="\n"))
-})
+### List of parser functions that operate on single objects. This list
+### is useful for testing these functions, ie
+### lonely$parsefuns(attr(extract.docs.file,"src"),"extract.docs.file")
+lonely <- sapply(forall.parsers,function(L)L[[2]])
 
 extract.docs.file <- function # Extract documentation from a file
 ### Parse R code to extract inline documentation from comments around
@@ -175,10 +179,9 @@ extract.docs.file <- function # Extract documentation from a file
 ### named list of lists, one for each object to document.
 }
 
-### Default parsers to use with package.skeleton.dx
-default.parsers <- list("parsefuns","extract.docs.file",
-                        "examples.after.return","examples.from.testfile",
-                        "author.from.description","erase.format","title.from.name")
+### List of parsers to use by default with package.skeleton.dx.
+default.parsers <- c(sapply(forall.parsers,function(L)L[[1]](L[[2]])),
+                     extract.docs.file=extract.docs.file)
 
 extract.docs.fun <- function # Extract documentation from a function
 ### Given source code of a function, return a list describing inline
