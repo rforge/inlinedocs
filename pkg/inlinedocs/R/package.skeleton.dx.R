@@ -81,19 +81,20 @@ package.skeleton.dx <- function # Package skeleton deluxe
   }
 
   ## Essentially inlinedocs is this function, package.skeleton.dx,
-  ## that turn R/*.R, test/*.R, and test/*.R files into Rd files. This
-  ## is done by parsing them and making a list called "docs" that
-  ## summarizes them. This list is then used to edit the Rd files
-  ## output by package.skeleton and produce the final Rd files. The
-  ## old way of creating the docs list is rather monolithic, and for
-  ## maintenance purposes I would like to begin modularization of this
-  ## process. What is the best way to do this? I propose that
-  ## package.skeleton.dx() starts docs as an empty list, then parses
-  ## the concatenated R files as "objs," reads their text as "code,"
-  ## reads the package description as "desc," then passes these to a
-  ## list of functions that will sequentially add things to docs. This
-  ## will make extension of inlinedocs quite easy, since all you would
-  ## need to do is write a new parser function and add it to the list.
+  ## that turn R/*.R, test/*.R, and DESCRIPTION files into Rd
+  ## files. This is done by parsing them and making a list called
+  ## "docs" that summarizes them. This list is then used to edit the
+  ## Rd files output by package.skeleton and produce the final Rd
+  ## files. The old way of creating the docs list is rather
+  ## monolithic, and for maintenance purposes I would like to begin
+  ## modularization of this process. What is the best way to do this?
+  ## I propose that package.skeleton.dx() starts docs as an empty
+  ## list, then parses the concatenated R files as "objs," reads their
+  ## text as "code," reads the package description as "desc," then
+  ## passes these to a list of functions that will sequentially add
+  ## things to docs. This will make extension of inlinedocs quite
+  ## easy, since all you would need to do is write a new parser
+  ## function and add it to the list.
 
   ## concatenate code files and parse them
   code_files <- if(!"Collate"%in%colnames(desc))Sys.glob("*.R")
