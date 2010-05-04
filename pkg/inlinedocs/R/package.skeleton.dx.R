@@ -124,7 +124,7 @@ package.skeleton.dx <- function # Package skeleton deluxe
   ## then try the global options()
   opt <- "inlinedocs.parsers"
   if(is.null(parsers)&&!is.null(parsers <- getOption(opt))){
-    cat("Using parsers in option ",opt,"\n")
+    cat("Using parsers in option ",opt,"\n",sep="")
   }
   ## if nothing configured, just use the pkg default
   if(is.null(parsers))parsers <- default.parsers
