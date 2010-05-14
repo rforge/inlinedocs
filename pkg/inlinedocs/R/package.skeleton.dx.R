@@ -8,7 +8,8 @@ combine.list <- function(x,y){
   toup <- names(y)[names(y)%in%names(x)]
   x[names(y)[toadd]] <- y[toadd]
   for(up in toup)x[[up]] <- combine(x[[up]],y[[up]])
-  x
+  return(x)
+### A list, same type as x, but with added elements from y.
 }
 
 ### Prefix for code comments used with grep and gsub.
