@@ -67,7 +67,7 @@ forall.parsers <-
                  "((?:\\n###[^\\n]*)+)",#comment value lines \\1
                  "([\\w\\W]*)[}]",#examples \\2
                  sep="")
-         SEP <- "----------"
+         SEP <- "-/-/-/-/-=====-----"
          REP <- paste("\\1",SEP,"\\2",sep="")
          r <- strsplit(gsub(FIND,REP,after,perl=TRUE),split=SEP)[[1]]
          l <- strsplit(r,split="\n")
