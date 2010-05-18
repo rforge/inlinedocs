@@ -71,8 +71,8 @@ forall.parsers <-
          REP <- paste("\\1",SEP,"\\2",sep="")
          r <- strsplit(gsub(FIND,REP,after,perl=TRUE),split=SEP)[[1]]
          l <- strsplit(r,split="\n")
-         if(length(l)<2||l[[2]]=="")return(list())
          excode <- c(l[[2]],"")
+         if(length(l)<2||paste(excode,collapse="")=="")return(list())
          prefixes <- gsub("(\\s*).*","\\1",excode,perl=TRUE)[grep("\\w",excode)]
          FIND <- prefixes[which.min(nchar(prefixes))]
          list(examples=paste(sub(FIND,"",excode),collapse="\n"),
