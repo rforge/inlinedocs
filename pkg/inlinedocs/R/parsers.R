@@ -88,7 +88,9 @@ extract.docs.file <- function # Extract documentation from a file
 ### Parse R code to extract inline documentation from comments around
 ### each function. These are not able to be retreived simply by
 ### looking at the "source" attribute. This is a Parser Function that
-### can be used in the parser list of package.skeleton.dx().
+### can be used in the parser list of package.skeleton.dx(). TODO:
+### Modularize this into separate Parser Functions for S4 classes,
+### prefixes, ##<< blocks, etc. Right now it is not very clean!
 (code,
 ### Code lines in a character vector containing multiple R objects to
 ### parse for documentation.
