@@ -637,3 +637,44 @@ extract.docs.setClass <- function # S4 class inline documentation
   }
   invisible(docs)
 }
+
+extract.docs.code <- function
+### Write code to a file and parse it to r objs, then run all the
+### parsers and return the documentation list.
+(code,
+### Character vector of code lines.
+ parsers,
+### List of Parser Functions.
+ verbose=TRUE,
+### Echo names of Parser Functions?
+ ...
+### Additional arguments to pass to Parser Functions.
+ ){
+  code.file <- tempfile()
+  writeLines(code,code.file)
+  e <- new.env()
+  old <- options(keep.source.pkgs=TRUE)
+  tryCatch(suppressWarnings(sys.source(code.file,e)),error=function(e){
+    stop("source ",code.file," failed with error:\n",e)
+  })
+  options(old)
+  objs <- sapply(ls(e),get,e,simplify=FALSE)
+
+  ## apply parsers in sequence to code and objs
+  docs <- list()
+  for(i in seq_along(parsers)){
+    N <- names(parsers[i])
+    if(verbose){
+      if(is.character(N) && N!=""){
+        cat(N," ",sep="")
+      }else cat('. ')
+    }
+    p <- parsers[[i]]
+    ## This is the argument list that each parser receives:
+    L <- p(code=code,objs=objs,docs=docs,...)
+    docs <- combine(docs,L)
+  }
+  if(verbose)cat("\n")
+  docs
+### A list of extracted documentation from code.
+}

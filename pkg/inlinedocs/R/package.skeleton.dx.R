@@ -97,22 +97,6 @@ package.skeleton.dx <- function # Package skeleton deluxe
   ## easy, since all you would need to do is write a new parser
   ## function and add it to the list.
 
-  ## concatenate code files and parse them
-  code_files <- if(!"Collate"%in%colnames(desc))Sys.glob("*.R")
-  else strsplit(gsub("\\s+"," ",desc[,"Collate"]),split=" ")[[1]]
-  code <- do.call(c,lapply(code_files,readLines))
-
-  ## write code to a file and parse it to r objs
-  code.file <- tempfile()
-  writeLines(code,code.file)
-  e <- new.env()
-  old <- options(keep.source.pkgs=TRUE)
-  tryCatch(suppressWarnings(sys.source(code.file,e)),error=function(e){
-    stop("source ",code.file," failed with error:\n",e)
-  })
-  options(old)
-  objs <- sapply(ls(e),get,e,simplify=FALSE)
-
   ## for the parser list, first try reading package-specific
   ## configuration file
   if(is.null(parsers))parsers <- tryCatch({
@@ -129,20 +113,13 @@ package.skeleton.dx <- function # Package skeleton deluxe
   }
   ## if nothing configured, just use the pkg default
   if(is.null(parsers))parsers <- default.parsers
-  
-  ## apply parsers in sequence to code and objs
-  docs <- list()
-  for(i in seq_along(parsers)){
-    N <- names(parsers[i])
-    if(is.character(N) && N!=""){
-      cat(N," ",sep="")
-    }else cat('. ')
-    p <- parsers[[i]]
-    ## This is the argument list that each parser receives:
-    L <- p(code=code,objs=objs,desc=desc,docs=docs,...)
-    docs <- combine(docs,L)
-  }
-  cat("\n")
+
+  ## concatenate code files and parse them
+  code_files <- if(!"Collate"%in%colnames(desc))Sys.glob("*.R")
+  else strsplit(gsub("\\s+"," ",desc[,"Collate"]),split=" ")[[1]]
+  code <- do.call(c,lapply(code_files,readLines))
+
+  docs <- extract.docs.code(code,parsers,desc=desc)
 
   ## Make -package Rd file
   name <- desc[,"Package"]
