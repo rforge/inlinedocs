@@ -1,7 +1,8 @@
 ### combine lists or character strings
 combine <- function(x,y)UseMethod("combine")
 ### combine character strings by pasting them together
-combine.character <- function(x,y)paste(x,y,sep="\n")
+combine.character <- function(x,y)
+    paste(x,y,sep="\n")
 ### combine lists by adding elements or adding to existing elements
 combine.list <- function(x,y){
   toadd <- !names(y)%in%names(x)
@@ -29,6 +30,7 @@ decomment <- function
 fields <- c("Package","Maintainer","Author","Version",
             "License","Title","Description")
 ### Default DESCRIPTION, written if it doesn't exist.
+# TODO, PhG: start with reasonable values here!
 empty.description <- matrix("",ncol=length(fields),dimnames=list(NULL,fields))
 
 package.skeleton.dx <- function # Package skeleton deluxe
@@ -50,13 +52,26 @@ package.skeleton.dx <- function # Package skeleton deluxe
 ### list defined in options("inlinedocs.parsers"), if that is
 ### defined. If not, we use the package global default in the variable
 ### default.parsers.
+ # PhG: added to support NAMESPACE creation!
+ namespace = FALSE,
+### a logical indicating whether a NAMESPACE file should be generated
+### for this package. If \code{TRUE}, all objects whose name starts with
+### a letter, plus all S4 methods and classes are exported.
  ...
 ### Parameters to pass to Parser functions.
  ){
   chdir <- file.path(pkgdir,"R")
   old.wd <- setwd(chdir)
   on.exit(setwd(old.wd))
-
+  # PhG: R allows for specific code to be in /unix, or /windows subdirectories
+  # but apparently, inlinedocs does not support this. I think it is fair to
+  # stop here with an explicit error message if at least one of /unix or
+  # /windows subdirectory is found!
+  # file_test(-d, ...) does the job, but I don't want to add a dependency on
+  # package 'utils", where it lives. So, I prefer using file.info()
+  if (isTRUE(file.info("unix")$isdir) || isTRUE(file.info("windows")$isdir))
+    stop("Platform-specific code in ./R/unix, or ./R/windows is not supported")
+  
   ## if no DESCRIPTION, make one and exit.
   descfile <- file.path("..","DESCRIPTION")
   if(!file.exists(descfile)){
@@ -67,22 +82,78 @@ package.skeleton.dx <- function # Package skeleton deluxe
   ## Read description and check for errors
   desc <- read.dcf(descfile)
   if(any(f <- !sapply(fields,is.element,colnames(desc))))
-    stop("Need ",names(f)[f]," in ",descfile)
+    stop("Need ", paste(names(f)[f], collapse = ", "), " in ", descfile)
+    #PhG: corrected from stop("Need ",names(f)[f]," in ",descfile)
   if(any(f <- sapply(fields,function(f)desc[,f]=="")))
-    stop("Need a value for ",names(f)[f]," in ",descfile)
+    stop("Need a value for ", paste(names(f)[f], collapse = ", "), " in ", descfile)
+    #PhG: corrected from stop("Need a value for ",names(f)[f]," in ",descfile)
 
   ## Load necessary packages before loading pkg code
   if("Depends" %in% colnames(desc)){
     required <- strsplit(desc[,"Depends"],split=",")[[1]]
-    ## This may need some refining, basically I just tried to take the
-    ## first word from each vector element, stripping of whitespace in
-    ## front and anything after:
-    pkgnames <- gsub("\\W*(\\w+)\\b.*","\\1",required)
-    for(pkg in pkgnames)try(library(pkg,character.only=TRUE),silent=TRUE)
+    # PhG: for packages with NAMESPACE, dependencies are also listes in the
+    # Imports field!
+  } else required <- character(0)
+  # PhG: packages listed in Imports field are not supposed to be attached to the
+  # search path when a package with NAMESPACE is loaded, only the namespace is
+  # loaded. However, the code here is not loaded as it should be, and we need to
+  # load also these Import(ed) packages to get correct results in the present
+  # case (to be checked with most complex cases!)
+  if ("Imports" %in% colnames(desc))
+    required <- c(required, strsplit(desc[, "Imports"], split = ",")[[1]])
+  ## This may need some refining, basically I just tried to take the
+  ## first word from each vector element, stripping of whitespace in
+  ## front and anything after:
+  #pkgnames <- gsub("\\W*(\\w+)\\b.*","\\1",required)
+  # PhG: the previous line is wrong: it does not work with package names
+  # like R.oo... Extract from Writing R Extensions manual:
+  # "The `Package' and `Version' fields give the name and the version of the
+  # package, respectively. The name should consist of letters, numbers, and the
+  # dot character and start with a letter." 
+  # Consequently, I propose:
+  pkgnames <- gsub("\\W*([a-zA-Z][a-zA-Z0-9.]*)\\b.*", "\\1", required)
+  # PhG: We need to eliminate 'R' from the list!
+  pkgnames <- pkgnames[pkgnames != "R"]
+  # PhG: if we create a namespace, we need to keep this list for further use
+  if (isTRUE(namespace)) allpkgs <- pkgnames
+  # PhG: We eliminate also from the list the packages that are already loaded
+  pkgnames <- pkgnames[!paste("package", pkgnames, sep = ":") %in% search()]
+  # PhG: according to Writing R Extensions manual, a package name can occur
+  # several times in Depends
+  pkgnames <- unique(pkgnames)
+  if (length(pkgnames)) {
+    # PhG: A civilized function returns the system in the same state it was
+    # before => detach loaded packages at the end!
+    on.exit(try(for (pkg in pkgnames) detach(paste("package", pkg, sep = ":"),
+        unload = TRUE, character.only = TRUE), silent = TRUE), add = TRUE)
+    # PhG: Shouldn't we need to check that packages are loaded and shouldn't
+    # we exit with an explicit error message if not? Note: we don't use version
+    # information here. That means we may well load wrong version of the
+    # packages... and that is NOT detected as an error!
+    #for(pkg in pkgnames)try(library(pkg,character.only=TRUE),silent=TRUE)
+    pkgmissing <- character(0)
+    for (pkg in pkgnames) {
+        res <- try(library(pkg, character.only = TRUE), silent = TRUE)
+        if (inherits(res, "try-error"))
+            pkgmissing <- c(pkgmissing, pkg)
+    }
+    if (length(pkgmissing))
+        stop("Need missing package(s): ", paste(pkgmissing, collapse = ", "))
   }
 
   ## Essentially inlinedocs is this function, package.skeleton.dx,
-  ## that turn R/*.R, test/*.R, and DESCRIPTION files into Rd
+  ## that turn R/*.R, tests/*.R, and DESCRIPTION files into Rd
+  # PhG: this is tests/*.R, not test/*.R. Also, it is a bit ennoying to mix
+  # examples and tests in tests/*.R... It means that your 'tests'/'examples'
+  # will be run twice! Moreover, adding something to 'tests' causes a large
+  # overhead in compiling R packages on Mac OS X. For packages without C or
+  # FORTRAN code to compile (like those targetted by inlinedocs), it is
+  # easy to compile the packages using R CMD build on a Mac without any other
+  # addition... In case there is something in /tests, one has to install almost
+  # 2Gb of latest version of Xtools, downloaded on Mac web site after login
+  # (Gaps!). So, if one could avoid this painfull task, it would be wonderful!
+  # My suggestion would be to place example code in the /ex subdirtectory of the
+  # source of the package...
   ## files. This is done by parsing them and making a list called
   ## "docs" that summarizes them. This list is then used to edit the
   ## Rd files output by package.skeleton and produce the final Rd
@@ -113,12 +184,22 @@ package.skeleton.dx <- function # Package skeleton deluxe
   }
   ## if nothing configured, just use the pkg default
   if(is.null(parsers))parsers <- default.parsers
-
+  
   ## concatenate code files and parse them
+  # PhG: in Writing R Extensions manuals, source code in /R subdirectory can
+  # have .R, .S, .q, .r, or .s extension. However, it makes sense to restrict
+  # this to .R only for inlinedocs, but a clear indication is required in the
+  # man page!
   code_files <- if(!"Collate"%in%colnames(desc))Sys.glob("*.R")
   else strsplit(gsub("\\s+"," ",desc[,"Collate"]),split=" ")[[1]]
+  # PhG: one must consider a potential Encoding field in DESCRIPTION file!
+  # which is used also for .R files according to Writing R Extensions
+  if ("Encoding" %in% colnames(desc)) {
+    oEnc <- options(encoding = desc[1, "Encoding"])$encoding
+    on.exit(options(encoding = oEnc), add = TRUE)
+  }
   code <- do.call(c,lapply(code_files,readLines))
-
+  
   docs <- extract.docs.code(code,parsers,desc=desc)
 
   ## Make -package Rd file
@@ -135,7 +216,8 @@ package.skeleton.dx <- function # Package skeleton deluxe
   ## Make package skeleton and edit Rd files (eventually just don't
   ## use package.skeleton at all?)
   unlink(name,rec=TRUE)
-  package.skeleton(name,code_files=code_files)
+  # PhG: added namespace argument to package.skeleton()
+  package.skeleton(name,code_files=code_files, namespace = isTRUE(namespace))
   cat("Modifying files automatically generated by package.skeleton:\n")
   ## documentation of generics may be duplicated among source files.
   dup.names <- duplicated(names(docs))
@@ -144,6 +226,28 @@ package.skeleton.dx <- function # Package skeleton deluxe
   }
   for(N in unique(names(docs))) modify.Rd.file(N,name,docs)
   file.copy(file.path(name,'man'),"..",rec=TRUE)
+  # PhG: copy NAMESPACE file back
+  if (isTRUE(namespace)) {
+    # PhG: package.skeleton() does not add import() statement, but here the
+    # philosophy is to get a fully compilable package, which is not the
+    # case at this stage with a NAMESPACE. So, we add all packages listed
+    # in Depends and Imports fields of the DESCRIPTION file in an import()
+    # statement in the NAMESPACE
+    nmspFile <- file.path("..", "NAMESPACE")
+    cat("import(", paste(allpkgs, collapse = ", "), ")\n\n", sep = "",
+        file = nmspFile) 
+    # PhG: append the content of the NAMESPACE file generated by package.skeleton()
+    file.append(nmspFile, file.path(name,'NAMESPACE'))
+    # PhG: we also have to export S3 methods explictly in the NAMESPACE
+    cat("\n", file = nmspFile, append = TRUE)
+    for (N in unique(names(docs))) {
+        d <- docs[[N]]
+        if (!is.null(d$s3method))
+            cat('S3method("', d$s3method[1], '", "', d$s3method[2], '")\n',
+                sep = "", file = nmspFile, append = TRUE)
+    }
+  }
+  
   unlink(name,rec=TRUE)
 }
 
@@ -157,12 +261,15 @@ modify.Rd.file <- function
  docs
 ### Named list of documentation in extracted comments.
  ){
-  fb <- paste(N,".Rd",sep="")
+  # PhG: for functions like 'obj<-', package.skeleton creates files like 'obj_-'
+  # => rework names the same way, i.e., using the same function from utils package
+  Nme <- utils:::.fixPackageFileNames(N)
+  fb <- paste(Nme,".Rd",sep="")
   ## For some functions, such as `[[.object`, package.skeleton (as used
   ## within this package but not when used standalone) seems to generate
   ## with a preceding z ("z[[.object.Rd"), so the z form is tested for and
   ## used if it exists and the first does not.
-  zfb <- paste("z",N,".Rd",sep="")
+  zfb <- paste("z",Nme,".Rd",sep="")
   f <- file.path(pkg,'man',fb)
   if ( (!file.exists(f)) && file.exists(file.path(pkg,'man',zfb)) ){
     fb <- zfb
@@ -192,6 +299,16 @@ modify.Rd.file <- function
     d[["alias"]] <- paste(paste(N,"}\n\\alias{",sep=""),
                             d[["alias"]],sep="")
   }
+
+  # PhG: in the special case of custom operators like %....%, we must protect
+  # these strings in name, alias and usage (at least)! Otherwise, bad things
+  # happen with these strings: (1) usage entry is cut out, because confused
+  # with comments, and % are escaped in name and alias!
+  if (grepl("^%.+%$", N)) {
+    Nmask <- gsub("%", "---percent---", N)
+    # Replace any occurence of N by Nmask
+    dlines <- gsub(N, Nmask, dlines, fixed = TRUE)
+  } else Nmask <- NULL
 
   ## cut out all comments {} interferes with regex matching
   comments <- grep("^[%~]",dlines)
@@ -230,6 +347,11 @@ modify.Rd.file <- function
   ## modifies those % symbols which follow something other than %.
   ## (a more complicated version would attempt to do so only within strings.)
   dlines <- gsub("([^%])%","\\1\\\\%",dlines,perl=TRUE)
+  
+  # PhG: now restore masked function name, if any (case of %....% operators)
+  if (!is.null(Nmask))
+    dlines <- gsub(Nmask, N, dlines, fixed = TRUE)
+  
   ## Find and replace based on data in d
   txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
@@ -274,11 +396,33 @@ modify.Rd.file <- function
   if(length(grep("usage[{]data",utxt))){
      utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
    }
+  
   ## fix \method version if s3method
   if ( !is.null(d$s3method) ){
     pat <- paste(d$s3method,collapse=".")
     rep <- paste("\\method{xx",d$s3method[1],"}{",d$s3method[2],"}",sep="")
     utxt <- gsub(pat,rep,utxt,fixed=TRUE)
+    
+    # PhG: there is the special case of generic<-.obj(x, ..., value) to rewrite
+    # \method{generic}{obj}(x, ...) <- value
+    if (grepl("<-$", d$s3method[1])) {
+        # 1) replace {generic<-} by {generic}
+        utxt <- sub("<-[}]", "}", utxt)
+        # 2) replace ..., value) by ...) <- value
+        utxt <- sub(", *([^),]+)[)]", ") <- \\1", utxt)
+    }
+  } else {
+    # PhG: in case we have fun<-(x, ..., value), we must rewrite it
+    # as fun(x, ...) <- value
+    if (grepl("<-$", N)) {
+        utxt <- sub("<-[(](.+), ([^,)]+)[)]",
+            "(\\1) <- \\2", utxt)
+    }
+    # PhG: this is for special functions %...% which should write x %...% y
+    if (grepl("^%.*%$", N)) {
+        utxt <- sub("(%.*%)[(]([^,]+), ([^)]+)[)]",
+            "\\2 \\1 \\3", utxt) 
+    }
   }
   ## add another backslash due to bug in package.skeleton
   ## but only if not before % character due to another bug if % in usage

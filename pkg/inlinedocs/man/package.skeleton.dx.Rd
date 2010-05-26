@@ -8,7 +8,7 @@ function, which creates bare Rd files. The inline documentation is
 added to these Rd files and then these files are copied to
 ../man. It will overwrite files in the pkgdir/man directory.}
 \usage{
-package.skeleton.dx(pkgdir = "..", parsers = NULL, ...)
+package.skeleton.dx(pkgdir = "..", parsers = NULL, namespace = FALSE, ...)
 }
 \arguments{
   \item{pkgdir}{package directory where the DESCRIPTION file lives. Your code
@@ -21,6 +21,9 @@ pkgdir/R/.inlinedocs.R, if that file exists. If not, we use the
 list defined in options("inlinedocs.parsers"), if that is
 defined. If not, we use the package global default in the variable
 default.parsers.}
+  \item{namespace}{a logical indicating whether a NAMESPACE file should be generated
+for this package. If \code{TRUE}, all objects whose name starts with
+a letter, plus all S4 methods and classes are exported.}
   \item{\dots}{Parameters to pass to Parser functions.}
 }
 

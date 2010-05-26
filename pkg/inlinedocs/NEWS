@@ -1,0 +1,56 @@
+= inlinedocs NEWS
+
+== Version 1.3
+  
+* examples.after.return is modified to detect where examples start using a
+  specific mark (either ##examples<<, or #{{{examples). This way, it does not
+  get trap with multiple return() in the function, or the presence of a
+  return() in the examples
+
+* examples.in.attr parser is added. It look at an "ex" attribute containing
+  code of the examples, either as a character string, or as a function.
+  
+* Added dependence to 'utils' package (for things like package.skeleton())
+
+* Added the possibility to build a NAMESPACE (argument namespace in
+  package.skeleton.dx()). A NAMESPACE is also added to the inlinedocs package.
+  
+* When DESCRIPTION file is empty, fill required fields with reasonable values,
+  e.g., Package: with the same name as dir, Version: 1.0-0, etc.
+  
+* Automatic detection of S3 methods added, and correct formatting of usage and
+  addition of entries in NAMESPACE as required.
+  
+* Reformatting of special cases usages, like fun<-(x, value) => fun(x) <- value,
+  met<-.obj(x, ..., value) => method{met}{obj}(x, ...) <= value, and
+  %op%(e1, e2) <- e1 %op% e2
+  
+* Now the packages in the imports field are considered too, as well for building
+  the NAMESPACE file
+  
+* If there is an 'encoding' field in DESCRIPTION, it is now taken into account
+  (according to Writing R Extensions manual, it applies to to R code)!
+  
+* There is now the possbility to place external examples elsewhere that in /tests.
+  Just indicate the subdirectory wher you place them in
+  options(inlinedocs.exdir = "exsubsir")
+
+* The names of .Rd files was not computed correctly when functions with names like
+  `obj<-`, or `%op%`. Corrected.
+  
+* The presence of platform specific code in /R/unix or /R/windows is not supported
+  by inlinedocs (currnetly). However, this was ignored silently. Now,
+  package.skeleton.dx() stops process when it find one of these subdirs.
+  
+* A couple of error messages where badly formatted when they included several
+  items like in stop("Need ",names(f)[f]," in ",descfile). Corrected.
+  
+* Wrong extraction of package names form 'Depends' field in case where packages
+  contain one or more dots in their names. Corrected.
+
+* It is necessary to eliminate 'R' from the list of packages to load from
+  'Depends' field. Corrected.
+
+* package.skeleton.dx() tried to load packages already laoded, and failed to
+  unload packages (including their namespaces, if possible) that where not
+  loaded before exiting. Corrected.

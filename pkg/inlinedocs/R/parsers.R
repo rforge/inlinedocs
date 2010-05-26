@@ -47,37 +47,86 @@ forall.parsers <-
          if("title"%in%names(doc))list() else
          list(title=gsub("[._]"," ",name))
        }),
-       ## Get examples for FUN from the file test/FUN.R
+       # PhG: it is tests/FUN.R!!! I would like more flexibility here
+	   # please, let me choose which dir to use for examples!
+	   ## Get examples for FUN from the file tests/FUN.R
        examples.from.testfile=list(forfun,function(name,...){
-         tfile <- file.path("..","tests",paste(name,".R",sep=""))
+         tsubdir <- getOption("inlinedocs.exdir")
+		 if (is.null(tsubdir)) tsubdir <- "tests"	# Default value
+		 tfile <- file.path("..",tsubdir,paste(name,".R",sep=""))
          if(file.exists(tfile))
            list(examples=paste(readLines(tfile),collapse="\n"))
          else list()
        }),
        ## Get examples from inline definitions after return()
-       examples.after.return=list(forfun,function(name,src,...){
-         coll <- paste(src,collapse="\n")
-         thispre <- gsub("^[\\^]","",prefix)
-         FIND <- paste("(return|UseMethod)[(][^\\n]*\\n",thispre,sep="")
-         m <- regexpr(FIND,coll)
-         if(m[1]==-1)return(list())
-         after <- substr(coll,m[1],nchar(coll))
-         FIND <-
-           paste("[^\\n]*",# rest of the return line
-                 "((?:\\n###[^\\n]*)+)",#comment value lines \\1
-                 "([\\w\\W]*)[}]",#examples \\2
-                 sep="")
-         SEP <- "-/-/-/-/-=====-----"
-         REP <- paste("\\1",SEP,"\\2",sep="")
-         r <- strsplit(gsub(FIND,REP,after,perl=TRUE),split=SEP)[[1]]
-         l <- strsplit(r,split="\n")
-         excode <- c(l[[2]],"")
-         if(length(l)<2||paste(excode,collapse="")=="")return(list())
-         prefixes <- gsub("(\\s*).*","\\1",excode,perl=TRUE)[grep("\\w",excode)]
-         FIND <- prefixes[which.min(nchar(prefixes))]
-         list(examples=paste(sub(FIND,"",excode),collapse="\n"),
-              value=decomment(l[[1]][-1]))
-       }))
+	   # PhG: this does not work well! Think at these situations:
+	   # 1) You have multiple return() in the code of your function,
+	   # 2) You have return() appearing is some example code, ...
+	   # I can hardly propose a hack here. The whole code of the function
+	   # must be parsed, and one must determine which one is the last line
+	   # of code that is actually executed.
+	   #
+	   # I make two propositions here
+	   # 1) to keep the same mechanism that has the advantage of simplicity
+	   #    but to use a special tag ##examples<< or #{{{examples to separate
+	   #    function code from examples explicitly, and
+	   # 2) to place the example in an "ex" attribute attached to the function
+	   #    (see next parser). That solution will be also interesting for
+	   #    documenting datasets, something not done yet by inlinedocs!
+	   examples.after.return = list(forfun, function(name, src, ...) { 
+			# Look for the examples mark
+			m <- grep("##examples<<|#\\{\\{\\{examples", src)
+			if (!length(m)) return(list())
+			if (length(m) > 1)
+				warning("More than one examples tag for ", name, ". Taking the last one")
+			m <- m[length(m)]
+			# Look for the lines containing return value comments just before
+			r <- grep("\\s*### ", src[1:(m-1)])
+			if (!length(r)) {
+				value <- NULL
+			} else {
+				# Only take consecutive lines before the mark
+				keep <- rev((m - rev(r)) == 1:length(r))
+				if (!any(keep)) {
+					value <- NULL
+				} else {
+					value <- decomment(src[r[keep]])
+				}
+			}
+			# Collect now the example code beneath the mark
+			ex <- src[(m + 1):(length(src) - 1)]
+			# Possibly eliminate a #}}} tag
+			ex <- ex[!grepl("#}}}", ex)]
+			# Eliminate leading tabulations or four spaces
+			ex <- sub("^\t|    ", "", ex)
+			# Add an empty line before and after example
+			ex <- c("", ex, "")
+			# Return examples and value
+			list(examples = paste(ex, collapse = "\n"), value = value)
+	   }),
+	   # PhG: here is what I propose for examples code in the 'ex' attribute
+	   examples.in.attr = list(forfun, function (name, o, ...) {
+			ex <- attr(o, "ex")
+			if (!is.null(ex)) {
+				# Special case for code contained in a function
+				if (inherits(ex, "function")) {
+					# If source is available, start from there
+					src <- attr(ex, "source")
+					if (!is.null(src)) {
+						ex <- src
+					} else { # Use the body of the function
+						ex <- deparse(body(ex))
+					}
+					# Eliminate leading and trailing code
+					ex <- ex[-c(1, length(ex))]
+					# Eliminate leading tabulations or four spaces
+					ex <- sub("^\t|    ", "", ex)
+					# Add an empty line before and after example
+					ex <- c("", ex, "")
+				}
+				list(examples = paste(ex, collapse = "\n"))
+			} else list()
+	   }))
 
 ### List of parser functions that operate on single objects. This list
 ### is useful for testing these functions, ie
@@ -89,8 +138,8 @@ extract.docs.file <- function # Extract documentation from a file
 ### each function. These are not able to be retreived simply by
 ### looking at the "source" attribute. This is a Parser Function that
 ### can be used in the parser list of package.skeleton.dx(). TODO:
-### Modularize this into separate Parser Functions for S4 classes,
-### prefixes, ##<< blocks, etc. Right now it is not very clean!
+### Modularize this into separate Parsers Functions for S4 classes,
+### prefixes, ##<<blocks, etc. Right now it is not very clean!
 (code,
 ### Code lines in a character vector containing multiple R objects to
 ### parse for documentation.
@@ -113,11 +162,15 @@ extract.docs.file <- function # Extract documentation from a file
           doc$description <- parsed[[on]]@description
         }
         if ( "setMethodS3" == parsed[[on]]@created ){
-          pattern <- "^([^\\.]+)\\.(.*)$"
+          # PhG: this may be wrong! It does not catch correctly how the method
+		  # must be splitted in case of methods containing dots. for instance,
+		  # as.data.frame.matrix must be split into: m1 = as.data.frame and
+		  # m2 = matrix... here you got m1 = as, and m2 = data.frame.matrix!!!
+		  pattern <- "^([^\\.]+)\\.(.*)$"
           doc$s3method=c(m1 <- gsub(pattern,"\\1",on,perl=TRUE),
               m2 <- gsub(pattern,"\\2",on,perl=TRUE))
           if ( 0 < length(grep("\\W",m1,perl=TRUE)) ){
-            m1 <- paste("`",m1,"`",sep="")
+			  m1 <- paste("`",m1,"`",sep="")
           }
           cat("S3method(",m1,",",m2,")\n",sep="")
         }
@@ -664,6 +717,25 @@ extract.docs.code <- function
 
   ## apply parsers in sequence to code and objs
   docs <- list()
+  
+  # PhG: Automatically determine who is S3 methods
+  for (name in names(objs)) {
+    parts <- strsplit(name, ".", fixed = TRUE)[[1]]
+	l <- length(parts)
+	if (l > 1) {
+        for (i in 1:(l - 1)) {
+            # Look for a generic function (known by the system or defined
+            # in the package) that matches that part of the function name
+            generic <- paste(parts[1:i], collapse = ".")
+            if (any(generic %in% utils:::getKnownS3generics()) ||
+                utils:::findGeneric(generic, e) != "") {
+                object <- paste(parts[(i + 1):l], collapse = ".") 
+                docs[[name]]$s3method <- c(generic, object)
+                break
+            }
+        }
+    }
+  }
   for(i in seq_along(parsers)){
     N <- names(parsers[i])
     if(verbose){
