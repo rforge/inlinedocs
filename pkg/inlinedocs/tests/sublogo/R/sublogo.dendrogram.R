@@ -224,3 +224,4 @@ sublogo <- function
  ){
   sublogo.dendrogram(seqs.to.mat(seqs,mat),...)
 }
+

@@ -22,3 +22,14 @@ test.file <- function
     }
   }
 }
+save.test.result <- function
+### For unit tests, this is an easy way of getting a text
+### representation of the list result of extract.docs.file.
+(f
+### R code file with inlinedocs to process with extract.docs.file.
+ ){
+  L <- extract.docs.file(f)
+  dump("L",control=NULL)
+  lines <- readLines("dumpdata.R")
+  cat(lines)
+}
