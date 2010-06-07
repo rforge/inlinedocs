@@ -37,7 +37,7 @@ first defining instances, subsequent definitions of that generic
 also link back to the first defining instance.}
 \value{Returns an invisible list of .DocLink objects.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

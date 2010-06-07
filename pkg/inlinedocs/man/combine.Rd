@@ -14,7 +14,7 @@ combine(x, y)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

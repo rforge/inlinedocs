@@ -29,7 +29,7 @@ a letter, plus all S4 methods and classes are exported.}
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

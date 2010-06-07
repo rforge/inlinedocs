@@ -133,7 +133,7 @@ forall.parsers <-
 ### lonely$parsefun(attr(extract.docs.file,"source"),"extract.docs.file")
 lonely <- sapply(forall.parsers,function(L)L[[2]])
 
-extract.docs.file <- function # Extract documentation from a file
+extra.code.docs <- function # Extract documentation from code chunks
 ### Parse R code to extract inline documentation from comments around
 ### each function. These are not able to be retreived simply by
 ### looking at the "source" attribute. This is a Parser Function that
@@ -251,8 +251,21 @@ extract.docs.file <- function # Extract documentation from a file
 }
 
 ### List of parsers to use by default with package.skeleton.dx.
-default.parsers <- c(extract.docs.file=extract.docs.file,
-                     sapply(forall.parsers,function(L)L[[1]](L[[2]])))
+default.parsers <-
+  c(extra.code.docs=extra.code.docs,
+    sapply(forall.parsers,function(L)L[[1]](L[[2]])),
+    edit.package.file=function(desc,...){
+      in.details <- setdiff(colnames(desc),"Description")
+      details <- paste(paste(in.details,": \\tab ",desc[,in.details],"\\cr",
+                             sep=""),collapse="\n")
+      L <-
+        list(list(title=desc[,"Title"],
+                  description=desc[,"Description"],
+                  `tabular{ll}`=details,
+                  author=desc[,"Maintainer"]))
+      names(L) <- paste(desc[,"Package"],"-package",sep="")
+      L
+    })
 
 extract.docs.fun <- function # Extract documentation from a function
 ### Given source code of a function, return a list describing inline
@@ -693,29 +706,30 @@ extract.docs.setClass <- function # S4 class inline documentation
   invisible(docs)
 }
 
-extract.docs.code <- function
-### Write code to a file and parse it to r objs, then run all the
-### parsers and return the documentation list.
+apply.parsers <- function
+### Parse code to r objs, then run all the parsers and return the
+### documentation list.
 (code,
 ### Character vector of code lines.
- parsers,
+ parsers=default.parsers,
 ### List of Parser Functions.
- verbose=TRUE,
+ verbose=FALSE,
 ### Echo names of Parser Functions?
  ...
 ### Additional arguments to pass to Parser Functions.
  ){
-  code.file <- tempfile()
-  writeLines(code,code.file)
   e <- new.env()
   old <- options(keep.source.pkgs=TRUE)
-  tryCatch(suppressWarnings(sys.source(code.file,e)),error=function(e){
-    stop("source ",code.file," failed with error:\n",e)
-  })
-  options(old)
+  on.exit(options(old))
+  ##tryCatch({
+    exprs <- parse(text=code)
+    for (i in exprs) eval(i, e)
+##   },error=function(err){
+##     print(i)
+##     stop("eval or parse failed with error:\n",err)
+##   })
   objs <- sapply(ls(e),get,e,simplify=FALSE)
 
-  ## apply parsers in sequence to code and objs
   docs <- list()
   
   # PhG: Automatically determine who is S3 methods
@@ -736,6 +750,7 @@ extract.docs.code <- function
         }
     }
   }
+  ## apply parsers in sequence to code and objs
   for(i in seq_along(parsers)){
     N <- names(parsers[i])
     if(verbose){
@@ -751,4 +766,17 @@ extract.docs.code <- function
   if(verbose)cat("\n")
   docs
 ### A list of extracted documentation from code.
+}
+
+extract.docs.file <- function
+### Apply all parsers relevant to extract info from just 1 code file.
+(f,
+### File name of R code to read and parse.
+ parsers=list(extra.code.docs,default.parsers$parsefun),
+### Parser Functions to use to parse the code and extract
+### documentation.
+ ...
+### Other arguments to pass to Parser Functions.
+ ){
+  apply.parsers(readLines(f),parsers,verbose=FALSE,...)
 }

@@ -3,7 +3,7 @@
 \title{combine list}
 \description{combine lists by adding elements or adding to existing elements}
 \usage{
-combine.list(x, y)
+\method{combine}{list}(x, y)
 }
 \arguments{
   \item{x}{
@@ -14,7 +14,7 @@ combine.list(x, y)
 
 \value{A list, same type as x, but with added elements from y.}
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

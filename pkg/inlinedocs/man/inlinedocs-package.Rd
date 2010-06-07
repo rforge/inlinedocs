@@ -7,16 +7,16 @@
 \tabular{ll}{Package: \tab inlinedocs\cr
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
-Version: \tab 1.2\cr
-Date: \tab 2009-11-30\cr
-Author: \tab Toby Dylan Hocking, Keith Ponting\cr
-Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>\cr
+Version: \tab 1.3\cr
+Date: \tab 2010-05-25\cr
+Author: \tab Inlinedocs development team\cr
+Maintainer: \tab Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>\cr
 URL: \tab http://inlinedocs.r-forge.r-project.org\cr
-Depends: \tab methods\cr
+Depends: \tab methods, utils\cr
 License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr}
 }
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 \keyword{ package }
 

@@ -22,7 +22,7 @@ documentation sections missing from the child are}
 No methods defined with class "DocLink" in the signature.
 }
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

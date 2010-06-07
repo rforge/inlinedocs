@@ -3,7 +3,7 @@
 \title{combine character}
 \description{combine character strings by pasting them together}
 \usage{
-combine.character(x, y)
+\method{combine}{character}(x, y)
 }
 \arguments{
   \item{x}{
@@ -14,7 +14,7 @@ combine.character(x, y)
 
 
 
-\author{Toby Dylan Hocking <toby.hocking@inria.fr>, Keith Ponting <k.ponting@aurix.com>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 
