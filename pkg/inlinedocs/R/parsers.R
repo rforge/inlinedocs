@@ -1,3 +1,33 @@
+### combine lists or character strings
+combine <- function(x,y)UseMethod("combine")
+
+### combine character strings by pasting them together
+combine.character <- function(x,y)
+    paste(x,y,sep="\n")
+
+### combine lists by adding elements or adding to existing elements
+combine.list <- function(x,y){
+  toadd <- !names(y)%in%names(x)
+  toup <- names(y)[names(y)%in%names(x)]
+  x[names(y)[toadd]] <- y[toadd]
+  for(up in toup)x[[up]] <- combine(x[[up]],y[[up]])
+  return(x)
+### A list, same type as x, but with added elements from y.
+}
+
+### Prefix for code comments used with grep and gsub.
+prefix <- "^[ \t]*###[ \t]"
+
+decomment <- function
+### Remove comment prefix and join lines of code to form a
+### documentation string.
+(comments
+### Character vector of prefixed comment lines.
+ ){
+  paste(gsub(prefix,"",comments),collapse="\n")
+### String without prefixes or newlines.
+}
+
 ### For each object in the package that satisfies the criterion
 ### checked by subfun, parse source using FUN and return the resulting
 ### documentation list.
@@ -719,15 +749,10 @@ apply.parsers <- function
 ### Additional arguments to pass to Parser Functions.
  ){
   e <- new.env()
-  old <- options(keep.source.pkgs=TRUE)
+  old <- options(keep.source=TRUE)
   on.exit(options(old))
-  ##tryCatch({
-    exprs <- parse(text=code)
-    for (i in exprs) eval(i, e)
-##   },error=function(err){
-##     print(i)
-##     stop("eval or parse failed with error:\n",err)
-##   })
+  exprs <- parse(text=code)
+  for (i in exprs) eval(i, e)
   objs <- sapply(ls(e),get,e,simplify=FALSE)
 
   docs <- list()

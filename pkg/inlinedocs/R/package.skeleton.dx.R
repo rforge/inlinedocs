@@ -1,31 +1,3 @@
-### combine lists or character strings
-combine <- function(x,y)UseMethod("combine")
-### combine character strings by pasting them together
-combine.character <- function(x,y)
-    paste(x,y,sep="\n")
-### combine lists by adding elements or adding to existing elements
-combine.list <- function(x,y){
-  toadd <- !names(y)%in%names(x)
-  toup <- names(y)[names(y)%in%names(x)]
-  x[names(y)[toadd]] <- y[toadd]
-  for(up in toup)x[[up]] <- combine(x[[up]],y[[up]])
-  return(x)
-### A list, same type as x, but with added elements from y.
-}
-
-### Prefix for code comments used with grep and gsub.
-prefix <- "^[ \t]*###[ \t]"
-
-decomment <- function
-### Remove comment prefix and join lines of code to form a
-### documentation string.
-(comments
-### Character vector of prefixed comment lines.
- ){
-  paste(gsub(prefix,"",comments),collapse="\n")
-### String without prefixes or newlines.
-}
-
 ### Necessary fields in DESCRIPTION, otherwise error.
 fields <- c("Package","Maintainer","Author","Version",
             "License","Title","Description")
@@ -62,6 +34,7 @@ package.skeleton.dx <- function # Package skeleton deluxe
 ### Parameters to pass to Parser functions.
  ){
   chdir <- file.path(pkgdir,"R")
+  if(!file.exists(chdir))stop("need pkgdir/R, tried ",chdir)
   old.wd <- setwd(chdir)
   on.exit(setwd(old.wd))
   # PhG: R allows for specific code to be in /unix, or /windows subdirectories
