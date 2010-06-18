@@ -77,86 +77,91 @@ forall.parsers <-
          if("title"%in%names(doc))list() else
          list(title=gsub("[._]"," ",name))
        }),
-       # PhG: it is tests/FUN.R!!! I would like more flexibility here
-	   # please, let me choose which dir to use for examples!
-	   ## Get examples for FUN from the file tests/FUN.R
+       ## PhG: it is tests/FUN.R!!! I would like more flexibility here
+       ## please, let me choose which dir to use for examples!
+       ## Get examples for FUN from the file tests/FUN.R
        examples.from.testfile=list(forfun,function(name,...){
          tsubdir <- getOption("inlinedocs.exdir")
-		 if (is.null(tsubdir)) tsubdir <- "tests"	# Default value
-		 tfile <- file.path("..",tsubdir,paste(name,".R",sep=""))
+         if (is.null(tsubdir)) tsubdir <- "tests"	# Default value
+         tfile <- file.path("..",tsubdir,paste(name,".R",sep=""))
          if(file.exists(tfile))
            list(examples=paste(readLines(tfile),collapse="\n"))
          else list()
        }),
        ## Get examples from inline definitions after return()
-	   # PhG: this does not work well! Think at these situations:
-	   # 1) You have multiple return() in the code of your function,
-	   # 2) You have return() appearing is some example code, ...
-	   # I can hardly propose a hack here. The whole code of the function
-	   # must be parsed, and one must determine which one is the last line
-	   # of code that is actually executed.
-	   #
-	   # I make two propositions here
-	   # 1) to keep the same mechanism that has the advantage of simplicity
-	   #    but to use a special tag ##examples<< or #{{{examples to separate
-	   #    function code from examples explicitly, and
-	   # 2) to place the example in an "ex" attribute attached to the function
-	   #    (see next parser). That solution will be also interesting for
-	   #    documenting datasets, something not done yet by inlinedocs!
-	   examples.after.return = list(forfun, function(name, src, ...) { 
-			# Look for the examples mark
-			m <- grep("##examples<<|#\\{\\{\\{examples", src)
-			if (!length(m)) return(list())
-			if (length(m) > 1)
-				warning("More than one examples tag for ", name, ". Taking the last one")
-			m <- m[length(m)]
-			# Look for the lines containing return value comments just before
-			r <- grep("\\s*### ", src[1:(m-1)])
-			if (!length(r)) {
-				value <- NULL
-			} else {
-				# Only take consecutive lines before the mark
-				keep <- rev((m - rev(r)) == 1:length(r))
-				if (!any(keep)) {
-					value <- NULL
-				} else {
-					value <- decomment(src[r[keep]])
-				}
-			}
-			# Collect now the example code beneath the mark
-			ex <- src[(m + 1):(length(src) - 1)]
-			# Possibly eliminate a #}}} tag
-			ex <- ex[!grepl("#}}}", ex)]
-			# Eliminate leading tabulations or four spaces
-			ex <- sub("^\t|    ", "", ex)
-			# Add an empty line before and after example
-			ex <- c("", ex, "")
-			# Return examples and value
-			list(examples = paste(ex, collapse = "\n"), value = value)
-	   }),
-	   # PhG: here is what I propose for examples code in the 'ex' attribute
-	   examples.in.attr = list(forfun, function (name, o, ...) {
-			ex <- attr(o, "ex")
-			if (!is.null(ex)) {
-				# Special case for code contained in a function
-				if (inherits(ex, "function")) {
-					# If source is available, start from there
-					src <- attr(ex, "source")
-					if (!is.null(src)) {
-						ex <- src
-					} else { # Use the body of the function
-						ex <- deparse(body(ex))
-					}
-					# Eliminate leading and trailing code
-					ex <- ex[-c(1, length(ex))]
-					# Eliminate leading tabulations or four spaces
-					ex <- sub("^\t|    ", "", ex)
-					# Add an empty line before and after example
-					ex <- c("", ex, "")
-				}
-				list(examples = paste(ex, collapse = "\n"))
-			} else list()
-	   }))
+       ## PhG: this does not work well! Think of these situations:
+       ## 1) You have multiple return() in the code of your function,
+       ## 2) You have return() appearing is some example code, ...
+       ## I can hardly propose a hack here. The whole code of the function
+       ## must be parsed, and one must determine which one is the last line
+       ## of code that is actually executed.
+       ##
+       ## I make two propositions here
+       ## 1) to keep the same mechanism that has the advantage of simplicity
+       ##    but to use a special tag
+       ##examples<< or #{{{examples to separate
+       ##    function code from examples explicitly, and
+       ## 2) to place the example in an "ex" attribute
+       ##    attached to the function
+       ##    (see next parser). That solution will be also interesting for
+       ##    documenting datasets, something not done yet by inlinedocs!
+       examples.after.return = list(forfun, function(name, src, ...) { 
+         ## Look for the examples mark
+         m <- grep("##examples<<|#\\{\\{\\{examples", src)
+         if (!length(m)) return(list())
+         if (length(m) > 1)
+           warning("More than one examples tag for ", name,
+                   ". Taking the last one")
+         m <- m[length(m)]
+         ## Look for the lines containing return value comments just before
+         r <- grep("\\s*### ", src[1:(m-1)])
+           if (!length(r)) {
+             value <- NULL
+           } else {
+             ## Only take consecutive lines before the mark
+             keep <- rev((m - rev(r)) == 1:length(r))
+             if (!any(keep)) {
+               value <- NULL
+             } else {
+               value <- decomment(src[r[keep]])
+             }
+           }
+         ## Collect now the example code beneath the mark
+         ex <- src[(m + 1):(length(src) - 1)]
+         ## Possibly eliminate a #}}} tag
+         ex <- ex[!grepl("#}}}", ex)]
+         ## Eliminate leading tabulations or four spaces
+         prefixes <- gsub("(\\s*).*","\\1",ex,perl=TRUE)[grep("\\w",ex)]
+         FIND <- prefixes[which.min(nchar(prefixes))]
+         ex <- sub(FIND,"",ex)
+         ## Add an empty line before and after example
+         ex <- c("", ex, "")
+         ## Return examples and value
+         list(examples = paste(ex, collapse = "\n"), value = value)
+       }),
+       ## PhG: here is what I propose for examples code in the 'ex' attribute
+       examples.in.attr = list(forfun, function (name, o, ...) {
+         ex <- attr(o, "ex")
+         if (!is.null(ex)) {
+           ## Special case for code contained in a function
+           if (inherits(ex, "function")) {
+             ## If source is available, start from there
+             src <- attr(ex, "source")
+             if (!is.null(src)) {
+               ex <- src
+             } else { ## Use the body of the function
+               ex <- deparse(body(ex))
+             }
+             ## Eliminate leading and trailing code
+             ex <- ex[-c(1, length(ex))]
+             ## Eliminate leading tabulations or four spaces
+             ex <- sub("^\t|    ", "", ex)
+             ## Add an empty line before and after example
+             ex <- c("", ex, "")
+           }
+           list(examples = paste(ex, collapse = "\n"))
+         } else list()
+       }))
 
 ### List of parser functions that operate on single objects. This list
 ### is useful for testing these functions, ie
