@@ -92,7 +92,7 @@ package.skeleton.dx <- function # Package skeleton deluxe
   # PhG: if we create a namespace, we need to keep this list for further use
   if (isTRUE(namespace)) allpkgs <- pkgnames
   # PhG: We eliminate also from the list the packages that are already loaded
-  pkgnames <- pkgnames[!paste("package", pkgnames, sep = ":") %in% search()]
+  pkgnames <- pkgnames[!sprintf("package:%s",pkgnames) %in% search()]
   # PhG: according to Writing R Extensions manual, a package name can occur
   # several times in Depends
   pkgnames <- unique(pkgnames)

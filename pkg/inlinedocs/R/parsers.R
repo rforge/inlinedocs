@@ -523,6 +523,9 @@ extract.docs.fun <- function # Extract documentation from a function
       arg <- gsub(arg.pat,"\\\\item\\{\\1\\}",line,perl=TRUE)
       in.chunk <- TRUE
       if ( not.describe ){
+        ## TDH 2010-06-18 For item{}s in the documentation list names,
+        ## we don't need to have a backslash before, so delete it.
+        arg <- gsub("^[\\]+","",arg)
         cur.field <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
         payload <- comment
       } else {

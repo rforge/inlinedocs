@@ -36,7 +36,7 @@ silly.example <- function
   }
   ##note<< a note
   ##references<< a reference
-  ##seealso<< \code{\link{test}}
+  ##seealso<< \code{\link{Silly-class}}
   ##keyword<<documentation utilities
   invisible(res)
 ### invisible something not unrelated to first
