@@ -105,7 +105,7 @@ forall.parsers <-
        ##    attached to the function
        ##    (see next parser). That solution will be also interesting for
        ##    documenting datasets, something not done yet by inlinedocs!
-       examples.after.return = list(forfun, function(name, src, ...) { 
+       examples.after.return = list(forfun,function(src,name="",...) { 
          ## Look for the examples mark
          m <- grep("##examples<<|#\\{\\{\\{examples", src)
          if (!length(m)) return(list())
@@ -801,11 +801,16 @@ apply.parsers <- function
 ### A list of extracted documentation from code.
 }
 
+### Parsers that operate only on R code, independently of the
+### description file.
+nondesc.parsers <- c(extra.code.docs=list(extra.code.docs),
+  default.parsers[c("parsefun","examples.after.return","examples.in.attr")])
+
 extract.docs.file <- function
 ### Apply all parsers relevant to extract info from just 1 code file.
 (f,
 ### File name of R code to read and parse.
- parsers=list(extra.code.docs,default.parsers$parsefun),
+ parsers=nondesc.parsers,
 ### Parser Functions to use to parse the code and extract
 ### documentation.
  ...

@@ -35,7 +35,7 @@ save.test.result <- function
 ### R code file with inlinedocs to process with extract.docs.file.
  ){
   .result <- extract.docs.file(f)
-  dump(".result",control=NULL)
-  lines <- readLines("dumpdata.R")
+  dump(".result",tmp <- tempfile(),control=NULL)
+  lines <- readLines(tmp)
   cat(paste(lines,"\n"))
 }

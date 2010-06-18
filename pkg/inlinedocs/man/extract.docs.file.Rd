@@ -3,7 +3,7 @@
 \title{extract docs file}
 \description{Apply all parsers relevant to extract info from just 1 code file.}
 \usage{
-extract.docs.file(f, parsers = list(extra.code.docs, default.parsers$parsefun), ...)
+extract.docs.file(f, parsers = nondesc.parsers, ...)
 }
 \arguments{
   \item{f}{File name of R code to read and parse.}
