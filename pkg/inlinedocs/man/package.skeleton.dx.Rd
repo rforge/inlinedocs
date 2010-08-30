@@ -1,5 +1,6 @@
 \name{package.skeleton.dx}
 \alias{package.skeleton.dx}
+\alias{inlinedocs	 }
 \title{Package skeleton deluxe}
 \description{Automates more of the setup process for a new source
 package. After inspecting the specified R code files to find
@@ -34,4 +35,20 @@ a letter, plus all S4 methods and classes are exported.}
 
 
 
+\examples{
+library(inlinedocs)
 
+# get the path to the silly example package that is provided with package inlinedocs
+testPackagePath=file.path( system.file(package="inlinedocs"),"silly" )
+# copy example project to the current unlocked workspace that can be modified
+file.copy(testPackagePath,".",recursive=TRUE)
+
+# generate documentation rd-Files for this package
+package.skeleton.dx("silly")
+
+# display source file and the generated Rd file  
+file.show( c( file.path("silly","R","silly.R"),file.path("silly","man","silly.example.Rd") ),header=c("source","rd") )
+
+# cleanup: remove the test package from current workspace again
+unlink("silly",recursive=TRUE)
+}
