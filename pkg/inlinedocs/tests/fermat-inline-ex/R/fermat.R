@@ -32,3 +32,5 @@ is.pseudoprime <- function#Check an integer for pseudo-primality to an arbitrary
 ### Whether the number is pseudoprime
   is.pseudoprime(13,4)
 }
+
+

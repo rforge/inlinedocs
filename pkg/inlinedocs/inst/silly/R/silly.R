@@ -36,13 +36,12 @@ silly.example <- function
   }
   ##note<< a note
   ##references<< a reference
-  ##seealso<< \code{\link{test}}
+  ##seealso<< \code{\link{silly-package}}
   ##keyword<<documentation utilities
-  invisible(res)
-  ### invisible something not unrelated to first
+  return(res)
+### invisible something not unrelated to first
+  ##examples<<
+  ##These lines got to the examples section in the documentation.
+  res <- silly.example(first="first",second=TRUE, third=3)
 }
 
-inlinedocExample(silly.example) <- function(){
-	#These lines got to the examples section in the documentation.
-	res <- silly.example(first="first",second=TRUE, third=3)
-}
