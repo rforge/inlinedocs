@@ -1,0 +1,145 @@
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+\documentclass{beamer}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{
+\url{http://inlinedocs.r-forge.r-project.org}}
+\author{Toby Dylan Hocking \\ toby.hocking AT inria.fr}
+\date{21 October 2010}
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+\newcommand{\framet}[2]{\frame[containsverbatim]{
+\begin{itemize}
+\frametitle{#1}{#2}
+\end{itemize}
+}}
+
+\begin{document}
+\setkeys{Gin}{width=\textwidth}
+\frame{\titlepage}
+
+\section{General package structure}
+
+\framet{Sharing your code with the R community}{
+\item Most likely you have some interesting functions you would like
+  to share.
+\item You could just email your code.R to a colleague.
+\item However, there is a standardized process for documenting,
+  publishing and installing R code.
+\item If you want your code to be used (and potentially modified) by
+  anyone, then you should consider making a \textbf{package}.
+p}
+
+\framet{What is an R package?}{
+\item It is a collection of code and data for a specific task, in a
+  specific format.
+\item Give your package a name, make a corresponding directory
+  \texttt{pkgdir}
+\item Required items:
+  \begin{enumerate}
+  \item pkgdir/R/*.R for R code.
+  \item pkgdir/DESCRIPTION to describe its purpose, author, etc.
+  \item pkgdir/man/*.Rd for \textbf{documentation}.
+  \end{enumerate}
+\item Optional items:
+  \begin{itemize}
+  \item pkgdir/data/* for data sets.
+  \item pkgdir/src/* for C/FORTRAN/C++ source to be compiled
+    and linked to R.
+  \item pkgdir/inst/* for other files you want to install.
+  \item pkgdir/po/* for international translations.
+  \end{itemize}
+\item All of these need to be in a standard format as described in
+  ``Writing R Extensions'' in excrutiating detail.
+} 
+
+\framet{How to write the package?}{
+\item Do it yourself! Read ``Writing R Extensions,'' only 141 pages in
+  PDF form, as of 22 September 2010.
+\item package.skeleton()
+\item roxygen::roxygenize()
+\item inlinedocs::package.skeleton.dx()
+}
+
+\framet{Documentation generation has several advantages}{
+\item Documentation is written in comments, nearer to the source code
+\item Can exploit the structure of the source code
+\item Simplifies updating documentation
+\item Reduces the probability of mismatch between code and docs
+}
+
+\section{roxygen: complete Rd support and call graphs}
+
+\framet{Documentation in comments in a header}{
+\item Comments start with \#'
+}
+
+\framet{Visualizing your functions using call graphs}{
+\item @callGraph
+}
+
+\section{inlinedocs}
+
+\section{Conclusions and references}
+
+\framet{Documentation}{
+\item To publish your package:
+\begin{enumerate}
+  \item Write your code in pkgdir/R/code.R
+  \item Write a pkgdir/DESCRIPTION
+  \item Write (or generate) documentation pkgdir/man/*.Rd
+  \item R CMD check pkgdir
+  \item R CMD build pkgdir
+  \item Upload to ftp://cran.r-project.org/incoming user:anonymous
+    password:your@email and email cran@r-project.org
+\end{enumerate}
+\item roxygen's strengths
+\begin{itemize}
+  \item Full support of Rd and namespaces
+  \item Very nice call graphs
+\end{itemize}
+\item inlinedocs' strengths
+\begin{itemize}
+  \item Documentation closer to code
+  \item Less repetition
+\end{itemize}
+}
+
+\framet{References for learning more about package development}{
+\item The definitive guide: help.start() then
+  \href{http://cran.r-project.org/doc/manuals/R-exts.html}{Writing R
+    Extensions},
+\item The built-in package generator: ?package.skeleton
+\item roxygen
+  \begin{itemize}
+  \item library(roxygen)
+  \item ?roxygenize
+  \item \url{http://roxygen.org/roxygen.pdf}
+  \end{itemize}
+\item inlinedocs
+  \begin{itemize}
+  \item library(inlinedocs)
+  \item ?inlinedocs
+  \item \url{http://inlinedocs.r-forge.r-project.com}
+  \end{itemize}
+\item Contact me directly: toby.hocking AT inria.fr,
+  \url{http://cbio.ensmp.fr/~thocking/}
+}
+
+\end{document}
+
