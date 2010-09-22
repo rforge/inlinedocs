@@ -140,7 +140,7 @@ forall.parsers <-
          list(examples = paste(ex, collapse = "\n"), value = value)
        }),
        ## PhG: here is what I propose for examples code in the 'ex' attribute
-       examples.in.attr = list(forfun, function (name, o, ...) {
+       examples.in.attr = list(forall, function (name, o, ...) {
          ex <- attr(o, "ex")
          if (!is.null(ex)) {
            ## Special case for code contained in a function
@@ -161,12 +161,15 @@ forall.parsers <-
            }
            list(examples = paste(ex, collapse = "\n"))
          } else list()
-       }))
+       })
+       )
 
 ### List of parser functions that operate on single objects. This list
-### is useful for testing these functions, ie
-### lonely$parsefun(attr(extract.docs.file,"source"),"extract.docs.file")
+### is useful for testing these functions.
 lonely <- sapply(forall.parsers,function(L)L[[2]])
+attr(lonely,"ex") <- function(){
+  lonely$parsefun(attr(extract.docs.file,"source"),"extract.docs.file")
+}
 
 extra.code.docs <- function # Extract documentation from code chunks
 ### Parse R code to extract inline documentation from comments around
