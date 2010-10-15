@@ -1,0 +1,9 @@
+Package: st.inlinedocs
+Maintainer: Toby Dylan Hocking <toby.hocking@inria.fr>
+Author: Toby Dylan Hocking
+Version: 1.0
+License: GPL-3
+Title: Soft-thresholding
+Description: A package documented using inlinedocs.
+Collate: 'pseudoprime.R' 'fermat.R' 'pseudoprime.R~' 'soft.threshold.R'
+    'soft.threshold.R~'
