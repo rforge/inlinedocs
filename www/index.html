@@ -29,20 +29,22 @@ for them. Now how to go about doing that?
 <li><b>Option 1: do it yourself.</b> Fire up package.skeleton() and
 then edit the Rd files by hand, following the directions in <a
 href="http://cran.r-project.org/doc/manuals/R-exts.html">Writing R
-Extensions (over 150 pages in PDF form)</a> --- good luck. It takes a
+Extensions (over 100 pages in PDF form)</a> --- good luck. It takes a
 long time to edit all these files by hand, and if you change your code
 you will end up with docs which do not agree. Unless you constantly
 update all those Rd files. (will you really?)</li>
 
-<li><b>Option 2: <a href="http://roxygen.org/">Roxygen</a>.</b> You
-like the idea of combining source code with documentation, because
-then you can do "literate programming" and moreover, it is practically
-easier to keep them in sync with each other. But ROxygen has a number
-of drawbacks, especially for documenting function arguments. The huge
-headers are usually far away from the actual code being documented,
-and you have to repeat yourself when you name the function arguments
-in the comment and the definition. (but to its credit, the call graphs
-that Roxygen makes are pretty cool).</li>
+<li><b>Option 2: put documentation in big header comments, as
+in <a href="http://roxygen.org/">roxygen</a> or
+R.oo::Rdoc$compile.</b> You like the idea of combining source code
+with documentation, because then you can do "literate programming" and
+moreover, it is practically easier to keep them in sync with each
+other. But these packages have a number of drawbacks, especially for
+documenting function arguments. The huge headers are usually far away
+from the actual code being documented, and you have to repeat yourself
+when you name the function arguments in the comment and the
+definition. (but to its credit, the call graphs that roxygen makes are
+pretty cool).</li>
 
 <li><b>Option 3: inlinedocs.</b> You will never have to repeat
 yourself, just comment your code in natural places, and you get Rd
