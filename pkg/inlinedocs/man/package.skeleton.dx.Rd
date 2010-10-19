@@ -38,6 +38,9 @@ a letter, plus all S4 methods and classes are exported.}
 \examples{
 library(inlinedocs)
 
+owd <- setwd(tempdir())
+on.exit(setwd(owd))
+
 ## get the path to the silly example package that is provided with
 ## package inlinedocs
 testPackagePath=file.path( system.file(package="inlinedocs"),"silly" )
