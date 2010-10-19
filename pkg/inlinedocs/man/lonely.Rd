@@ -10,5 +10,5 @@ is useful for testing these functions.}
 
 
 \examples{
-  lonely$parsefun(attr(extract.docs.file,"source"),"extract.docs.file")
+lonely$parsefun(attr(extract.docs.file,"source"),"extract.docs.file")
 }

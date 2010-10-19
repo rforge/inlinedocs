@@ -36,28 +36,32 @@ a letter, plus all S4 methods and classes are exported.}
 
 
 \examples{
-  library(inlinedocs)
-  
-  ## get the path to the silly example package that is provided with
-  ## package inlinedocs
-  testPackagePath=file.path( system.file(package="inlinedocs"),"silly" )
-  ## copy example project to the current unlocked workspace that can
-  ## be modified
-  file.copy(testPackagePath,".",recursive=TRUE)
-  
-  ## generate documentation rd-Files for this package
-  package.skeleton.dx("silly")
-  
-  ## display source file and the generated Rd file  
-  file.show( c(file.path("silly","R","silly.R"),
+library(inlinedocs)
+
+## get the path to the silly example package that is provided with
+## package inlinedocs
+testPackagePath=file.path( system.file(package="inlinedocs"),"silly" )
+## copy example project to the current unlocked workspace that can
+## be modified
+file.copy(testPackagePath,".",recursive=TRUE)
+
+## generate documentation rd-Files for this package
+package.skeleton.dx("silly")
+
+## display source file and the generated Rd file  
+file.show( c(file.path("silly","R","silly.R"),
            file.path("silly","man","silly.example.Rd") ),
         header=c("source","rd") )
 
-  ## check the package to see if generated documentation passes
-  ## without WARNINGs
-  checkLines <- system("R CMD check silly",intern=TRUE)
-  stopifnot(length(grep("WARNING",checkLines))==0)
-  
-  ## cleanup: remove the test package from current workspace again
-  unlink("silly",recursive=TRUE)
+## check the package to see if generated documentation passes
+## without WARNINGs
+checkLines <- system("R CMD check silly",intern=TRUE)
+warnLines <- grep("WARNING",checkLines,value=TRUE)
+if(length(warnLines)>0){
+print(warnLines)
+stop("WARNING encountered in package check!")
+}
+
+## cleanup: remove the test package from current workspace again
+unlink("silly",recursive=TRUE)
 }

@@ -10,17 +10,7 @@ extract.docs.fun(code, name.fun)
   \item{code}{The function to examine.}
   \item{name.fun}{The name of the function/chunk to use in warning messages.}
 }
-\details{The primary mechanism is that consecutive groups of lines matching
-the specified prefix regular expression "" (i.e. lines
-beginning with "") are collected
-as follows into documentation sections:\describe{
-\item{description}{group starting at line 2 in the code}
-\item{arguments}{group following each function argument}
-\item{value}{group ending at the penultimate line of the code}}
-These may be added to by use of the  constructs described
-below.
-
-For simple functions/arguments, the argument may also be
+\details{For simple functions/arguments, the argument may also be
 documented by appending  comments on the same line as the
 argument name. Mixing this mechanism with  comment lines for
 the same argument is likely to lead to confusion, as the 
