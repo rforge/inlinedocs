@@ -19,6 +19,7 @@ soft.threshold <- function # Soft-thresholding
 .result <- 
  list(soft.threshold = list(definition = "soft.threshold <- function # Soft-thresholding\n### Apply the soft-threshold function to a vector.\n(x,\n### A vector of numeric data.\n lambda=1\n### The largest absolute value that will be mapped to zero.\n ){\n  stopifnot(lambda>=0)\n  st <- ifelse(abs(x)<lambda,0,x-sign(x)*lambda)\n  return(st)\n### The vector of observations after applying \n### the soft-thresholding function.\n  ##examples<<\n  x <- seq(-5,5,l=50)\n  y <- soft.threshold(x)\n  plot(x,y)\n}",  
      title = "Soft-thresholding",
+        format="",
      description = "Apply the soft-threshold function to a vector.",  
      `item{x}` = "A vector of numeric data.",
      `item{lambda}`= "The largest absolute value that will be mapped to zero.",

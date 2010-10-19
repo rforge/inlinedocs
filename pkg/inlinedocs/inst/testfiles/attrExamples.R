@@ -26,4 +26,5 @@ inlinedocExample(helloWorld) <- function(){
 .result <- 
 	list(helloWorld = list(definition = "helloWorld <- function\n### function for which an example should be added\n( ){\n  cat(\"Hello World!\\n\")\n  invisible(NULL)\n  ### None (invisible NULL)\n}",  
 			description = "function for which an example should be added",  
-			value = "None (invisible NULL)", examples = "\n# all text including comments inside this block \n# should go to the examples section of \n# function helloWorld\nhelloWorld()\t# prints Hello World\n")) 
+			value = "None (invisible NULL)", examples = "\n# all text including comments inside this block \n# should go to the examples section of \n# function helloWorld\nhelloWorld()\t# prints Hello World\n",
+               format="",title="helloWorld"))

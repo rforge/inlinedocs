@@ -28,8 +28,8 @@ decomment <- function
 ### String without prefixes or newlines.
 }
 
-### For each object in the package that satisfies the criterion
-### checked by subfun, parse source using FUN and return the resulting
+### For each object in the package that satisfies the criterion#
+## checked by subfun, parse source using FUN and return the resulting
 ### documentation list.
 forall <- function
 (FUN,
@@ -39,7 +39,8 @@ forall <- function
 ### is.function. subfun(x)==TRUE means FUN will be applied to x and
 ### the result will be returned.
  ){
-  function(objs,docs,...){
+  FUN <- FUN
+  f <- function(objs,docs,...){
     objs <- objs[sapply(objs,subfun)]
     L <- list()
     for(N in names(docs)){
@@ -49,98 +50,173 @@ forall <- function
     }
     L
   }
+  class(f) <- c("allfun","function")
+  f
 ### A Parser Function.
+}
+
+### Print method for functions constructed using forall.
+print.allfun <- function(x,...){
+  e <- environment(x)
+  cat("Function to apply to every element.\nselector:")
+  print(e$subfun)
+  cat("processor:")
+  print(e$FUN)
 }
 
 ### For each function in the package, do something.
 forfun <- function(FUN)forall(FUN,is.function)
 
+examples.after.return <- function
+### Get examples from inline definitions after return()
+### PhG: this does not work well! Think of these situations:
+### 1) You have multiple return() in the code of your function,
+### 2) You have return() appearing is some example code, ...
+### I can hardly propose a hack here. The whole code of the function
+### must be parsed, and one must determine which one is the last line
+### of code that is actually executed.
+###
+### I make two propositions here
+### 1) to keep the same mechanism that has the advantage of simplicity
+###    but to use a special tag
+###    ##examples<< or #{{{examples to separate
+###    function code from examples explicitly, and
+### 2) to place the example in an "ex" attribute
+###    attached to the function
+###    (see next parser). That solution will be also interesting for
+###    documenting datasets, something not done yet by inlinedocs!
+(src,name="",...) { 
+  ## Look for the examples mark
+  m <- grep("^\\s*(##examples<<|#\\{\\{\\{examples)", src)
+  if (!length(m)) return(list())
+  if (length(m) > 1)
+    warning("More than one examples tag for ", name,
+            ". Taking the last one")
+  m <- m[length(m)]
+  ## Look for the lines containing return value comments just before
+  r <- grep("\\s*### ", src[1:(m-1)])
+    if (!length(r)) {
+      value <- NULL
+    } else {
+      ## Only take consecutive lines before the mark
+      keep <- rev((m - rev(r)) == 1:length(r))
+      if (!any(keep)) {
+        value <- NULL
+      } else {
+        value <- decomment(src[r[keep]])
+      }
+    }
+  ## Collect now the example code beneath the mark
+  ex <- src[(m + 1):(length(src) - 1)]
+  ## Possibly eliminate a #}}} tag
+  ex <- ex[!grepl("#}}}", ex)]
+  ## Eliminate leading tabulations or four spaces
+  prefixes <- gsub("(\\s*).*","\\1",ex,perl=TRUE)[grep("\\w",ex)]
+  FIND <- prefixes[which.min(nchar(prefixes))]
+  ex <- sub(FIND,"",ex)
+  ## Add an empty line before and after example
+  ex <- c("", ex, "")
+  ## Return examples and value
+  list(examples = paste(ex, collapse = "\n"), value = value)
+}
+
+prefixed.lines <- function(src,...){
+### The primary mechanism of inline documentation is via consecutive
+### groups of lines matching the specified prefix regular expression
+### "\code{^### }" (i.e. lines beginning with "\code{### }") are
+### collected as follows into documentation sections:\describe{
+### \item{description}{group starting at line 2 in the code}
+### \item{arguments}{group following each function argument}
+### \item{value}{group ending at the penultimate line of the code}}
+### These may be added to by use of the \code{##<<} constructs
+### described below.
+  clines <- grep(prefix,src)
+  if(length(clines)==0)return(list())
+  bounds <- which(diff(clines)!=1)
+  starts <- c(1,bounds+1)
+  ends <- c(bounds,length(clines))
+  ## detect body of function using paren matching
+  f <- function(ch)cumsum(nchar(gsub(sprintf("[^%s]",ch),"",src)))
+  parens <- f("(")-f(")")
+  body.begin <- which(diff(parens)<0 & parens[-1]==0)+2
+  is.arg <- function(){
+    0 == length(grep("^\\s*#",src[start-1],perl=TRUE)) &&
+      start<=body.begin
+    }
+  res <- list()
+  for(i in seq_along(starts)){
+    start <- clines[starts[i]]
+    end <- clines[ends[i]]
+    lab <- if(end+1==length(src))"value"
+    else if(start==2)"description"
+    else if(is.arg()){
+      ##twutz: strip leading white spaces and brackets and ,
+      arg <- gsub("^[ \t(,]*", "", src[start - 1])	
+      arg <- gsub("^([^=,]*)[=,].*", "\\1", arg)
+      ##twutz: remove trailing whitespaces
+      arg <- gsub("^([^ \t]*)([ \t]+)$","\\1",arg)	
+      arg <- gsub("...", "\\dots", arg, fix = TRUE)
+      paste("item{",arg,"}",sep="")
+    } else {
+      next;
+    }
+    res[[lab]] <- decomment(src[start:end])
+  }
+  res
+}
+
 ### Parsers for each object/function that are constructed
 ### automatically. This is a named list, each element is a list of 2
 ### elements: forfun/forall, then a parser function for an individual
 ### object.
-forall.parsers <-
-  list(## Extract lots of info from normal functions.
-       parsefun=list(forfun,function(src,name,...){
+forfun.parsers <-
+  list(prefixed.lines=prefixed.lines,
+       examples.after.return=examples.after.return,
+       ## Extract lots of info from normal functions.
+       parsefun=function(src,name,...){
          extract.docs.fun(src,name)
-       }),
-       ## Fill in author from DESCRIPTION and titles.
-       author.from.description=list(forall,function(desc,...){
-         list(author=desc[,"Maintainer"])
-       }),
-       ## The format section sometimes causes problems, so erase it.
-       erase.format=list(forall,function(...){
-         list(format="")
-       }),
-       ## Convert the function name to a title.
-       title.from.name=list(forall,function(name,doc,...){
-         if("title"%in%names(doc))list() else
-         list(title=gsub("[._]"," ",name))
-       }),
+       },
+       ## title from first line of function def
+       title.from.firstline=function(src,name,code,...){
+         if(length(grep("#",src[1]))){
+           list(title=gsub("[^#]*#\\s*(.*)","\\1",src[1],perl=TRUE))
+         } else list()
+       },
        ## PhG: it is tests/FUN.R!!! I would like more flexibility here
        ## please, let me choose which dir to use for examples!
        ## Get examples for FUN from the file tests/FUN.R
-       examples.from.testfile=list(forfun,function(name,...){
+       examples.from.testfile=function(name,...){
          tsubdir <- getOption("inlinedocs.exdir")
          if (is.null(tsubdir)) tsubdir <- "tests"	# Default value
          tfile <- file.path("..",tsubdir,paste(name,".R",sep=""))
          if(file.exists(tfile))
            list(examples=paste(readLines(tfile),collapse="\n"))
          else list()
-       }),
-       ## Get examples from inline definitions after return()
-       ## PhG: this does not work well! Think of these situations:
-       ## 1) You have multiple return() in the code of your function,
-       ## 2) You have return() appearing is some example code, ...
-       ## I can hardly propose a hack here. The whole code of the function
-       ## must be parsed, and one must determine which one is the last line
-       ## of code that is actually executed.
-       ##
-       ## I make two propositions here
-       ## 1) to keep the same mechanism that has the advantage of simplicity
-       ##    but to use a special tag
-       ##examples<< or #{{{examples to separate
-       ##    function code from examples explicitly, and
-       ## 2) to place the example in an "ex" attribute
-       ##    attached to the function
-       ##    (see next parser). That solution will be also interesting for
-       ##    documenting datasets, something not done yet by inlinedocs!
-       examples.after.return = list(forfun,function(src,name="",...) { 
-         ## Look for the examples mark
-         m <- grep("##examples<<|#\\{\\{\\{examples", src)
-         if (!length(m)) return(list())
-         if (length(m) > 1)
-           warning("More than one examples tag for ", name,
-                   ". Taking the last one")
-         m <- m[length(m)]
-         ## Look for the lines containing return value comments just before
-         r <- grep("\\s*### ", src[1:(m-1)])
-           if (!length(r)) {
-             value <- NULL
-           } else {
-             ## Only take consecutive lines before the mark
-             keep <- rev((m - rev(r)) == 1:length(r))
-             if (!any(keep)) {
-               value <- NULL
-             } else {
-               value <- decomment(src[r[keep]])
-             }
-           }
-         ## Collect now the example code beneath the mark
-         ex <- src[(m + 1):(length(src) - 1)]
-         ## Possibly eliminate a #}}} tag
-         ex <- ex[!grepl("#}}}", ex)]
-         ## Eliminate leading tabulations or four spaces
-         prefixes <- gsub("(\\s*).*","\\1",ex,perl=TRUE)[grep("\\w",ex)]
-         FIND <- prefixes[which.min(nchar(prefixes))]
-         ex <- sub(FIND,"",ex)
-         ## Add an empty line before and after example
-         ex <- c("", ex, "")
-         ## Return examples and value
-         list(examples = paste(ex, collapse = "\n"), value = value)
-       }),
+       },
+       definition.from.source=function(doc,src,...){
+         def <- doc$definition
+         if(is.null(def)||def=="")
+           list(definition=src)
+         else list()
+       })
+
+### List of Parser Functions that can be applied to any object.
+forall.parsers <-
+  list(## Fill in author from DESCRIPTION and titles.
+       author.from.description=function(desc,...){
+         list(author=desc[,"Maintainer"])
+       },
+       ## The format section sometimes causes problems, so erase it.
+       erase.format=function(...){
+         list(format="")
+       },
+       ## Convert the function name to a title.
+       title.from.name=function(name,doc,...){
+         if("title"%in%names(doc))list() else
+         list(title=gsub("[._]"," ",name))
+       },
        ## PhG: here is what I propose for examples code in the 'ex' attribute
-       examples.in.attr = list(forall, function (name, o, ...) {
+       examples.in.attr =  function (name, o, ...) {
          ex <- attr(o, "ex")
          if (!is.null(ex)) {
            ## Special case for code contained in a function
@@ -154,19 +230,18 @@ forall.parsers <-
              }
              ## Eliminate leading and trailing code
              ex <- ex[-c(1, length(ex))]
-             ## Eliminate leading tabulations or four spaces
-             ex <- sub("^\t|    ", "", ex)
+             ## Eliminate leading tabulations or 2/4 spaces
+             ex <- sub("^\t|    |  ", "", ex)
              ## Add an empty line before and after example
              ex <- c("", ex, "")
            }
            list(examples = paste(ex, collapse = "\n"))
          } else list()
        })
-       )
 
 ### List of parser functions that operate on single objects. This list
 ### is useful for testing these functions.
-lonely <- sapply(forall.parsers,function(L)L[[2]])
+lonely <- c(forall.parsers,forfun.parsers)
 attr(lonely,"ex") <- function(){
   lonely$parsefun(attr(extract.docs.file,"source"),"extract.docs.file")
 }
@@ -201,9 +276,9 @@ extra.code.docs <- function # Extract documentation from code chunks
         }
         if ( "setMethodS3" == parsed[[on]]@created ){
           # PhG: this may be wrong! It does not catch correctly how the method
-		  # must be splitted in case of methods containing dots. for instance,
-		  # as.data.frame.matrix must be split into: m1 = as.data.frame and
-		  # m2 = matrix... here you got m1 = as, and m2 = data.frame.matrix!!!
+	  # must be splitted in case of methods containing dots. for instance,
+	  # as.data.frame.matrix must be split into: m1 = as.data.frame and
+	  # m2 = matrix... here you got m1 = as, and m2 = data.frame.matrix!!!
 		  pattern <- "^([^\\.]+)\\.(.*)$"
           doc$s3method=c(m1 <- gsub(pattern,"\\1",on,perl=TRUE),
               m2 <- gsub(pattern,"\\2",on,perl=TRUE))
@@ -290,8 +365,9 @@ extra.code.docs <- function # Extract documentation from code chunks
 
 ### List of parsers to use by default with package.skeleton.dx.
 default.parsers <-
-  c(extra.code.docs=extra.code.docs,
-    sapply(forall.parsers,function(L)L[[1]](L[[2]])),
+  c(extra.code.docs=extra.code.docs, ## TODO: cleanup!
+    sapply(forfun.parsers,forfun),
+    sapply(forall.parsers,forall),
     edit.package.file=function(desc,...){
       in.details <- setdiff(colnames(desc),"Description")
       details <- paste(paste(in.details,": \\tab ",desc[,in.details],"\\cr",
@@ -314,44 +390,6 @@ extract.docs.fun <- function # Extract documentation from a function
 ### The name of the function/chunk to use in warning messages.
  ){
   res <- list()
-  clines <- grep(prefix,code)
-  if(length(grep("#",code[1]))){
-    res$title <- gsub("[^#]*#\\s*(.*)","\\1",code[1],perl=TRUE)
-  }
-  if(length(clines) > 0){
-    ##details<<
-    ## The primary mechanism is that consecutive groups of lines matching
-    ## the specified prefix regular expression "\code{^### }" (i.e. lines
-    ## beginning with "\code{### }") are collected
-    ## as follows into documentation sections:\describe{
-    ## \item{description}{group starting at line 2 in the code}
-    ## \item{arguments}{group following each function argument}
-    ## \item{value}{group ending at the penultimate line of the code}}
-    ## These may be added to by use of the \code{##<<} constructs described
-    ## below.
-    bounds <- which(diff(clines)!=1)
-    starts <- c(1,bounds+1)
-    ends <- c(bounds,length(clines))
-    for(i in seq_along(starts)){
-      start <- clines[starts[i]]
-      end <- clines[ends[i]]
-      lab <- if(end+1==length(code))"value"
-      else if(start==2)"description"
-      else if ( 0 == length(grep("^\\s*#",code[start-1],perl=TRUE)) ){
-         #arg <- gsub("^[ (]*","",code[start-1])
-         #arg <- gsub("^([^=,]*)[=,].*","\\1",arg)
-         #arg <- gsub("...","\\dots",arg,fix=TRUE) ##special case for dots
- 		 arg <- gsub("^[ \t(,]*", "", code[start - 1])	#twutz: strip leading white spaces and brackets and ,
-		 arg <- gsub("^([^=,]*)[=,].*", "\\1", arg)
-		 arg <- gsub("^([^ \t]*)([ \t]+)$","\\1",arg)	#twutz: remove trailing whitespaces
-		 arg <- gsub("...", "\\dots", arg, fix = TRUE)
-         paste("item{",arg,"}",sep="")
-       } else {
-         next;
-       }
-      res[[lab]] <- decomment(code[start:end])
-    }
-  }
   ##details<< For simple functions/arguments, the argument may also be
   ## documented by appending \code{##<<} comments on the same line as the
   ## argument name. Mixing this mechanism with \code{###} comment lines for
@@ -723,6 +761,10 @@ extract.docs.setClass <- function # S4 class inline documentation
   ## following line.
   f.n <- paste(class.name,"class",sep="-")
   docs <- extract.docs.fun(chunk.source,f.n)
+  ## also apply source parsing functions that I separated out into
+  ## separate functions
+  docs <- combine(docs,lonely$prefixed.lines(chunk.source))
+  docs$title <- lonely$title.from.firstline(chunk.source)
   ##details<<
   ## The class definition skeleton includes an \code{Objects from the Class}
   ## section, to which any \code{##details<<} documentation chunks are
@@ -804,10 +846,16 @@ apply.parsers <- function
 ### A list of extracted documentation from code.
 }
 
+### Names of Parser Functions that operate on the desc arg.
+descfile.names <- c("author.from.description","edit.package.file")
+
+### Names of Parser Functions that do NOT use the desc arg.
+non.descfile.names <-
+  names(default.parsers)[!names(default.parsers)%in%descfile.names]
+
 ### Parsers that operate only on R code, independently of the
 ### description file.
-nondesc.parsers <- c(extra.code.docs=list(extra.code.docs),
-  default.parsers[c("parsefun","examples.after.return","examples.in.attr")])
+nondesc.parsers <- default.parsers[non.descfile.names]
 
 extract.docs.file <- function
 ### Apply all parsers relevant to extract info from just 1 code file.

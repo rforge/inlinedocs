@@ -18,12 +18,24 @@ test.file <- function
   .result <- e$.result
   for(FUN in names(.result)){
     if(verbose)cat(FUN,"")
-    for(N in names(.result[[FUN]])){
-      .res <- .result[[FUN]][[N]]
-      res <- result[[FUN]][[N]]
-      if(is.null(res) || .res!=res){
+    fun <- result[[FUN]]
+    .fun <- .result[[FUN]]
+    ## first check to make sure all the stored items are there
+    for(N in names(.fun)){
+      .res <- .fun[[N]]
+      res <- fun[[N]]
+      if(is.null(res) || is.na(res) || is.na(.res) || .res!=res){
         stop(f,":\n\n",res,"\nin ",FUN,"$",N,", expected:\n\n",.res,"\n")
       }
+    }
+    ## now check and see if there are no additional items!
+    additional <- !names(fun)%in%names(.fun)
+    show <- fun[additional] ##ignore NULL extracted items
+    show <- show[!sapply(show,is.null)]
+    if(length(show)){
+      cat("\n")
+      print(show)
+      stop("extracted some unexpected docs!")
     }
   }
   if(verbose)cat("\n")
