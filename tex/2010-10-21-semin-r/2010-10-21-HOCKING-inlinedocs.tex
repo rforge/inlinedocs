@@ -283,7 +283,15 @@ soft.threshhold <- function(x,lambda=1){
   \frametitle{roxygen generates Rd}
   \texttt{shell\$ R CMD roxygen -d softThresh}
   \\
-  generates \texttt{softThresh/man/soft.threshold.Rd}
+  generates/overwrites \texttt{softThresh/man/soft.threshold.Rd}
+  \\ \hrulefill\\
+  There is also the R function \texttt{roxygenize} (see its help page for
+  details)
+\end{frame}
+
+\begin{frame}
+  \frametitle{roxygen can also generate call graphs (complicated setup)}
+  \includegraphics{Compose-callgraph}
 \end{frame}
 
 \begin{frame}[containsverbatim]
@@ -470,6 +478,12 @@ soft.threshold <- function(x,lambda=1){...}
   \item library(roxygen)
   \item ?roxygenize
   \item \url{http://roxygen.org/roxygen.pdf}
+  \end{itemize}
+\item R.oo:Rdoc
+  \begin{itemize}
+  \item library(R.oo)
+  \item ?Rdoc (not very much documentation)
+  \item \url{http://www.aroma-project.org/developers}
   \end{itemize}
 \item inlinedocs
   \begin{itemize}
