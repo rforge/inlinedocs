@@ -196,7 +196,7 @@ forfun.parsers <-
        definition.from.source=function(doc,src,...){
          def <- doc$definition
          if(is.null(def)||def=="")
-           list(definition=src)
+           list(definition=paste(src,collapse="\n"))
          else list()
        })
 
