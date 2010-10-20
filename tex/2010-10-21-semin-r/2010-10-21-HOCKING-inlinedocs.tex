@@ -2,6 +2,7 @@
 \documentclass{beamer}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage[all]{xy}
 
 \title{Sustainable package development using documentation generation
 \url{http://inlinedocs.r-forge.r-project.org}}
@@ -66,7 +67,7 @@
   \end{itemize}
 \item All of these need to be in a standard format as described in
   ``Writing R Extensions'' in excrutiating detail.
-} 
+}
 
 \framet{How to write the package?}{
 \item Do it yourself! Read ``Writing R Extensions,'' only 141 pages in
@@ -78,6 +79,17 @@
 \item \texttt{R.oo::Rdoc\$compile()}
 \item \texttt{inlinedocs::package.skeleton.dx()}
 }
+
+\begin{frame} \frametitle{Documentation generation diagram}
+  \def \objectstyle {\hbox}
+  \xymatrix{
+    \texttt{R/*.R} \ar@(d,l) [dr]  & \texttt{DESCRIPTION} \ar [d] & 
+    \texttt{man/*.Rd}& \\
+     & \txt{documentation\\generator} \ar@(r,d) [ur]& &\\
+     &&package directory&
+     \save "1,1"."3,4"*[F]\frm{}\restore
+    }
+\end{frame} 
 
 \section{Documenting a function in several ways}
 
@@ -465,7 +477,9 @@ attr(soft.threshold,"ex") <- function(){
     \item password: your@email
       \item send email to cran@r-project.org
     \end{itemize}
-}
+  \item If it passes the CRAN checks, then it is posted to the CRAN
+    website for anyone to download and install using \texttt{install.packages()}
+  }
 
 \framet{References for learning more about package development}{
 \item The definitive guide: help.start() then
