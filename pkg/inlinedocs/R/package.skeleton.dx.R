@@ -244,7 +244,6 @@ inlinedocExample(package.skeleton.dx) <- function(){
   library(inlinedocs)
 
   owd <- setwd(tempdir())
-  on.exit(setwd(owd))
   
   ## get the path to the silly example package that is provided with
   ## package inlinedocs
@@ -272,6 +271,7 @@ inlinedocExample(package.skeleton.dx) <- function(){
   
   ## cleanup: remove the test package from current workspace again
   unlink("silly",recursive=TRUE)
+  setwd(owd)
 }
 
 

@@ -39,7 +39,6 @@ a letter, plus all S4 methods and classes are exported.}
 library(inlinedocs)
 
 owd <- setwd(tempdir())
-on.exit(setwd(owd))
 
 ## get the path to the silly example package that is provided with
 ## package inlinedocs
@@ -67,4 +66,5 @@ stop("WARNING encountered in package check!")
 
 ## cleanup: remove the test package from current workspace again
 unlink("silly",recursive=TRUE)
+setwd(owd)
 }
