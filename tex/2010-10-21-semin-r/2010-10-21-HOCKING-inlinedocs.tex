@@ -418,7 +418,16 @@ R> package.skeleton.dx("softThresh")
 
 \begin{frame}[containsverbatim]
   \frametitle{How to write example code?}
-    inlinedocs
+    roxygen: in comments (not executable)
+    \hrulefill
+\begin{verbatim}
+##' @examples
+##' x <- seq(-5,5,l=50)
+##' y <- soft.threshold(x)
+##' plot(x,y)
+soft.threshold <- function(x,lambda=1){...}
+\end{verbatim}
+    inlinedocs: in code (executable)
     \hrulefill
     \begin{verbatim}
 soft.threshold <- function(x,lambda=1){...}
@@ -427,15 +436,6 @@ attr(soft.threshold,"ex") <- function(){
   y <- soft.threshold(x)
   plot(x,y)
 }
-\end{verbatim}
-    roxygen
-    \hrulefill
-\begin{verbatim}
-##' @examples
-##' x <- seq(-5,5,l=50)
-##' y <- soft.threshold(x)
-##' plot(x,y)
-soft.threshold <- function(x,lambda=1){...}
 \end{verbatim}
 \end{frame}
 
@@ -448,9 +448,8 @@ soft.threshold <- function(x,lambda=1){...}
   \item Resulting code base is very easy to maintain.
   \item Almost eliminates the possibility of code and documentation
     conflicts.
-  \item AND: the syntax is easily extensible, there is support for S4
-    methods.
-  }
+  \item AND: support for S4 methods, named list documentation, easily
+    extensible syntax.}
   
 \section{Package publication, conclusions, and references}
 
@@ -458,9 +457,9 @@ soft.threshold <- function(x,lambda=1){...}
   \item Write your code in \texttt{pkgdir/R/code.R}
   \item Write a \texttt{pkgdir/DESCRIPTION}
   \item Write (or generate) documentation \texttt{pkgdir/man/*.Rd}
-  \item \texttt{R CMD check pkgdir}
+  \item \texttt{R CMD check pkgdir} (until no errors or warnings)
   \item \texttt{R CMD build pkgdir} (makes \texttt{pkgdir.tar.gz})
-  \item Upload to ftp://cran.r-project.org/incoming 
+  \item Upload \texttt{pkgdir.tar.gz} to ftp://cran.r-project.org/incoming 
     \begin{itemize}
     \item     user: anonymous
     \item password: your@email
