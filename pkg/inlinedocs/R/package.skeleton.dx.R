@@ -262,7 +262,9 @@ inlinedocExample(package.skeleton.dx) <- function(){
 
   ## check the package to see if generated documentation passes
   ## without WARNINGs
-  checkLines <- system("R CMD check silly",intern=TRUE)
+  cmd <- sprintf("%s CMD check silly",file.path(R.home("bin"), "R"))
+  print(cmd)
+  checkLines <- system(cmd,intern=TRUE)
   warnLines <- grep("WARNING",checkLines,value=TRUE)
   if(length(warnLines)>0){
     print(warnLines)
