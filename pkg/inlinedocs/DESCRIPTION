@@ -1,7 +1,7 @@
 Package: inlinedocs
 Title: Convert inline comments to documentation
 Type: Package
-Version: 1.4
+Version: 1.5
 Date: 2010-10-20
 Author: Inlinedocs development team
 Maintainer: Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>
