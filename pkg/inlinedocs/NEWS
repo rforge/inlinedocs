@@ -2,6 +2,12 @@
 
 == 1.5 some unit testing method for Rd generation? via R CMD check?
 
+bugfix for s4 classes where we were getting this error
+
+Error in assign(mname, def, where) : 
+  cannot add bindings to a locked environment
+
+
 == 1.4 unit tests for Parser Functions using inst/testfiles/*.R and
 the .result variable in each. we check first if all contents of
 .result are correctly extracted, then we check to make sure nothing
