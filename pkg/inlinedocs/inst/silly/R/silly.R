@@ -36,12 +36,20 @@ silly.example <- function
   }
   ##note<< a note
   ##references<< a reference
-  ##seealso<< \code{\link{silly-package}}
+  ##seealso<< \code{\link{Silly-class}}
   ##keyword<<documentation utilities
-  return(res)
+  invisible(res)
 ### invisible something not unrelated to first
-  ##examples<<
-  ##These lines got to the examples section in the documentation.
-  res <- silly.example(first="first",second=TRUE, third=3)
 }
 
+setClass("Silly", # S4 classes can be documented as well
+### The Silly class does nothing much either
+         ##details<< Put what you like in documentation details,
+         ## but ideally reference construction methods.
+         representation(forwards="function", ##<< forward operation
+                        reverse="function", ##<< how to go backward
+                        crashes="integer") ##<< how many crashes
+         ) ##<< this comment is ignored as it is outside setClass expression
+
+## creates "show" generic function. Documentation of this not yet supported.
+##setMethod("show","Silly",function(object){cat("crashed ",object@crashes," times\n")})

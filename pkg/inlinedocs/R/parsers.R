@@ -806,7 +806,11 @@ apply.parsers <- function
   old <- options(keep.source=TRUE)
   on.exit(options(old))
   exprs <- parse(text=code)
-  for (i in exprs) eval(i, e)
+  for (i in exprs){
+    tryCatch(eval(i, e),error=function(e){
+      ##print(e)
+    })
+  }
   objs <- sapply(ls(e),get,e,simplify=FALSE)
 
   docs <- list()
