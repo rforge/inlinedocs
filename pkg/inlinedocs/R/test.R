@@ -25,6 +25,7 @@ test.file <- function
       .res <- .fun[[N]]
       res <- fun[[N]]
       if(is.null(res) || is.na(res) || is.na(.res) || .res!=res){
+        browser()
         stop(f,":\n\n",res,"\nin ",FUN,"$",N,", expected:\n\n",.res,"\n")
       }
     }

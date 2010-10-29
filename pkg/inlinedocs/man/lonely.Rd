@@ -10,5 +10,19 @@ is useful for testing these functions.}
 
 
 \examples{
-lonely$parsefun(attr(extract.docs.file,"source"),"extract.docs.file")
+f <- function # title
+### description
+(x, ##<< arg x
+ y
+### arg y
+ ){
+##value<< a list with elements
+list(x=x, ##<< original x value
+     y=y, ##<< original y value
+     sum=x+y) ##<< their sum
+##end<<
+}
+src <- attr(f,"source")
+lonely$extract.xxx.chunks(src)
+lonely$prefixed.lines(src)
 }

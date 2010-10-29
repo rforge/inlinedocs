@@ -1,14 +1,16 @@
-\name{extract.docs.fun}
-\alias{extract.docs.fun}
+\name{extract.xxx.chunks}
+\alias{extract.xxx.chunks}
 \title{Extract documentation from a function}
 \description{Given source code of a function, return a list describing inline
 documentation in that source code.}
 \usage{
-extract.docs.fun(code, name.fun)
+extract.xxx.chunks(src, name.fun = "(unnamed function)", ...)
 }
 \arguments{
-  \item{code}{The function to examine.}
+  \item{src}{The source lines of the function to examine, as a character
+vector.}
   \item{name.fun}{The name of the function/chunk to use in warning messages.}
+  \item{\dots}{ignored.}
 }
 \details{For simple functions/arguments, the argument may also be
 documented by appending  comments on the same line as the
