@@ -6,7 +6,7 @@ helloWorld <- function
   ### None (invisible NULL)
 }
 
-inlinedocExample(helloWorld) <- function(){
+attr(helloWorld,"ex") <- function(){
 	# all text including comments inside this block 
 	# should go to the examples section of 
 	# function helloWorld

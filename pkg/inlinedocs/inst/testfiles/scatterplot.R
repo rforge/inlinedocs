@@ -1,3 +1,5 @@
+.dontcheck <- TRUE
+
 label.endpoints <- function
 ### Make a Positioning Method that labels a certain x value.
 (FUN,

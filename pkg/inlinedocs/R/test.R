@@ -13,7 +13,7 @@ test.file <- function
  ){
   result <- extract.docs.file(f)
   e <- new.env()
-  sys.source(f,e)
+  suppressWarnings(sys.source(f,e))
   ## these are the items to check for, in no particular order
   .result <- e$.result
   for(FUN in names(.result)){
@@ -38,8 +38,29 @@ test.file <- function
       stop("extracted some unexpected docs!")
     }
   }
+  ## finally make a package using this file and see if it passes
+  ## without warnings
+  if(!is.null(e$.dontcheck))return()
+  pkgname <- sub(".[rR]$","",basename(f))
+  pkgdir <- file.path(tempdir(),pkgname)
+  if(file.exists(pkgdir))unlink(pkgdir,recursive=TRUE)
+  rdir <- file.path(pkgdir,"R")
+  dir.create(rdir,recursive=TRUE)
+  desc <- file.path(system.file(package="inlinedocs"),"silly","DESCRIPTION")
+  file.copy(desc,pkgdir)
+  file.copy(f,rdir)
+  package.skeleton.dx(pkgdir)
+  cmd <- sprintf("%s CMD check %s",file.path(R.home("bin"), "R"),pkgdir)
+  if(verbose)cat(cmd,"\n")
+  checkLines <- system(cmd,intern=TRUE)
+  warnLines <- grep("WARNING",checkLines,value=TRUE)
+  if(length(warnLines)>0){
+    print(warnLines)
+    stop("WARNING encountered in package check!")
+  }
   if(verbose)cat("\n")
 }
+
 save.test.result <- function
 ### For unit tests, this is an easy way of getting a text
 ### representation of the list result of extract.docs.file.
