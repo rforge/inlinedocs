@@ -1,7 +1,9 @@
 \name{forall}
 \alias{forall}
 \title{forall}
-\description{documentation list.}
+\description{For each object in the package that satisfies the criterion
+checked by subfun, parse source using FUN and return the resulting
+documentation list.}
 \usage{
 forall(FUN, subfun = function(x) TRUE)
 }

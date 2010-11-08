@@ -28,8 +28,8 @@ decomment <- function
 ### String without prefixes or newlines.
 }
 
-### For each object in the package that satisfies the criterion#
-## checked by subfun, parse source using FUN and return the resulting
+### For each object in the package that satisfies the criterion
+### checked by subfun, parse source using FUN and return the resulting
 ### documentation list.
 forall <- function
 (FUN,
