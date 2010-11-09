@@ -136,13 +136,14 @@ prefixed.lines <- function(src,...){
   starts <- c(1,bounds+1)
   ends <- c(bounds,length(clines))
   ## detect body of function using paren matching
-  f <- function(ch)cumsum(nchar(gsub(sprintf("[^%s]",ch),"",src)))
+  code <- gsub("#.*","",src)
+  f <- function(ch)cumsum(nchar(gsub(sprintf("[^%s]",ch),"",code)))
   parens <- f("(")-f(")")
   body.begin <- which(diff(parens)<0 & parens[-1]==0)+2
   is.arg <- function(){
-    0 == length(grep("^\\s*#",src[start-1],perl=TRUE)) &&
-      start<=body.begin
-    }
+    gres <- grep("^\\s*#",src[start-1],perl=TRUE)
+    0 == length(gres) && start<=body.begin
+  }
   res <- list()
   for(i in seq_along(starts)){
     start <- clines[starts[i]]
