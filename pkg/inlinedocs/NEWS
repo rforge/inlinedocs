@@ -1,6 +1,19 @@
 = inlinedocs NEWS/TODO
 
-== 1.5 some unit testing method for Rd generation? via R CMD check?
+== 1.5 
+
+TODO: make sure for tests we check for all elements of the outer list
+(currently we only do this for the inner list).
+
+bugfix: for paren matching heuristic in prefixed.lines Parser
+Function, do not consider parens in comments.
+
+extended unit tests: now every testfile is assembled into a package
+that will be checked using R CMD check. If there are any warnings,
+then we will stop with an error. this poses problems for testfiles
+with extensive dependencies and references (such as
+scatterplot.R). For these, just set the .dontcheck variable in the
+testfile.
 
 bugfix for s4 classes where we were getting this error
 
