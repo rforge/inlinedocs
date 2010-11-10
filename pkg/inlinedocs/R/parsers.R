@@ -28,10 +28,10 @@ decomment <- function
 ### String without prefixes or newlines.
 }
 
+forall <- function
 ### For each object in the package that satisfies the criterion
 ### checked by subfun, parse source using FUN and return the resulting
 ### documentation list.
-forall <- function
 (FUN,
 ### Function to apply to each element in the package.
  subfun=function(x)TRUE
@@ -43,11 +43,13 @@ forall <- function
   f <- function(objs,docs,...){
     objs <- objs[sapply(objs,subfun)]
     L <- list()
+    on.exit(cat(sprintf("Parser Function failed on %s\n",N)))
     for(N in names(docs)){
       o <- objs[[N]]
       L[[N]] <- FUN(src=attr(o,"source"),
                     name=N,objs=objs,o=o,docs=docs,doc=docs[[N]],...)
     }
+    on.exit()## remove warning message
     L
   }
   class(f) <- c("allfun","function")

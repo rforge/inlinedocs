@@ -5,6 +5,9 @@
 TODO: make sure for tests we check for all elements of the outer list
 (currently we only do this for the inner list).
 
+Report which of the users' documentation objects we failed on if the
+Parser Function in forall stops with an error.
+
 bugfix: for paren matching heuristic in prefixed.lines Parser
 Function, do not consider parens in comments.
 
