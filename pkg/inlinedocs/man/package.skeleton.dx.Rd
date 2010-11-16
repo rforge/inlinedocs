@@ -52,8 +52,8 @@ package.skeleton.dx("silly")
 
 ## display source file and the generated Rd file  
 file.show( c(file.path("silly","R","silly.R"),
-           file.path("silly","man","silly.example.Rd") ),
-        header=c("source","rd") )
+             file.path("silly","man","silly.example.Rd") ),
+          header=c("source","rd") )
 
 ## check the package to see if generated documentation passes
 ## without WARNINGs
@@ -62,8 +62,8 @@ print(cmd)
 checkLines <- system(cmd,intern=TRUE)
 warnLines <- grep("WARNING",checkLines,value=TRUE)
 if(length(warnLines)>0){
-print(warnLines)
-stop("WARNING encountered in package check!")
+  print(warnLines)
+  stop("WARNING encountered in package check!")
 }
 
 ## cleanup: remove the test package from current workspace again

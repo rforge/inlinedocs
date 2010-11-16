@@ -69,6 +69,21 @@ print.allfun <- function(x,...){
 ### For each function in the package, do something.
 forfun <- function(FUN)forall(FUN,is.function)
 
+kill.prefix.whitespace <- function
+### Figure out what the whitespace preceding the example code is, and
+### then delete that from every line.
+(ex
+### character vector of example code lines.
+ ){
+  tlines <- gsub("\\s*","",ex)
+  ##tlines <- gsub("#.*","",tlines)
+  prefixes <- unique(gsub("\\S.*","",ex[tlines!=""]))
+  FIND <- prefixes[which.min(nchar(prefixes))]
+  ## Eliminate leading tabulations or 2/4 spaces
+  sub(FIND, "", ex)
+### Character vector of code lines with preceding whitespace removed.
+}
+
 examples.after.return <- function
 ### Get examples from inline definitions after return()
 ### PhG: this does not work well! Think of these situations:
@@ -113,9 +128,7 @@ examples.after.return <- function
   ## Possibly eliminate a #}}} tag
   ex <- ex[!grepl("#}}}", ex)]
   ## Eliminate leading tabulations or four spaces
-  prefixes <- gsub("(\\s*).*","\\1",ex,perl=TRUE)[grep("\\w",ex)]
-  FIND <- prefixes[which.min(nchar(prefixes))]
-  ex <- sub(FIND,"",ex)
+  ex <- kill.prefix.whitespace(ex)
   ## Add an empty line before and after example
   ex <- c("", ex, "")
   ## Return examples and value
@@ -474,8 +487,8 @@ forall.parsers <-
              }
              ## Eliminate leading and trailing code
              ex <- ex[-c(1, length(ex))]
-             ## Eliminate leading tabulations or 2/4 spaces
-             ex <- sub("^\t|    |  ", "", ex)
+             ## all the prefixes
+             ex <- kill.prefix.whitespace(ex)
              ## Add an empty line before and after example
              ex <- c("", ex, "")
            }
