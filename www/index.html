@@ -121,15 +121,13 @@ you're really lazy (like me), and you haven't written one yet,
 inlinedocs will create an empty DESCRIPTION file for you.
 </li>
 
-<li>You still have to manually document your datasets (the files in
-pkgdir/data), but these don't change often, so that's no problem
-to do by hand. To get started just use the prompt() function.</li>
+<li>You still have to document your datasets (the files in
+pkgdir/data) by writing an Rd file, but these don't change often, so
+that's no problem. To get started just use the prompt() function.</li>
 
-<li>To add examples for FUN, add a file FUN.R to your pkgdir/tests
-directory. This is more sustainable than putting test code in R
-comments, since debugging/changing commented code is a pain. You can
-also add inline examples in the "ex" attribute of FUN or at the end of
-FUN (see example below).</li>
+<li>To add inline examples for FUN, use the "ex" attribute of FUN, as
+shown below. This is more sustainable than putting test code in R
+comments, since debugging and changing commented code is a pain.</li>
 
 <li>For additional flexibility, inlinedocs now allows documentation of
 <a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/tests/silly/R/silly.example.R?view=markup&amp;revision=115&amp;root=inlinedocs">S4 class definitions (i.e. those which use
