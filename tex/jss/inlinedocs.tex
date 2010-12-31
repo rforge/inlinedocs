@@ -1,0 +1,117 @@
+\documentclass[article]{jss}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% almost as usual
+\newcommand{\inlinedocs}{\pkg{inlinedocs}}
+\author{Toby Dylan Hocking\\INRIA Paris \And 
+        Second Author\\Plus Affiliation}
+\title{Sustainable, extensible documentation generation using \inlinedocs}
+
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Toby Dylan Hocking, Second Author} %% comma-separated
+\Plaintitle{Sustainable, extensible documentation generation using
+  \inlinedocs} %% without formatting
+%\Shorttitle{A Capitalized Title} %% a short title (if necessary)
+\newcommand{\R}{\proglang{R}}
+%% an abstract and keywords
+\Abstract{The concept of structured, interwoven code and documentation
+  has existed for many years, but existing systems that implement this
+  for the \R\ programming language do not take advantage of
+  information present in the code. This article presents 2
+  contributions for documentation generation the \R\ community. First,
+  we propose a new syntax for inline documentation of \R\ code within
+  comments adjacent to the relevant code, which allows for highly
+  readable and maintainable code. Second, we propose an extensible
+  system for parsing these comments, which allows the syntax to be
+  easily augmented.}
+
+\Keywords{Rd, documentation, documentation generation, literate
+  programming, \proglang{R}}
+
+\Plainkeywords{Rd, documentation, documentation generation, literate
+  programming, R} %% without formatting
+%% at least one keyword must be supplied
+
+%% publication information
+%% NOTE: Typically, this can be left commented and will be filled out by the technical editor
+%% \Volume{13}
+%% \Issue{9}
+%% \Month{September}
+%% \Year{2004}
+%% \Submitdate{2004-09-29}
+%% \Acceptdate{2004-09-29}
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Toby Dylan Hocking\\
+  INRIA - Sierra project\\
+  23, avenue d'Italie\\
+  CS 81321 \\
+  75214 Paris Cedex 13\\
+  Telephone: +33/1 39 63 54 99\\
+  E-mail: \email{Toby.Hocking@inria.fr}\\
+  URL: \url{http://cbio.ensmp.fr/~thocking/}
+}
+%% It is also possible to add a telephone and fax number
+%% before the e-mail in the following format:
+%% Fax: +43/1/31336-734
+
+%% for those who use Sweave please include the following line (with % symbols):
+%% need no \usepackage{Sweave.sty}
+
+%% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%% include your article here, just as usual
+%% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
+
+\section{Introduction}
+
+\subsection[Existing documentation generation systems for R]{Existing
+  documentation generation systems for \R}
+package.skeleton
+
+roxygen
+
+Rdoc
+
+\subsection{Documentation using inline comments}
+
+motivation via function arguments, etc.
+
+\section[The inlinedocs syntax]{The \inlinedocs\ syntax for inline
+  documentation}
+description, arguments, value using \verb+###+
+
+examples using ex attr and structure(...,ex=function())
+
+other items using \verb+##<<+
+
+s4 classes, nested lists.
+
+\section[The inlinedocs system of extensible documentation
+generators]{The \inlinedocs\ system of extensible documentation
+  generators}
+
+\subsection{Structure of a Parser Function}
+
+\subsection{forall/forfun}
+
+\subsection{documentation lists}
+
+\subsection{package.skeleton.dx}
+
+how to call.
+
+how to alter the default parsers: pkgdir/R/.inlinedocs.R variable
+parsers or options("inlinedocs.parsers").
+
+\section{Conclusions}
+
+\end{document}
