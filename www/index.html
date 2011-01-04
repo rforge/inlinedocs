@@ -71,13 +71,14 @@ guaranteed to pass R CMD check! Some notes/tips:</p>
 
 <ul>
 
-<li>Use an editor where you can comment-fill easily, like <a
-href="http://www.gnu.org/software/emacs">Emacs</a> with <a
-href="http://ess.r-project.org">ESS</a>. Then you just type "###" and
-go on as long as you want with your comment. When you're done and you
-have a really long comment, do a M-q to automatically break lines and
-add ### prefixes.</li>
+<li>Use an editor where you can easily do line breaks in your
+comments, like <a href="http://www.gnu.org/software/emacs">Emacs</a>
+with <a href="http://ess.r-project.org">ESS</a>. Then you just type
+"###" and go on as long as you want with your comment. When you're
+done and you have a really long comment, do a M-q to automatically
+break lines and add ### prefixes.</li>
 
+<!--
 <li>Some more examples:<ul>
 
 <li>inlinedocs:
@@ -107,6 +108,7 @@ add ### prefixes.</li>
 </li>
 
 </ul></li>
+-->
 
 <li>You can add a description of a data item declared in your code by
 adding a ### comment on the line before the variable is first
@@ -171,8 +173,18 @@ return to the same documentation chunk.) This allows named lists to be
 documented using the names actually in the code so that it is less
 easy to forget to document when you add an element.</li>
 
-<li>The package includes a <a
-href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&amp;view=markup">silly example</a>, which (as the file name suggests) is a very silly function indeed but exercises most of these facilities.</li>
+<li>The package includes
+a <a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&amp;view=markup">silly
+example</a>, which (as the file name suggests) is a very silly
+function indeed but exercises most of these facilities.</li>
+
+<li>
+Some more examples of inlinedocs syntax can be found in the 
+<a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/?root=inlinedocs">testfiles
+directory</a>. These files contain the unit tests which are checked
+before publishing each new version of inlinedocs, so you can be sure
+that they will work correctly.
+</li>
 
 </ul>
 
