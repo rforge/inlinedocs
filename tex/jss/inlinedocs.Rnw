@@ -1,10 +1,14 @@
 %  -*- compile-command: "make"; compilation-read-command: nil -*- 
 \documentclass[article]{jss}
- 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\SweaveOpts{keep.source=TRUE}
+<<echo=FALSE>>=
+options(prompt=">>>",continue=">>>")
+@ 
 %% almost as usual
 \newcommand{\inlinedocs}{\pkg{inlinedocs}}
 \author{Toby Dylan Hocking\\INRIA Paris \And 
@@ -76,7 +80,9 @@
 
 \subsection[Existing documentation generation systems for R]{Existing
   documentation generation systems for \R}
-package.skeleton \cite{R}
+Sweave \citep{sweave}
+
+package.skeleton \citep{R}
 
 roxygen
 
@@ -108,8 +114,7 @@ The following subsections describe common usage of \inlinedocs-comments.
 \subsection{Documenting function signatures and return values}
 
 The following examples demonstrates the basic documentation of a function.
-
-<<keep.source=T>>=
+<<>>=
 foo <- function(
 	### Adding two arguments
 	first           ##<< the first argument 
@@ -139,7 +144,7 @@ location of white spaces, brackets, default arguments and commas is quite flexib
 The comments of the following example are placed in the title, details, and
 seealso sections respectively.
  
-<<keep.source=T>>=
+<<>>=
 bar <- function(
 	### Demonstrating section comments
 	##title<< bar-Function  		
@@ -185,7 +190,7 @@ generators]{The \inlinedocs\ system of extensible documentation
 how to call.
 
 how to alter the default parsers: pkgdir/R/.inlinedocs.R variable
-parsers or options("inlinedocs.parsers").
+parsers or \texttt{options("inlinedocs.parsers")}.
 
 \section{Conclusions}
 
