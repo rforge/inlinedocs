@@ -99,7 +99,7 @@ to the source code of the objects. Adjacent \inlinedocs-comments are
 \item \verb+###+ on the line directly before the \R-object
 \end{itemize}
 
-Furthermore, \inlinedocs allows to put text of various documentation
+Furthermore, \inlinedocs\ allows to put text of various documentation
 sections anywhere in the function header or body of a function by using the
 \verb+##SECTION<<+ notation.
 
