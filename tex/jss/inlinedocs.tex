@@ -87,13 +87,89 @@ motivation via function arguments, etc.
 
 \section[The inlinedocs syntax]{The \inlinedocs\ syntax for inline
   documentation}
-description, arguments, value using \verb+###+
 
+Documentation of \R-objects (i.e. variables, functions, arguments,
+list entries) are written inside special comments, that are directly adjacent
+to the source code of the objects. Adjacent \inlinedocs-comments are
+
+\begin{itemize}
+\item \verb+##<<+ on the same line as the the \R-object
+\item \verb+###+ on the lines directly following the \R-object
+\item \verb+###+ on the line directly before the \R-object
+\end{itemize}
+
+Furthermore, \inlinedocs allows to put text of various documentation
+sections anywhere in the function header or body of a function by using the
+\verb+##SECTION<<+ notation.
+
+The following subsections describe common usage of \inlinedocs-comments. 
+
+\subsection{Documenting function signatures and return values}
+
+The following examples demonstrates the basic documentation of a function.
+
+%% twutz: who knows, how to deal with ##<< inside code environments?
+% \begin{code}
+% foo <- function(
+% 	### Adding two arguments
+% 	first           ##<< the first argument 
+% 	,second=0       ##<< the second argument with a multi-line description
+% 		## that is possibly better placed the details section  		
+% ){
+% 	first + second 
+% 	### returns the sum of 
+% 	### first and second
+% }
+% \end{code}
+
+The comments are placed within sections of the corresponding 
+documentation:
+\begin{itemize}
+\item Comment following the line of \code{function} goes to the description
+section.
+\item For each argument and item is created in the arguments section.
+\item Comments following \code{return} or the last line of the body go to the
+value section.
+\end{itemize} 
+
+Name, alias and title of the documentation are set to the function name. The
+location of white spaces, brackets, default arguments and kommata is quite flexible.
+
+\subsection{Documenting descriptions, links, and references}
+The comments of the following example are placed in the title, details, and
+seealso sections respectively.
+ 
+% \begin{code}
+% bar <- function(
+% 	### Demonstrating section comments
+% 	##title<< bar-Function  		
+% ){
+% 	##details<<
+% 	## This comment will show up in the details section.
+% 	b <- rep(1,10)
+% 	for( i in 2:10 ){
+% 		##details<<
+% 		## The cumulative sum, here, is calculated by a loop.\cr
+% 		## Such comments can be placed anywhere in the code.
+% 		b[i] <- b[i+1]
+% 	}
+% 	##seealso<< \code{\link{foo}}
+% 	### vector of cumulative sume of 1:10
+% }
+% \end{code}
+
+
+The \verb+##SECTION<<+ notation can be used for all documentation
+sections (references, source, note, author, seealso, title, keyword, \ldots)
+except for the examples section, which is handled in a special manner as shown below.
+
+\subsection{Documenting list entries}
+
+\subsection{Providing examples} 
 examples using ex attr and structure(...,ex=function())
 
-other items using \verb+##<<+
-
-s4 classes, nested lists.
+ 
+\subsection{Documenting S4 classes}
 
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
