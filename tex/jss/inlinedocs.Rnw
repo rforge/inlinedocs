@@ -1,5 +1,6 @@
+%  -*- compile-command: "make"; compilation-read-command: nil -*- 
 \documentclass[article]{jss}
-
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,7 +76,7 @@
 
 \subsection[Existing documentation generation systems for R]{Existing
   documentation generation systems for \R}
-package.skeleton
+package.skeleton \cite{R}
 
 roxygen
 
@@ -108,19 +109,18 @@ The following subsections describe common usage of \inlinedocs-comments.
 
 The following examples demonstrates the basic documentation of a function.
 
-%% twutz: who knows, how to deal with ##<< inside code environments?
-% \begin{code}
-% foo <- function(
-% 	### Adding two arguments
-% 	first           ##<< the first argument 
-% 	,second=0       ##<< the second argument with a multi-line description
-% 		## that is possibly better placed the details section  		
-% ){
-% 	first + second 
-% 	### returns the sum of 
-% 	### first and second
-% }
-% \end{code}
+<<keep.source=T>>=
+foo <- function(
+	### Adding two arguments
+	first           ##<< the first argument 
+	,second=0       ##<< the second argument with a multi-line description
+		## that is possibly better placed the details section  		
+){
+	first + second 
+	### returns the sum of 
+	### first and second
+}
+@ 
 
 The comments are placed within sections of the corresponding 
 documentation:
@@ -139,25 +139,24 @@ location of white spaces, brackets, default arguments and commas is quite flexib
 The comments of the following example are placed in the title, details, and
 seealso sections respectively.
  
-% \begin{code}
-% bar <- function(
-% 	### Demonstrating section comments
-% 	##title<< bar-Function  		
-% ){
-% 	##details<<
-% 	## This comment will show up in the details section.
-% 	b <- rep(1,10)
-% 	for( i in 2:10 ){
-% 		##details<<
-% 		## The cumulative sum, here, is calculated by a loop.\cr
-% 		## Such comments can be placed anywhere in the code.
-% 		b[i] <- b[i+1]
-% 	}
-% 	##seealso<< \code{\link{foo}}
-% 	### vector of cumulative sume of 1:10
-% }
-% \end{code}
-
+<<keep.source=T>>=
+bar <- function(
+	### Demonstrating section comments
+	##title<< bar-Function  		
+){
+	##details<<
+	## This comment will show up in the details section.
+	b <- rep(1,10)
+	for( i in 2:10 ){
+		##details<<
+		## The cumulative sum, here, is calculated by a loop.\cr
+		## Such comments can be placed anywhere in the code.
+		b[i] <- b[i+1]
+	}
+	##seealso<< \code{\link{foo}}
+	### vector of cumulative sume of 1:10
+}
+@
 
 The \verb+##SECTION<<+ notation can be used for all documentation
 sections (references, source, note, author, seealso, title, keyword, \ldots)
@@ -189,5 +188,7 @@ how to alter the default parsers: pkgdir/R/.inlinedocs.R variable
 parsers or options("inlinedocs.parsers").
 
 \section{Conclusions}
+
+\bibliography{refs}
 
 \end{document}
