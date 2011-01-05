@@ -21,7 +21,7 @@
   has existed for many years, but existing systems that implement this
   for the \R\ programming language do not take advantage of
   information present in the code. This article presents 2
-  contributions for documentation generation the \R\ community. First,
+  contributions for documentation generation for the \R\ community. First, 
   we propose a new syntax for inline documentation of \R\ code within
   comments adjacent to the relevant code, which allows for highly
   readable and maintainable code. Second, we propose an extensible
@@ -94,7 +94,7 @@ to the source code of the objects. Adjacent \inlinedocs-comments are
 
 \begin{itemize}
 \item \verb+##<<+ on the same line as the the \R-object
-\item \verb+###+ on the lines directly following the \R-object
+\item \verb+##+ on the lines directly following the \R-object
 \item \verb+###+ on the line directly before the \R-object
 \end{itemize}
 
@@ -127,13 +127,13 @@ documentation:
 \begin{itemize}
 \item Comment following the line of \code{function} goes to the description
 section.
-\item For each argument and item is created in the arguments section.
+\item For each argument an item is created in the arguments section.
 \item Comments following \code{return} or the last line of the body go to the
 value section.
 \end{itemize} 
 
 Name, alias and title of the documentation are set to the function name. The
-location of white spaces, brackets, default arguments and kommata is quite flexible.
+location of white spaces, brackets, default arguments and commas is quite flexible.
 
 \subsection{Documenting descriptions, links, and references}
 The comments of the following example are placed in the title, details, and
