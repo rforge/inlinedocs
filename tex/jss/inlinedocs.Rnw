@@ -183,10 +183,14 @@ center <- function(
   ,...            ##<< further arguments passed to mean or median
 ){
   method <- match.arg(method)
-  switch(method,
+  res <- switch(method,
     mean = mean(x,...),
     median = median(x,...),
     stop("center: unknown method."))
+  ##value<< a list with elements
+  list(method=method,     ##<< method of calculating the average
+       center=res)        ##<< the calculated average
+  ##end<<
 }
 @
 
@@ -224,7 +228,7 @@ The following example demonstrates attaching example code to the \code{center} f
 <<>>=
 attr(center,"ex") <- function(){
   x <- runif(10)
-  c( mean=center(x), median=center(x,method="median") )
+  c( mean=center(x)$center, median=center(x,method="median")$center )
 }
 @
 Using this method in combination with the \code{structure} function
