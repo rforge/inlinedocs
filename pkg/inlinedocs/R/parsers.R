@@ -135,7 +135,7 @@ examples.after.return <- function
   list(examples = paste(ex, collapse = "\n"), value = value)
 }
 
-prefixed.lines <- function(src,...){
+prefixed.lines <- structure(function(src,...){
 ### The primary mechanism of inline documentation is via consecutive
 ### groups of lines matching the specified prefix regular expression
 ### "\code{^### }" (i.e. lines beginning with "\code{### }") are
@@ -155,6 +155,7 @@ prefixed.lines <- function(src,...){
   f <- function(ch)cumsum(nchar(gsub(sprintf("[^%s]",ch),"",code)))
   parens <- f("(")-f(")")
   body.begin <- which(diff(parens)<0 & parens[-1]==0)+2
+  if(length(body.begin)==0)body.begin <- 1 ## rare cases
   is.arg <- function(){
     gres <- grep("^\\s*#",src[start-1],perl=TRUE)
     0 == length(gres) && start<=body.begin
@@ -163,7 +164,7 @@ prefixed.lines <- function(src,...){
   for(i in seq_along(starts)){
     start <- clines[starts[i]]
     end <- clines[ends[i]]
-    lab <- if(end+1==length(src))"value"
+    lab <- if(all(grepl("^\\s*#",src[end:(length(src)-1)])))"value"
     else if(start==2)"description"
     else if(is.arg()){
       ##twutz: strip leading white spaces and brackets and ,
@@ -179,7 +180,21 @@ prefixed.lines <- function(src,...){
     res[[lab]] <- decomment(src[start:end])
   }
   res
+},ex=function(){
+test <- function
+### the desc
+(x,
+### the first argument
+ y ##<< another argument
+ ){
+  5
+### the return value
+##seealso<< foobar
 }
+src <- attr(test,"source")
+prefixed.lines(src)
+extract.xxx.chunks(src)
+})
 
 extract.xxx.chunks <- function # Extract documentation from a function
 ### Given source code of a function, return a list describing inline

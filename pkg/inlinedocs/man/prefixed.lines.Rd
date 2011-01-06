@@ -27,4 +27,18 @@ prefixed.lines(src, ...)
 
 
 
-
+\examples{
+test <- function
+### the desc
+(x,
+### the first argument
+ y ##<< another argument
+ ){
+  5
+### the return value
+##seealso<< foobar
+}
+src <- attr(test,"source")
+prefixed.lines(src)
+extract.xxx.chunks(src)
+}
