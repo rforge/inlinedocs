@@ -11,6 +11,7 @@ options(prompt=">>>",continue=">>>")
 @ 
 %% almost as usual
 \newcommand{\inlinedocs}{\pkg{inlinedocs}}
+\newcommand{\filepath}[1]{\texttt{#1}}
 \author{Toby Dylan Hocking\\INRIA Paris \And 
         Second Author\\Plus Affiliation}
 \title{Sustainable, extensible documentation generation using \inlinedocs}
@@ -195,21 +196,52 @@ nested. This means that a list entry can be itself a list, whose items are descr
 a block. Note, that the components must have a name. 
 
 \subsection{Providing examples}
-\inlinedocs\ supports attaching examples to the documentation of a function in several ways. 
-In all of them the \R-code is plain text and instead of part of a comment.
+\inlinedocs\ supports attaching examples to the documentation of a function in several ways.
+
+The methods for documenting examples were motivated by the desire to
+express examples in R code rather than in R comments, and to keep the
+examples close to the object definition. When examples are in R code
+rather than comments, they are more easily transferred to the R
+interpreter, and thus are easier to debug, change, and keep up to date
+and informative. Furthermore, when examples are written close to the
+object definition, it is easy to remember to bring examples up to date
+when changes are made to the definition.
+
+One way to document examples for an R object \code{OBJ} is to write a
+separate examples file \filepath{pkgdir/\emph{exdir}/OBJ.R} and then
+use its contents as the examples section. The examples directory
+\filepath{\emph{exdir}} may be specified in
+\code{options("inlinedocs.exdir")}, and defaults to
+\filepath{tests}. This approach has the advantage of simplicity, but
+in fact poses several problems. First, it requires you to repeat the
+name of the object in the R code and in the examples file name. More
+importantly, the example code resides in a separate file from the
+object definition, rendering sustainable updates of example code
+difficult. This method for writing examples is supported by the
+\code{examples.from.testfile} Parser Function, but is deprecated.
 
 The following example demonstrates attaching example code to the \code{center} function as an attribute.
-
 <<>>=
 attr(center,"ex") <- function(){
   x <- runif(10)
   c( mean=center(x), median=center(x,method="median") )
 }
 @
+Using this method in combination with the \code{structure} function
+when defining functions is the preferred method for defining examples.
+<<>>=
+add2 <- structure(function(x){
+  x+2
+},ex=function(){
+  add2(11) == 13
+})
+@
 
-Other ways of attaching example code are, code after the return statement of
-a function, or code in a file \code{test/<Functionname>.R}.
-
+The advantages of this method are threefold. First, there is no
+repetition of the object name. Second, the examples are immediately
+below the function definition, so can be easily maintained. Finally,
+the examples remain R code, so are correctly treated by the syntax
+highlighters of most editors.
  
 \subsection{Documenting S4 classes}
 
