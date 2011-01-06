@@ -1,4 +1,4 @@
-%  -*- compile-command: "make"; compilation-read-command: nil -*- 
+%  -*- compile-command: "make" -*- 
 \documentclass[article]{jss}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,7 +198,7 @@ a block. Note, that the components must have a name.
 \inlinedocs\ supports attaching examples to the documentation of a function in several ways. 
 In all of them the \R-code is plain text and instead of part of a comment.
 
-The following example demonstrates attaching example code to the \code{center} functin as an attribute.
+The following example demonstrates attaching example code to the \code{center} function as an attribute.
 
 <<>>=
 attr(center,"ex") <- function(){
