@@ -101,7 +101,7 @@ to the source code of the objects. Adjacent \inlinedocs-comments are
 
 \begin{itemize}
 \item \verb+##<<+ on the same line as the the \R-object
-\item \verb+##+ on the lines directly following the \R-object
+\item \verb+###+ on the lines directly following the \R-object
 \item \verb+###+ on the line directly before the \R-object
 \end{itemize}
 
@@ -116,14 +116,14 @@ The following subsections describe common usage of \inlinedocs-comments.
 The following examples demonstrates the basic documentation of a function.
 <<>>=
 foo <- function(
-	### Adding two arguments
-	first           ##<< the first argument 
-	,second=0       ##<< the second argument with a multi-line description
-		## that is possibly better placed the details section  		
+  ### Adding two arguments
+  first           ##<< the first argument 
+  ,second=0       ##<< the second argument with a multi-line description
+    ## that is possibly better placed the details section
 ){
-	first + second 
-	### returns the sum of 
-	### first and second
+  first + second 
+  ### returns the sum of 
+  ### first and second
 }
 @ 
 
@@ -146,20 +146,20 @@ seealso sections respectively.
  
 <<>>=
 bar <- function(
-	### Demonstrating section comments
-	##title<< bar-Function  		
+  ### Demonstrating section comments
+  ##title<< bar-Function
 ){
-	##details<<
-	## This comment will show up in the details section.
-	b <- rep(1,10)
-	for( i in 2:10 ){
-		##details<<
-		## The cumulative sum, here, is calculated by a loop.\cr
-		## Such comments can be placed anywhere in the code.
-		b[i] <- b[i+1]
-	}
-	##seealso<< \code{\link{foo}}
-	### vector of cumulative sume of 1:10
+  ##details<<
+  ## This comment will show up in the details section.
+  b <- rep(1,10)
+  for( i in 2:10 ){
+    ##details<<
+    ## The cumulative sum, here, is calculated by a loop.\cr
+    ## Such comments can be placed anywhere in the code.
+    b[i] <- b[i+1]
+  }
+  ##seealso<< \code{\link{foo}}
+  ### vector of cumulative sume of 1:10
 }
 @
 
@@ -168,9 +168,47 @@ sections (references, source, note, author, seealso, title, keyword, \ldots)
 except for the examples section, which is handled in a special manner as shown below.
 
 \subsection{Documenting list entries}
+The documentation of list entries is conveniently done using \inlinedocs\ as shown in the following example.
 
-\subsection{Providing examples} 
-examples using ex attr and structure(...,ex=function())
+<<>>=
+center <- function(
+  ### Average of a sample
+  x               ##<< numeric vector of samples
+  ,method=c(      ##<< method for calulating the center 
+    ##describe<<
+    mean="mean"       ##<< arithmetic mean   
+    ,median="median") ##<< median
+    ##end<<
+  ,...            ##<< further arguments passed to mean or median
+){
+  method <- match.arg(method)
+  switch(method,
+    mean = mean(x,...),
+    median = median(x,...),
+    stop("center: unknown method."))
+}
+@
+
+The list entries wrapped by \verb+##describe<<+ and \verb+##end<<+ lines can
+be documented in the same way as function arguments. This construct can be
+nested. This means that a list entry can be itself a list, whose items are described by such 
+a block. Note, that the components must have a name. 
+
+\subsection{Providing examples}
+\inlinedocs\ supports attaching examples to the documentation of a function in several ways. 
+In all of them the \R-code is plain text and instead of part of a comment.
+
+The following example demonstrates attaching example code to the \code{center} functin as an attribute.
+
+<<>>=
+attr(center,"ex") <- function(){
+  x <- runif(10)
+  c( mean=center(x), median=center(x,method="median") )
+}
+@
+
+Other ways of attaching example code are, code after the return statement of
+a function, or code in a file \code{test/<Functionname>.R}.
 
  
 \subsection{Documenting S4 classes}
