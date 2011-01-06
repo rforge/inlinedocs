@@ -157,10 +157,11 @@ bar <- function(
     ##details<<
     ## The cumulative sum, here, is calculated by a loop.\cr
     ## Such comments can be placed anywhere in the code.
-    b[i] <- b[i+1]
+    b[i] <- b[i-1]+i
   }
-  ##seealso<< \code{\link{foo}}
+  b
   ### vector of cumulative sume of 1:10
+  ##seealso<< \code{\link{foo}}
 }
 @
 
