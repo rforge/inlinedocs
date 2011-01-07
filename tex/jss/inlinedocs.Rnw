@@ -207,7 +207,7 @@ center <- function(
 The list entries wrapped by \verb+##describe<<+ and \verb+##end<<+ lines can
 be documented in the same way as function arguments. This construct can be
 nested. This means that a list entry can be a list itself, whose items are described by such 
-a block. Note, that the components must be have names. 
+a block. Note, that the components must have names. 
 
 \subsection{Providing examples}
 The following example demonstrates attaching example code 
