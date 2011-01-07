@@ -1,9 +1,11 @@
 = inlinedocs NEWS/TODO
 
-== 1.5 
-
 TODO: make sure for tests we check for all elements of the outer list
 (currently we only do this for the inner list).
+
+== 1.5 
+
+##sections<< permitted immediately after ###return value
 
 Report which of the users' documentation objects we failed on if the
 Parser Function in forall stops with an error.
