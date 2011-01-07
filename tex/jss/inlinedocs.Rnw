@@ -13,11 +13,11 @@ options(prompt=">>>",continue=">>>")
 \newcommand{\inlinedocs}{\pkg{inlinedocs}}
 \newcommand{\filepath}[1]{\texttt{#1}}
 \author{Toby Dylan Hocking\\INRIA Paris \And 
-        Second Author\\Plus Affiliation}
+        Thomas Wutzler\\MPI for Biogeochemistry, Jena}
 \title{Sustainable, extensible documentation generation using \inlinedocs}
 
 %% for pretty printing and a nice hypersummary also set:
-\Plainauthor{Toby Dylan Hocking, Second Author} %% comma-separated
+\Plainauthor{Toby Dylan Hocking, Thomas Wutzler} %% comma-separated
 \Plaintitle{Sustainable, extensible documentation generation using
   \inlinedocs} %% without formatting
 %\Shorttitle{A Capitalized Title} %% a short title (if necessary)
@@ -60,8 +60,17 @@ options(prompt=">>>",continue=">>>")
   75214 Paris Cedex 13\\
   Telephone: +33/1 39 63 54 99\\
   E-mail: \email{Toby.Hocking@inria.fr}\\
-  URL: \url{http://cbio.ensmp.fr/~thocking/}
+  URL: \url{http://cbio.ensmp.fr/~thocking/}\\
+  \\	
+  Thomas Wutzler\\
+  Max Planck Institute for Biogeochemistry\\
+  Hans-Knöll-Strasse 10\\
+  07745 Jena, Germany\\
+  Telephone: +49/3641 576271\\
+  E-mail: \email{twutz@bgc-jena.mpg.de}\\
+  URL: \url{https://www.bgc-jena.mpg.de/bgc-mdi/index.php/Main/ThomasWutzler}
 }
+
 %% It is also possible to add a telephone and fax number
 %% before the e-mail in the following format:
 %% Fax: +43/1/31336-734
@@ -120,7 +129,7 @@ foo <- function(
   ### Adding two arguments
   first           ##<< the first argument 
   ,second=0       ##<< the second argument with a multi-line description
-    ## that is possibly better placed the details section
+    ## that is possibly better placed in the details section
 ){
   first + second 
   ### returns the sum of 
@@ -131,10 +140,10 @@ foo <- function(
 The comments are placed within sections of the corresponding 
 documentation:
 \begin{itemize}
-\item Comment following the line of \code{function} goes to the description
+\item Comment following the line of \code{function} is the description
 section.
 \item For each argument an item is created in the arguments section.
-\item Comments following \code{return} or the last line of the body go to the
+\item Comments following a \code{return} statement or the last line of the body make up the
 value section.
 \end{itemize} 
 
@@ -197,43 +206,23 @@ center <- function(
 
 The list entries wrapped by \verb+##describe<<+ and \verb+##end<<+ lines can
 be documented in the same way as function arguments. This construct can be
-nested. This means that a list entry can be itself a list, whose items are described by such 
-a block. Note, that the components must have a name. 
+nested. This means that a list entry can be a list itself, whose items are described by such 
+a block. Note, that the components must be have names. 
 
 \subsection{Providing examples}
-\inlinedocs\ supports attaching examples to the documentation of a function in several ways.
-
-The methods for documenting examples were motivated by the desire to
-express examples in R code rather than in R comments, and to keep the
-examples close to the object definition. When examples are in R code
-rather than comments, they are more easily transferred to the R
-interpreter, and thus are easier to debug, change, and keep up to date
-and informative. Furthermore, when examples are written close to the
-object definition, it is easy to remember to bring examples up to date
-when changes are made to the definition.
-
-One way to document examples for an R object \code{OBJ} is to write a
-separate examples file \filepath{pkgdir/\emph{exdir}/OBJ.R} and then
-use its contents as the examples section. The examples directory
-\filepath{\emph{exdir}} may be specified in
-\code{options("inlinedocs.exdir")}, and defaults to
-\filepath{tests}. This approach has the advantage of simplicity, but
-in fact poses several problems. First, it requires you to repeat the
-name of the object in the R code and in the examples file name. More
-importantly, the example code resides in a separate file from the
-object definition, rendering sustainable updates of example code
-difficult. This method for writing examples is supported by the
-\code{examples.from.testfile} Parser Function, but is deprecated.
-
-The following example demonstrates attaching example code to the \code{center} function as an attribute.
+The following example demonstrates attaching example code 
+to the \code{center} function by using the \code{ex}-attribute.
 <<>>=
 attr(center,"ex") <- function(){
   x <- runif(10)
-  c( mean=center(x)$center, median=center(x,method="median")$center )
+  center(x)
+  center(x,method="median")
 }
 @
+
 Using this method in combination with the \code{structure} function
-when defining functions is the preferred method for defining examples.
+when defining functions avoids the repetition of the function name. 
+Hence, this is the preferred method for defining examples.
 <<>>=
 add2 <- structure(function(x){
   x+2
@@ -242,11 +231,17 @@ add2 <- structure(function(x){
 })
 @
 
-The advantages of this method are threefold. First, there is no
-repetition of the object name. Second, the examples are immediately
-below the function definition, so can be easily maintained. Finally,
-the examples remain R code, so are correctly treated by the syntax
-highlighters of most editors.
+The methods for documenting examples were motivated by the desire a) to
+express examples in R code rather than in R comments, and b) to keep the
+examples close to the object definition. When examples are in R code
+rather than comments, they are more easily transferred to the R
+interpreter, and thus are easier to debug, change. They are correctly treated by the syntax
+highlighters of most editors. Furthermore, when examples are written close to the
+object definition, it is easier to keep examples up to date and informative.
+
+Another way to document examples for an \R\ object \code{OBJ} is to write a
+separate examples file \filepath{pkgdir/\emph{exdir}/OBJ.R}. The contents of the file 
+is then used as the examples section. 
  
 \subsection{Documenting S4 classes}
 
