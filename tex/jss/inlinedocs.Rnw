@@ -93,7 +93,7 @@ options(prompt=">>>",continue=">>>")
 
 For automatic report generation, the mature Sweave \citep{sweave}
 format allows integration of R code and results within \LaTeX\
-documents \cite{latex}.
+documents \citep{latex}.
 
 However, the goal of \inlinedocs\ is different. It aims for
 integration of Rd documentation inside of R code files, for automatic
