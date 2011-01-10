@@ -1,6 +1,6 @@
 %  -*- compile-command: "make" -*- 
 \documentclass[article]{jss}
-
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,7 +30,7 @@ options(prompt=">>>",continue=">>>")
   contributions for documentation generation for the \R\ community. First, 
   we propose a new syntax for inline documentation of \R\ code within
   comments adjacent to the relevant code, which allows for highly
-  readable and maintainable code. Second, we propose an extensible
+  readable and maintainable code and documentation. Second, we propose an extensible
   system for parsing these comments, which allows the syntax to be
   easily augmented.}
 
@@ -90,7 +90,16 @@ options(prompt=">>>",continue=">>>")
 
 \subsection[Existing documentation generation systems for R]{Existing
   documentation generation systems for \R}
-Sweave \citep{sweave}
+
+For automatic report generation, the mature Sweave \citep{sweave}
+format allows integration of R code and results within \LaTeX\
+documents \cite{latex}.
+
+However, the goal of \inlinedocs\ is different. It aims for
+integration of Rd documentation inside of R code files, for automatic
+documentation generation using markup in R comments. For this purpose,
+there are already several different approaches, which we discuss
+below.
 
 package.skeleton \citep{R}
 
@@ -102,8 +111,16 @@ Rdoc
 
 motivation via function arguments, etc.
 
+The remainder of the article is organized as follows. In
+\autoref{syntax}, we discuss the details of the \inlinedocs\ syntax
+for writing documentation in R comments. In \autoref{extensible}, we
+discuss the design and implementation of \inlinedocs, and detail how
+the syntax can be extended. In \autoref{conclusions}, we conclude and
+offer some ideas for future improvements.
+
 \section[The inlinedocs syntax]{The \inlinedocs\ syntax for inline
   documentation}
+\label{syntax}
 
 Documentation of \R-objects (i.e. variables, functions, arguments,
 list entries) are written inside special comments, that are directly adjacent
@@ -248,12 +265,21 @@ is then used as the examples section.
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
   generators}
+\label{extensible}
 
 \subsection{Structure of a Parser Function}
 
 \subsection{forall/forfun}
 
 \subsection{documentation lists}
+
+Another intermediate representation that we considered was the
+\code{"Rd"} object, as described by \cite{new-r-help}. It is a nested
+list of character strings and lists, which is similar to the
+documentation list format of \inlinedocs. However, from the point of
+view of a Parser Function programmer, the \code{"Rd"} object is too
+cumbersome. Documentation lists allow rapid development of Parser
+Functions which are straightforward to read and modify.
 
 \subsection{package.skeleton.dx}
 
@@ -262,7 +288,21 @@ how to call.
 how to alter the default parsers: pkgdir/R/.inlinedocs.R variable
 parsers or \texttt{options("inlinedocs.parsers")}.
 
-\section{Conclusions}
+\section{Future work and conclusions}
+\label{conclusions}
+
+We currently have implemented unit tests for documentation lists. This
+assures that Parser Functions work as described. We also have unit
+tests which ensure that the generated Rd passes R CMD check without
+errors or warnings. It would be nice to also have unit tests for the
+content of the generated Rd. We could compare documentation lists with
+the output of the \code{parse_Rd} function as described by
+\cite{parseRd}. Furthermore, this could be used to convert a
+documentation list into an equivalent representation as an \code{"Rd"}
+object, and we could use the \code{print.Rd} function to write the Rd
+files. This could eventually be preferable to the current system of
+starting from the output \code{package.skeleton} and doing find and
+replace.
 
 \bibliography{refs}
 
