@@ -8,7 +8,9 @@ combine.character <- function(x,y)
 ### combine lists by adding elements or adding to existing elements
 combine.list <- function(x,y){
   toadd <- !names(y)%in%names(x)
-  toup <- names(y)[names(y)%in%names(x)]
+  toup <- names(y)[!toadd]
+  if("doc"%in%names(x))return(x$doc)
+  if("doc"%in%names(y))return(y$doc)
   x[names(y)[toadd]] <- y[toadd]
   for(up in toup)x[[up]] <- combine(x[[up]],y[[up]])
   return(x)
@@ -24,7 +26,7 @@ decomment <- function
 (comments
 ### Character vector of prefixed comment lines.
  ){
-  paste(gsub(prefix,"",comments),collapse="\n")
+  gsub(prefix,"",comments)
 ### String without prefixes or newlines.
 }
 
@@ -132,7 +134,7 @@ examples.after.return <- function
   ## Add an empty line before and after example
   ex <- c("", ex, "")
   ## Return examples and value
-  list(examples = paste(ex, collapse = "\n"), value = value)
+  list(examples = ex, value = value)
 }
 
 prefixed.lines <- structure(function(src,...){
@@ -461,14 +463,14 @@ forfun.parsers <-
          if (is.null(tsubdir)) tsubdir <- "tests"	# Default value
          tfile <- file.path("..",tsubdir,paste(name,".R",sep=""))
          if(file.exists(tfile))
-           list(examples=paste(readLines(tfile),collapse="\n"))
+           list(examples=readLines(tfile))
          else list()
        },
        definition.from.source=function(doc,src,...){
          def <- doc$definition
          is.empty <- function(x)is.null(x)||x==""
          if(is.empty(def) && !is.empty(src))
-           list(definition=paste(src,collapse="\n"))
+           list(definition=src)
          else list()
        })
 
@@ -507,8 +509,11 @@ forall.parsers <-
              ## Add an empty line before and after example
              ex <- c("", ex, "")
            }
-           list(examples = paste(ex, collapse = "\n"))
+           list(examples = ex)
          } else list()
+       },
+       collapse.docs=function(doc,...){
+         list(doc=lapply(doc,paste,collapse="\n"))
        })
 
 ### List of parser functions that operate on single objects. This list
@@ -555,7 +560,7 @@ extra.code.docs <- function # Extract documentation from code chunks
       doc <- list()
       if ( !is.null(parsed[[on]]) ){
         if ( !is.na(parsed[[on]]@code[1]) ){ # no code given for generics
-          doc$definition <- paste(parsed[[on]]@code,collapse="\n")
+          doc$definition <- paste(parsed[[on]]@code)
         }
         if(!"description"%in%names(doc) && !is.na(parsed[[on]]@description) ){
           doc$description <- parsed[[on]]@description
@@ -656,8 +661,7 @@ default.parsers <-
     sapply(forall.parsers,forall),
     edit.package.file=function(desc,...){
       in.details <- setdiff(colnames(desc),"Description")
-      details <- paste(paste(in.details,": \\tab ",desc[,in.details],"\\cr",
-                             sep=""),collapse="\n")
+      details <- sprintf("%s: \\tab %s\\cr",in.details,desc[,in.details])
       L <-
         list(list(title=desc[,"Title"],
                   description=desc[,"Description"],

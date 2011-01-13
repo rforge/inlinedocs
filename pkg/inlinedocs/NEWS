@@ -8,6 +8,9 @@ tools:::print.Rd. See code in etc/parseRd.R
 
 == 1.5 
 
+new doc keyword for documentation lists causes replacement of list
+rather than adding to list.
+
 ##sections<< permitted immediately after ###return value
 
 Report which of the users' documentation objects we failed on if the
