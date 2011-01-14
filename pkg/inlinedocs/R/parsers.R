@@ -658,7 +658,6 @@ extra.code.docs <- function # Extract documentation from code chunks
 default.parsers <-
   c(extra.code.docs=extra.code.docs, ## TODO: cleanup!
     sapply(forfun.parsers,forfun),
-    sapply(forall.parsers,forall),
     edit.package.file=function(desc,...){
       in.details <- setdiff(colnames(desc),"Description")
       details <- sprintf("%s: \\tab %s\\cr",in.details,desc[,in.details])
@@ -669,7 +668,9 @@ default.parsers <-
                   author=desc[,"Maintainer"]))
       names(L) <- paste(desc[,"Package"],"-package",sep="")
       L
-    })
+    },
+    sapply(forall.parsers,forall)
+    )
 
 setClass("DocLink", # Link documentation among related functions
 ### The \code{.DocLink} class provides the basis for hooking together
