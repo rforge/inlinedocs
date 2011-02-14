@@ -80,9 +80,10 @@
 
 \begin{document}
 <<echo=FALSE>>=
-.libPaths("/nas/home1/h/hocking/lib64/R/library")
+.libPaths(c("~/lib64/R/library",.libPaths()))
 library(inlinedocs)
 options(prompt=">>>",continue=">>>")
+print(.libPaths())
 @ 
 
 %% include your article here, just as usual
@@ -223,10 +224,11 @@ center <- function(
 }
 @
 
-The list entries wrapped by \verb+##describe<<+ and \verb+##end<<+ lines can
-be documented in the same way as function arguments. This construct can be
-nested. This means that a list entry can be a list itself, whose items are described by such 
-a block. Note, that the components must have names. 
+The list entries wrapped by \verb+##describe<<+ and \verb+##end<<+
+lines can be documented in the same way as function arguments. This
+construct can be nested. This means that a list entry can be a list
+itself, whose items are described by such a block. Note that the
+components of the list must have names.
 
 \subsection{Providing examples}
 The following example demonstrates attaching example code 
@@ -263,7 +265,7 @@ examples up to date and informative.
 \subsection[package.skeleton.dx for generating Rd files]{\code{package.skeleton.dx} for generating Rd files}
 
 The main function that the \inlinedocs\ package provides is
-\code{package.skeleton.dx("path/to/your/pkgdir")}, which generates Rd
+\code{package.skeleton.dx("pkgdir")}, which generates Rd
 files in \code{pkgdir/man}. This operates first by running
 \code{package.skeleton} to generate blank Rd files, which are updated
 using the inline documentation specified in the R code. After running
@@ -279,35 +281,50 @@ generators]{The \inlinedocs\ system of extensible documentation
 The previous section has explained how to write inline documentation
 in R code using the standard \inlinedocs\ syntax, then process it to
 generate Rd files using \code{package.skeleton.dx}. For most users of
-\inlinedocs\ this should be sufficient for everyday use. For users who
-wish to extend the syntax of \inlinedocs, the following sections
-explain the internal organization of the \inlinedocs\ package.
+\inlinedocs\ this should be sufficient for everyday use.
 
+For users who wish to extend the syntax of \inlinedocs, the following
+sections explain the internal organization of the \inlinedocs\
+package. The 2 central concepts are Parser Functions and Documentation
+Lists. Parser Functions are used to extract documentation from R code,
+which is then stored in a Documentation List, as explained in the
+following sections.
 
+\subsection{Documentation Lists store the structured content of Rd files}
 
-\subsection{Documentation Lists}
+A Documentation List is a list of lists that describes all of the
+documentation to write to the Rd files. The elements of the outer list
+correspond to Rd files in the package, and the elements of the inner
+list correspond to tags in an Rd file. For example, consider the
+following code chunk and its corresponding Documentation List.
 
-The Documentation List is central to \inlinedocs. It is a list of
-lists that describes all of the documentation to write to the Rd
-files. The elements of the outer list correspond to Rd files in the
-package, and the elements of the inner list correspond to tags in the
-Rd file. For example, consider the following function and its
-corresponding documentation list.
-
-<<echo=TRUE>>=
-give.me.five <- function
-(times
-### the number of fives
- ){
-  rep(5,times)
-### a vector of fives
-}
-inner.list <- prefixed.lines(attr(give.me.five,"source"))
-str(inner.list)
+\begin{small}
+\begin{minipage}{0.4\textwidth}
+  R code\hrulefill
+<<echo=FALSE>>=
+cat(paste(readLines("doclist.R"),collapse="\n")) 
 @ 
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+  Documentation List\hrulefill
+<<echo=FALSE,result=TRUE>>=
+dl <- extract.docs.file("doclist.R")
+show <- lapply(dl,function(L)L[!names(L)%in%c("definition","format")])
+str(show)
+@
+\end{minipage}
+\end{small}
+
+\hrulefill
 
 This list describes the tags in the Rd file that will be written for
-\code{test}. Furt
+the \code{give.me.five} function. The \code{prefixed.lines} Parser
+Function examines the character vector of lines of code that define
+the function, and returns a list of documentation tags.  
+
+The mechanism of \inlinedocs\ is to run several such Parser Functions
+on each item in the package, then combine their output to produce a
+Documentation List that describes all the items in the package.
 
 \subsection{Structure of a Parser Function}
 
