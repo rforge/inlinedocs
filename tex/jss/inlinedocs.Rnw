@@ -6,9 +6,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \SweaveOpts{keep.source=TRUE}
-<<echo=FALSE>>=
-options(prompt=">>>",continue=">>>")
-@ 
 %% almost as usual
 \newcommand{\inlinedocs}{\pkg{inlinedocs}}
 \newcommand{\filepath}[1]{\texttt{#1}}
@@ -82,6 +79,11 @@ options(prompt=">>>",continue=">>>")
 
 
 \begin{document}
+<<echo=FALSE>>=
+.libPaths("/nas/home1/h/hocking/lib64/R/library")
+library(inlinedocs)
+options(prompt=">>>",continue=">>>")
+@ 
 
 %% include your article here, just as usual
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
@@ -248,30 +250,66 @@ add2 <- structure(function(x){
 })
 @
 
-The methods for documenting examples were motivated by the desire a) to
-express examples in R code rather than in R comments, and b) to keep the
+The methods for documenting examples were motivated by the desire to
+express examples in R code rather than in R comments, and to keep the
 examples close to the object definition. When examples are in R code
 rather than comments, they are more easily transferred to the R
-interpreter, and thus are easier to debug, change. They are correctly treated by the syntax
-highlighters of most editors. Furthermore, when examples are written close to the
-object definition, it is easier to keep examples up to date and informative.
+interpreter, and thus are easier to debug. Furthermore, when examples
+are written close to the object definition, it is easier to keep
+examples up to date and informative.
 
-Another way to document examples for an \R\ object \code{OBJ} is to write a
-separate examples file \filepath{pkgdir/\emph{exdir}/OBJ.R}. The contents of the file 
-is then used as the examples section. 
- 
 \subsection{Documenting S4 classes}
+
+\subsection[package.skeleton.dx for generating Rd files]{\code{package.skeleton.dx} for generating Rd files}
+
+The main function that the \inlinedocs\ package provides is
+\code{package.skeleton.dx("path/to/your/pkgdir")}, which generates Rd
+files in \code{pkgdir/man}. This operates first by running
+\code{package.skeleton} to generate blank Rd files, which are updated
+using the inline documentation specified in the R code. After running
+\code{package.skeleton.dx}, the package documentation will be up to
+date with the code, and the package should pass R CMD check without
+errors or warnings.
 
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
   generators}
 \label{extensible}
 
+The previous section has explained how to write inline documentation
+in R code using the standard \inlinedocs\ syntax, then process it to
+generate Rd files using \code{package.skeleton.dx}. For most users of
+\inlinedocs\ this should be sufficient for everyday use. For users who
+wish to extend the syntax of \inlinedocs, the following sections
+explain the internal organization of the \inlinedocs\ package.
+
+
+
+\subsection{Documentation Lists}
+
+The Documentation List is central to \inlinedocs. It is a list of
+lists that describes all of the documentation to write to the Rd
+files. The elements of the outer list correspond to Rd files in the
+package, and the elements of the inner list correspond to tags in the
+Rd file. For example, consider the following function and its
+corresponding documentation list.
+
+<<echo=TRUE>>=
+give.me.five <- function
+(times
+### the number of fives
+ ){
+  rep(5,times)
+### a vector of fives
+}
+inner.list <- prefixed.lines(attr(give.me.five,"source"))
+str(inner.list)
+@ 
+
+This list describes the tags in the Rd file that will be written for
+\code{test}. Furt
+
 \subsection{Structure of a Parser Function}
-
-\subsection{forall/forfun}
-
-\subsection{documentation lists}
 
 Another intermediate representation that we considered was the
 \code{"Rd"} object, as described by \cite{new-r-help}. It is a nested
@@ -281,9 +319,7 @@ view of a Parser Function programmer, the \code{"Rd"} object is too
 cumbersome. Documentation lists allow rapid development of Parser
 Functions which are straightforward to read and modify.
 
-\subsection{package.skeleton.dx}
-
-how to call.
+\subsection{forall/forfun}
 
 how to alter the default parsers: pkgdir/R/.inlinedocs.R variable
 parsers or \texttt{options("inlinedocs.parsers")}.
@@ -301,7 +337,7 @@ the output of the \code{parse_Rd} function as described by
 documentation list into an equivalent representation as an \code{"Rd"}
 object, and we could use the \code{print.Rd} function to write the Rd
 files. This could eventually be preferable to the current system of
-starting from the output \code{package.skeleton} and doing find and
+starting from the output of \code{package.skeleton} and doing find and
 replace.
 
 \bibliography{refs}
