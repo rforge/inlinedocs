@@ -184,7 +184,7 @@ prefixed.lines <- structure(function(src,...){
   res
 },ex=function(){
 test <- function
-### the desc
+### the description
 (x,
 ### the first argument
  y ##<< another argument
@@ -282,7 +282,7 @@ extract.xxx.chunks <- function # Extract documentation from a function
         chunk.sep <- "\n\n"
       }
       chunk.res <- NULL
-      if ( 0 == length(grep("^\\s*$",payload,perl=TRUE)) )
+      if ( !grepl("^\\s*$",payload,perl=TRUE) )
         chunk.res <-
           if ( is.null(res[[field]]) ) payload
           else paste(res[[field]], payload, sep=chunk.sep)
@@ -290,7 +290,7 @@ extract.xxx.chunks <- function # Extract documentation from a function
     }
   while ( k <= length(src) ){
     line <- src[k]
-    if ( 0 < length(grep(extra.regexp,line,perl=TRUE) ) ){
+    if ( grepl(extra.regexp,line,perl=TRUE) ){
       ## we have a new extra chunk - first get field name and any payload
       new.field <- gsub(extra.regexp,"\\1",line,perl=TRUE)
       new.contents <- gsub(extra.regexp,"\\2",line,perl=TRUE)
@@ -365,9 +365,9 @@ extract.xxx.chunks <- function # Extract documentation from a function
           first.describe <- TRUE;
         }
       }
-    } else if ( in.chunk && 0<length(grep(cont.re,line,perl=TRUE)) ){
+    } else if ( in.chunk && grepl(cont.re,line,perl=TRUE) ){
       ## append this line to current chunk
-      if ( 0 == length(grep(prefix,line,perl=TRUE)) ){
+      if ( !grepl(prefix,line,perl=TRUE) ){
         ##describe<< Any lines with "\code{### }" at the left hand
         ## margin within the included chunks are handled separately,
         ## so if they appear in the documentation they will appear
@@ -380,7 +380,7 @@ extract.xxx.chunks <- function # Extract documentation from a function
           payload <- stripped
         }
       }
-    } else if ( 0 < length(grep(arg.pat,line,perl=TRUE)) ){
+    } else if ( grepl(arg.pat,line,perl=TRUE) ){
       not.describe <- (0==in.describe && !first.describe)
       if ( in.chunk && not.describe){
         res[[cur.field]] <- end.chunk(cur.field,payload)
@@ -450,8 +450,8 @@ forfun.parsers <-
        examples.after.return=examples.after.return,
        extract.xxx.chunks=extract.xxx.chunks,
        ## title from first line of function def
-       title.from.firstline=function(src,name,code,...){
-         if(length(grep("#",src[1]))){
+       title.from.firstline=function(src,...){
+         if(length(src) && grepl("#",src[1])){
            list(title=gsub("[^#]*#\\s*(.*)","\\1",src[1],perl=TRUE))
          } else list()
        },
@@ -573,7 +573,7 @@ extra.code.docs <- function # Extract documentation from code chunks
 		  pattern <- "^([^\\.]+)\\.(.*)$"
           doc$s3method=c(m1 <- gsub(pattern,"\\1",on,perl=TRUE),
               m2 <- gsub(pattern,"\\2",on,perl=TRUE))
-          if ( 0 < length(grep("\\W",m1,perl=TRUE)) ){
+          if ( grepl("\\W",m1,perl=TRUE) ){
 			  m1 <- paste("`",m1,"`",sep="")
           }
           cat("S3method(",m1,",",m2,")\n",sep="")
@@ -597,7 +597,7 @@ extra.code.docs <- function # Extract documentation from code chunks
       NULL
     } else if(0 == length(res) && "function" %in% class(o)
               && 1 == length(osource <- attr(o,"source"))
-              && 1 == length(grep(paste("UseMethod(",on,")",sep="\""),osource))
+              && grepl(paste("UseMethod(",on,")",sep="\""),osource)
               ){
       ## phew - this should only pick up R.oo S3 generic definitions like:
       ## attr(*, "source")= chr "function(...) UseMethod(\"select\")"
@@ -710,7 +710,7 @@ extract.file.parse <- function # File content analysis
     ## "prefix" lines will be used instead.
     default.description <- NULL
     while ( start > last.end+1
-           && 1 == length(grep(prefix,code[start-1],perl=TRUE)) ){
+           && grepl(prefix,code[start-1],perl=TRUE) ){
       start <- start-1
     }
     if ( start < chunks[[k]][1] ){
@@ -737,7 +737,7 @@ extract.file.parse <- function # File content analysis
       ## If the function definition is not embedded within the call, then
       ## the parent is that function. Test whether the the third value
       ## looks like a name and add it to parents if so.
-      if ( 1 == length(grep("^[\\._\\w]+$",chars[3],perl=TRUE)) ){
+      if ( grepl("^[\\._\\w]+$",chars[3],perl=TRUE) ){
         parent <- chars[3]
       }
       res[[object.name]] <- new("DocLink",name=object.name,
@@ -769,7 +769,7 @@ extract.file.parse <- function # File content analysis
       ## If the function definition is not embedded within the call, then
       ## the parent is that function. Test whether the the fourth value
       ## looks like a name and add it to parents if so.
-      if ( 1 == length(grep("^[\\._\\w]+$",chars[4],perl=TRUE)) ){
+      if ( grepl("^[\\._\\w]+$",chars[4],perl=TRUE) ){
         parent <- c(chars[4],parent)
       }
       res[[object.name]] <- new("DocLink",name=object.name,
