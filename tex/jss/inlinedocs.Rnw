@@ -83,7 +83,7 @@
 .libPaths(c("~/lib64/R/library",.libPaths()))
 library(inlinedocs)
 options(prompt=">>>",continue=">>>")
-print(.libPaths())
+#print(.libPaths())
 @ 
 
 %% include your article here, just as usual
@@ -287,8 +287,8 @@ For users who wish to extend the syntax of \inlinedocs, the following
 sections explain the internal organization of the \inlinedocs\
 package. The 2 central concepts are Parser Functions and Documentation
 Lists. Parser Functions are used to extract documentation from R code,
-which is then stored in a Documentation List, as explained in the
-following sections.
+which is then stored in a Documentation List before writing Rd files,
+as explained in the following sections.
 
 \subsection{Documentation Lists store the structured content of Rd files}
 
@@ -317,24 +317,25 @@ str(show)
 
 \hrulefill
 
-This list describes the tags in the Rd file that will be written for
-the \code{give.me.five} function. The \code{prefixed.lines} Parser
-Function examines the character vector of lines of code that define
-the function, and returns a list of documentation tags.  
+Parser Functions examine the lines of code that define the functions,
+and return the Documentation List of tags shown on the right. This
+list describes the tags in the Rd file that will be written for these
+functions. The names of the outer list specify the Rd file, and the
+names of the inner list specify the Rd tag.
 
-The mechanism of \inlinedocs\ is to run several such Parser Functions
-on each item in the package, then combine their output to produce a
-Documentation List that describes all the items in the package.
+To store parsed documentation, another intermediate representation
+that we considered instead of the Documentation List was the
+\code{"Rd"} object, as described by \cite{new-r-help}. It is a nested
+list of character strings and lists, which is similar to the
+Documentation List format of \inlinedocs. However, from the point of
+view of a Parser Function programmer, the \code{"Rd"} object is too
+cumbersome. Documentation lists allow rapid development of Parser
+Functions which are straightforward to read, write, and modify. Next,
+we will explain how to write Parser Functions that create
+Documentation Lists.
 
 \subsection{Structure of a Parser Function}
 
-Another intermediate representation that we considered was the
-\code{"Rd"} object, as described by \cite{new-r-help}. It is a nested
-list of character strings and lists, which is similar to the
-documentation list format of \inlinedocs. However, from the point of
-view of a Parser Function programmer, the \code{"Rd"} object is too
-cumbersome. Documentation lists allow rapid development of Parser
-Functions which are straightforward to read and modify.
 
 \subsection{forall/forfun}
 
