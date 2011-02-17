@@ -364,17 +364,31 @@ extracts all tags for all Rd files for the package, then returns the
 entire Documentation List. However, in practice, this results in one
 unwieldly Parser Function that does many things and is hard to
 maintain. A simpler strategy is to write several smaller Parser
-Functions, each which produces a specific type of inner Documentation
-List for a specific Rd file.
+Functions, each of which produces an inner Documentation List for a
+specific Rd file, such as the following:
 
-When \code{package.skeleton.dx} is called, a list of Parser Functions
-will be called in sequence, and their results will be combined to form
-the final Documentation List that will be used to write Rd files. This
-design choice of \inlinedocs\ encourages the development of modular
-Parser functions. For example, there is one Parser Function for
-\verb+###+ comments, another for \verb+##<<+ comments, another for
-adding the author tag using the Maintainer line of the DESCRIPTION
-file, etc.
+<<>>=
+title.from.firstline <- function(src,...){
+  if(grepl("#",src[1])){
+    list(title=gsub("[^#]*#\\s*(.*)","\\1",src[1],perl=TRUE))
+  } else list()
+}
+@
+
+This function takes \code{src}, the R code that defines a function,
+and looks for a comment on the first line. If there is a comment,
+\code{title.from.firstline} returns the comment as the title in an
+inner Documentation List.
+
+To implement this strategy, we introduce the \code{forall} and
+\code{foreach} functions.\code{package.skeleton.dx} accepts a list of
+Parser Functions will be called in sequence, and their results will be
+combined to form the final Documentation List that will be used to
+write Rd files. This design choice of \inlinedocs\ allows the
+development of modular Parser functions. For example, there is one
+Parser Function for \verb+###+ comments, another for \verb+##<<+
+comments, another for adding the author tag using the Maintainer line
+of the DESCRIPTION file, etc.
 
 To define Parser Functions for use with the source of individual
 , use \code{forall(pf)}, which takes a Parser Function for an
@@ -382,13 +396,6 @@ individual \code{pf}
 
 For example, consider the following Parser Funcion
 
-<<>>=
-title.from.firstline <- function(src,...){
-  if(length(grep("#",src[1]))){
-    list(title=gsub("[^#]*#\\s*(.*)","\\1",src[1],perl=TRUE))
-  } else list()
-}
-@ 
 
 how to alter the default parsers: pkgdir/R/.inlinedocs.R variable
 parsers or \texttt{options("inlinedocs.parsers")}.
