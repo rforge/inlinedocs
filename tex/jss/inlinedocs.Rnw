@@ -91,20 +91,25 @@ options(prompt=">>>",continue=">>>")
 
 \section{Introduction}
 
+The \inlinedocs\ package introduces the concept of documenting a
+package using inline code and comments to the \R\ programming
+language. There are several existing packages that attempt to address
+this, and we first review these efforts.
+
 \subsection[Existing documentation generation systems for R]{Existing
   documentation generation systems for \R}
 
 For automatic report generation, the mature Sweave \citep{sweave}
 format allows integration of R code and results within \LaTeX\
-documents \citep{latex}.
+documents \citep{latex}. However, the goal of \inlinedocs\ is
+different. It aims for integration of Rd documentation inside of R
+code files, for documentation generation using markup in R comments.
 
-However, the goal of \inlinedocs\ is different. It aims for
-integration of Rd documentation inside of R code files, for automatic
-documentation generation using markup in R comments. For this purpose,
-there are already several different approaches, which we discuss
-below.
-
-package.skeleton \citep{R}
+For documentation generation, there are already several different
+approaches, including the \code{package.skeleton} function which ships
+with base \R\ \citep{R}. After specifying some input R code files or
+objects to use for the package, it produces some bare-bones
+documentation that you must fill in using a text editor.
 
 roxygen
 
@@ -325,13 +330,13 @@ names of the inner list specify the Rd tag.
 
 To store parsed documentation, another intermediate representation
 that we considered instead of the Documentation List was the
-\code{"Rd"} object, as described by \cite{new-r-help}. It is a nested
-list of character strings and lists, which is similar to the
-Documentation List format of \inlinedocs. However, from the point of
-view of a Parser Function programmer, creating all the attrbute tags
-to make a valid \code{"Rd"} object is too cumbersome. Documentation
-lists allow rapid development of Parser Functions which are
-straightforward to read, write, and modify. 
+\code{"Rd"} object, as described by \cite{new-r-help}. It is a
+recursive structure of lists and character strings, which is similar
+to the Documentation List format of \inlinedocs. However, from the
+point of view of a Parser Function programmer, creating all the
+attrbute tags to make a valid \code{"Rd"} object is too
+cumbersome. Documentation lists allow rapid development of Parser
+Functions which are straightforward to read, write, and modify.
 
 \subsection[Structure of a Parser Function and forall/forfun]{Structure of a
   Parser Function and \code{forall}/\code{forfun}}
