@@ -328,16 +328,67 @@ that we considered instead of the Documentation List was the
 \code{"Rd"} object, as described by \cite{new-r-help}. It is a nested
 list of character strings and lists, which is similar to the
 Documentation List format of \inlinedocs. However, from the point of
-view of a Parser Function programmer, the \code{"Rd"} object is too
-cumbersome. Documentation lists allow rapid development of Parser
-Functions which are straightforward to read, write, and modify. Next,
-we will explain how to write Parser Functions that create
-Documentation Lists.
+view of a Parser Function programmer, creating all the attrbute tags
+to make a valid \code{"Rd"} object is too cumbersome. Documentation
+lists allow rapid development of Parser Functions which are
+straightforward to read, write, and modify. 
 
-\subsection{Structure of a Parser Function}
+\subsection[Structure of a Parser Function and forall/forfun]{Structure of a
+  Parser Function and \code{forall}/\code{forfun}}
 
+The job of a Parser Function is to return a Documentation List for a
+package. To do this, it will require knowledge of what is defined in
+the package, so the following arguments are supplied by \inlinedocs:
+\begin{center}
+\begin{tabular}{cl}
+  Argument & Description \\
+  \hline
+  \code{code} & Character vector of all lines of R code in the package.\\
+  \code{objs} & List of all R objects defined in the package.\\
+  \code{docs} & Documentation List from previous Parser Functions.\\
+  \code{desc} & 1-row matrix
+  of DESCRIPTION metadata, as read by \code{read.dcf}.
+\end{tabular}
+\end{center}
 
-\subsection{forall/forfun}
+The R code files in the package are concatenated into \code{code} and
+then parsed into \code{objs}, and the DESCRIPTION metadata is
+available as \code{desc}. These arguments allow complete flexibility
+in the construction of Parser Functions that take apart the package
+and extract meaningful Documentation Lists. In addition, the
+\code{docs} argument allows for checking of what previous Parser
+Functions have already extracted.
+
+In principle, one could write a single monolithic Parser Function that
+extracts all tags for all Rd files for the package, then returns the
+entire Documentation List. However, in practice, this results in one
+unwieldly Parser Function that does many things and is hard to
+maintain. A simpler strategy is to write several smaller Parser
+Functions, each which produces a specific type of inner Documentation
+List for a specific Rd file.
+
+When \code{package.skeleton.dx} is called, a list of Parser Functions
+will be called in sequence, and their results will be combined to form
+the final Documentation List that will be used to write Rd files. This
+design choice of \inlinedocs\ encourages the development of modular
+Parser functions. For example, there is one Parser Function for
+\verb+###+ comments, another for \verb+##<<+ comments, another for
+adding the author tag using the Maintainer line of the DESCRIPTION
+file, etc.
+
+To define Parser Functions for use with the source of individual
+, use \code{forall(pf)}, which takes a Parser Function for an
+individual \code{pf}
+
+For example, consider the following Parser Funcion
+
+<<>>=
+title.from.firstline <- function(src,...){
+  if(length(grep("#",src[1]))){
+    list(title=gsub("[^#]*#\\s*(.*)","\\1",src[1],perl=TRUE))
+  } else list()
+}
+@ 
 
 how to alter the default parsers: pkgdir/R/.inlinedocs.R variable
 parsers or \texttt{options("inlinedocs.parsers")}.
