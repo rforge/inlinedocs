@@ -369,50 +369,96 @@ specific Rd file, such as the following:
 
 <<>>=
 title.from.firstline <- function(src,...){
-  if(grepl("#",src[1])){
-    list(title=gsub("[^#]*#\\s*(.*)","\\1",src[1],perl=TRUE))
-  } else list()
+  if(grepl("#",first)){
+    list(title=gsub("[^#]*#\\s*(.*)","\\1",first,perl=TRUE))
+  }else list()
 }
 @
 
 This function takes \code{src}, the R code that defines a function,
 and looks for a comment on the first line. If there is a comment,
 \code{title.from.firstline} returns the comment as the title in an
-inner Documentation List.
+inner Documentation List. It would be nice to have a sensible default
+title even if it is not specified as a comment on the first line, so
+we can use another Parser Function such as the following:
 
-To implement this strategy, we introduce the \code{forall} and
-\code{foreach} functions.\code{package.skeleton.dx} accepts a list of
-Parser Functions will be called in sequence, and their results will be
-combined to form the final Documentation List that will be used to
-write Rd files. This design choice of \inlinedocs\ allows the
-development of modular Parser functions. For example, there is one
-Parser Function for \verb+###+ comments, another for \verb+##<<+
-comments, another for adding the author tag using the Maintainer line
-of the DESCRIPTION file, etc.
+<<>>=
+title.from.name <- function(name,doc,...){
+  if("title"%in%names(doc))list() else
+  list(title=gsub("[._]"," ",name))
+}
+@ 
 
-To define Parser Functions for use with the source of individual
-, use \code{forall(pf)}, which takes a Parser Function for an
-individual \code{pf}
+This function takes the name of a function \code{name}, and the
+documentation already extracted for it \code{doc}. If no title has
+been specified by previous Parser Functions such as
+\code{title.from.firstline}, it returns an inner Documentation List
+with a title based on the object name.
 
-For example, consider the following Parser Funcion
+But how do these Parser Functions get access to the \code{src},
+\code{name}, and \code{doc} arguments for individual documentation
+objects?  To implement this strategy, we introduce the \code{forall}
+and \code{forfun} functions, which transform an object-specific Parser
+Function such as \code{title.from.name} to a Parser Function that can
+work on an entire package. These functions examine the \code{objs} and
+\code{docs} arguments, and call the object-specfic Parser Function on
+each object in turn. The \code{forfun} function applies to every
+function in the package, whereas the \code{forall} function applies to
+every documentation object in the package.
 
+Thus, when using a Parser Function such as
+\code{forfun(title.from.name)}, you can use the following arguments in
+the definition of \code{title.from.name}, in addition to those
+discussed above that are passed to every Parser Function:
+\begin{center}
+\begin{tabular}{ll}
+  Argument & Description \\
+  \hline
+  \code{o} & The R object.\\
+  \code{name} & The name of the object.\\
+  \code{doc} & The inner Documentation List
+  already constructed for this object.\\
+  \code{src} & The \code{"source"} attribute of the object.\\
+\end{tabular}
+\end{center}
 
-how to alter the default parsers: pkgdir/R/.inlinedocs.R variable
-parsers or \texttt{options("inlinedocs.parsers")}.
+The \code{parsers} argument to \code{package.skeleton.dx} allows
+control of the list of Parser Functions used to create the
+Documentation List for the package. They will be called in sequence,
+and their results will be combined to form the final Documentation
+List that will be used to write Rd files. This design choice of
+\inlinedocs\ allows the development of modular Parser functions. For
+example, there is one Parser Function for \verb+###+ comments, another
+for \verb+##<<+ comments, another for adding the author tag using the
+Maintainer line of the DESCRIPTION file, etc.
 
-\section{Future work and conclusions}
+Furthermore, this design choice also allows easy extensions to the
+\inlinedocs\ syntax by simply writing a few new Parser
+Functions. Currently, there are no extensions that take advantage of
+this feature of inlinedocs, but it serves to streamline development of
+the internal \inlinedocs\ Parser Functions.
+
+\section{Conclusions and future work}
 \label{conclusions}
 
-We currently have implemented unit tests for documentation lists. This
-assures that Parser Functions work as described. We also have unit
-tests which ensure that the generated Rd passes R CMD check without
-errors or warnings. It would be nice to also have unit tests for the
-content of the generated Rd. We could compare documentation lists with
+We have presented \inlinedocs, which is both a new syntax for inline
+documentation of \R\ packages, and an extensible system for parsing this
+syntax and generating the Rd files. It has been in development since
+2009 on R-Forge \citep{rforge}, has seen several releases on CRAN, and
+is now considered stable.
+
+For quality assurance, we currently have implemented unit tests for
+Documentation Lists, which assure that Parser Functions work as
+described. We also have unit tests which ensure that the generated Rd
+passes R CMD check without errors or warnings.
+
+For the future, it would be nice to also have unit tests for the
+content of the generated Rd. We could compare Documentation Lists with
 the output of the \code{parse_Rd} function as described by
 \cite{parseRd}. Furthermore, this could be used to convert a
-documentation list into an equivalent representation as an \code{"Rd"}
+Documentation List into an equivalent representation as an \code{"Rd"}
 object, and we could use the \code{print.Rd} function to write the Rd
-files. This could eventually be preferable to the current system of
+files. This could eventually be used instead of the current system of
 starting from the output of \code{package.skeleton} and doing find and
 replace.
 
