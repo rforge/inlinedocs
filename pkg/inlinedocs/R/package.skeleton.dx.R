@@ -279,7 +279,53 @@ inlinedocExample(package.skeleton.dx) <- function(){
 }
 
 
-
+replace.one <- function
+### Do find and replace for one element of an inner documentation list
+### on 1 Rd file.
+(torep,
+### tag to find.
+ REP,
+### contents of tag to put inside.
+ txt
+### text in which to search.
+ ){
+  ##if(grepl("Using the same conventions",REP))browser()
+  escape.backslashes <- function(x)gsub("\\\\","\\\\\\\\",x)
+  cat(" ",torep,sep="")
+  FIND1 <- escape.backslashes(torep)
+  FIND <- gsub("([{}])","\\\\\\1",FIND1)
+  FIND <- paste(FIND,"[{][^}]*[}]",sep="")
+  REP.esc <- escape.backslashes(REP)
+  ## need to escape backslashes for faithful copying of the comments
+  ## to the Rd file:
+  REP <- paste(FIND1,"{",REP.esc,"}",sep="")
+  ## escape percent signs in R code:
+  REP <- gsub("%","\\\\\\\\%",REP)
+  ## alias (in particular) need to change only the first one generated
+  ## (generic methods in classes add to standard skeleton alias set)
+  if ( torep %in% c("alias") ){
+    txt <- sub(FIND,REP,txt)
+  } else {
+    txt <- gsub(FIND,REP,txt)
+  }
+  classrep <- sub("item{(.*)}","item{\\\\code{\\1}:}",torep,perl=TRUE)
+  if ( classrep != torep ){
+    ## in xxx-class files, slots are documented with:
+    ## \item{\code{name}:}{Object of class \code{"function"} ~~ }
+    ## which requires slightly different processing
+    FIND1 <- escape.backslashes(classrep)
+    FIND <-
+      paste(gsub("([{}])","\\\\\\1",FIND1),
+            "\\{Object of class \\\\code\\{\\\"(\\S+)\\\"\\}[^}]*[}]",sep="")
+    ## need to escape backslashes for faithful copying of the comments
+    ## to the Rd file and also put the class type in parentheses.
+    REP <- paste(FIND1,"{(\\\\code{\\1}) ",REP.esc,"}",sep="")
+    ## escape percent signs in R code:
+    REP <- gsub("%","\\\\\\\\%",REP)
+    txt <- gsub(FIND,REP,txt)
+  }
+  txt
+}
 
 modify.Rd.file <- function
 ### Add inline documentation from comments to an Rd file
@@ -385,37 +431,8 @@ modify.Rd.file <- function
   ## Find and replace based on data in d
   txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
-    if ( ".s3method" == torep ){         # .s3method is a flag handled later
-      next
-    }
-    cat(" ",torep,sep="")
-    FIND1 <- gsub("\\\\","\\\\\\\\",torep)
-    FIND <- paste(gsub("([{}])","\\\\\\1",FIND1),"[{][^}]*[}]",sep="")
-    ## need to escape backslashes for faithful copying of the comments
-    ## to the Rd file:
-    REP <- paste(FIND1,"{",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
-    ## escape percent signs in R code:
-    REP <- gsub("%","\\\\\\\\%",REP)
-    ## alias (in particular) need to change only the first one generated
-    ## (generic methods in classes add to standard skeleton alias set)
-    if ( torep %in% c("alias") ){
-      txt <- sub(FIND,REP,txt)
-    } else {
-      txt <- gsub(FIND,REP,txt)
-    }
-    classrep <- sub("item{(.*)}","item{\\\\code{\\1}:}",torep,perl=TRUE)
-    if ( classrep != torep ){
-      ## in xxx-class files, slots are documented with:
-      ## \item{\code{name}:}{Object of class \code{"function"} ~~ }
-      ## which requires slightly different processing
-      FIND1 <- gsub("\\\\","\\\\\\\\",classrep)
-      FIND <- paste(gsub("([{}])","\\\\\\1",FIND1),"\\{Object of class \\\\code\\{\\\"(\\S+)\\\"\\}[^}]*[}]",sep="")
-      ## need to escape backslashes for faithful copying of the comments
-      ## to the Rd file and also put the class type in parentheses.
-      REP <- paste(FIND1,"{(\\\\code{\\1}) ",gsub("\\\\","\\\\\\\\",d[[torep]]),"}",sep="")
-      ## escape percent signs in R code:
-      REP <- gsub("%","\\\\\\\\%",REP)
-      txt <- gsub(FIND,REP,txt)
+    if ( !grepl("^[.]",torep) ){         # .s3method is a flag handled later
+      txt <- replace.one(torep,d[[torep]],txt)
     }
   }
 
