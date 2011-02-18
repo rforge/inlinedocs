@@ -451,9 +451,10 @@ forfun.parsers <-
        extract.xxx.chunks=extract.xxx.chunks,
        ## title from first line of function def
        title.from.firstline=function(src,...){
-         if(length(src) && grepl("#",src[1])){
-           list(title=gsub("[^#]*#\\s*(.*)","\\1",src[1],perl=TRUE))
-         } else list()
+         first <- src[1]
+         if(!is.character(first))return(list())
+         if(!grepl("#",first))return(list())
+         list(title=gsub("[^#]*#\\s*(.*)","\\1",first,perl=TRUE))
        },
        ## PhG: it is tests/FUN.R!!! I would like more flexibility here
        ## please, let me choose which dir to use for examples!
@@ -664,8 +665,7 @@ default.parsers <-
       L <-
         list(list(title=desc[,"Title"],
                   description=desc[,"Description"],
-                  `tabular{ll}`=details,
-                  author=desc[,"Maintainer"]))
+                  `tabular{ll}`=details))
       names(L) <- paste(desc[,"Package"],"-package",sep="")
       L
     },
