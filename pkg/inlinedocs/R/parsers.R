@@ -656,7 +656,6 @@ extra.code.docs <- function # Extract documentation from code chunks
 default.parsers <-
   c(extra.code.docs=extra.code.docs, ## TODO: cleanup!
     sapply(forfun.parsers,forfun),
-    sapply(forall.parsers,forall),
     edit.package.file=function(desc,...){
       in.details <- setdiff(colnames(desc),"Description")
       details <- sprintf("%s: \\tab %s\\cr",in.details,desc[,in.details])
@@ -666,7 +665,8 @@ default.parsers <-
                   `tabular{ll}`=details))
       names(L) <- paste(desc[,"Package"],"-package",sep="")
       L
-    }
+    },
+    sapply(forall.parsers,forall)
     )
 
 setClass("DocLink", # Link documentation among related functions
@@ -895,6 +895,7 @@ apply.parsers <- function
   ## post-process to collapse all character vectors
   for(i in seq_along(docs)){
     for(j in seq_along(docs[[i]])){
+      if(names(docs[[i]])[j]!="s3method")
       docs[[i]][[j]] <- paste(docs[[i]][[j]],collapse="\n")
     }
   }

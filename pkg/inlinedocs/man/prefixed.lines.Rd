@@ -29,7 +29,7 @@ prefixed.lines(src, ...)
 
 \examples{
 test <- function
-### the desc
+### the description
 (x,
 ### the first argument
  y ##<< another argument
