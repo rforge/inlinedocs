@@ -1,18 +1,18 @@
 == TODO
 
-Make sure for tests we check for all elements of the outer list
-(currently we only do this for the inner list).
-
 Attempt doc list to Rd list conversion, so we can generate Rd using
 tools:::print.Rd. See code in etc/parseRd.R
 
 == 1.5 
 
+Check to make sure we are not extracting too many documentation
+objects, relative to the stored .result in unit tests.
+
 .names such as .s3method and .overwrite in inner documentation lists
 are ignored for find/replacement.
 
 .overwrite signals that all other items of the list should be used
-when combining, ignoring previous values stored in that slot.
+when combining, ignoring previous values stored in those slots.
 
 ##sections<< permitted immediately after ###return value
 

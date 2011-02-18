@@ -38,6 +38,12 @@ test.file <- function
       stop("extracted some unexpected docs!")
     }
   }
+  ## make sure there are no unexpected outer lists
+  not.expected <- names(result)[!names(result)%in%names(.result)]
+  if(length(not.expected)){
+    print(not.expected)
+    stop("extracted some unexpected documentation objects!")
+  }
   ## finally make a package using this file and see if it passes
   ## without warnings
   if(!is.null(e$.dontcheck))return()
