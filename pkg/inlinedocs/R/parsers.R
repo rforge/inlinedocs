@@ -924,11 +924,12 @@ extract.docs.file <- function
 ### Apply all parsers relevant to extract info from just 1 code file.
 (f,
 ### File name of R code to read and parse.
- parsers=nondesc.parsers,
+ parsers=NULL,
 ### Parser Functions to use to parse the code and extract
 ### documentation.
  ...
 ### Other arguments to pass to Parser Functions.
  ){
+  if(is.null(parsers))parsers <- nondesc.parsers
   apply.parsers(readLines(f),parsers,verbose=FALSE,...)
 }

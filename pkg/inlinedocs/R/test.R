@@ -11,11 +11,11 @@ test.file <- function
  verbose=TRUE
 ### Show output?
  ){
-  result <- extract.docs.file(f)
   e <- new.env()
   suppressWarnings(sys.source(f,e))
   ## these are the items to check for, in no particular order
   .result <- e$.result
+  result <- extract.docs.file(f,e$.parsers)
   for(FUN in names(.result)){
     if(verbose)cat(FUN,"")
     fun <- result[[FUN]]
