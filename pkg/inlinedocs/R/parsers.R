@@ -9,8 +9,8 @@ combine.character <- function(x,y)
 combine.list <- function(x,y){
   toadd <- !names(y)%in%names(x)
   toup <- names(y)[!toadd]
-  if("doc"%in%names(x))return(x$doc)
-  if("doc"%in%names(y))return(y$doc)
+  ##if("doc"%in%names(x))return(x$doc)
+  ##if("doc"%in%names(y))return(y$doc)
   x[names(y)[toadd]] <- y[toadd]
   for(up in toup)x[[up]] <- combine(x[[up]],y[[up]])
   return(x)
@@ -512,15 +512,12 @@ forall.parsers <-
            }
            list(examples = ex)
          } else list()
-       },
-       collapse.docs=function(doc,...){
-         list(doc=lapply(doc,paste,collapse="\n"))
-       })
+       }
+       )
 
 ### List of parser functions that operate on single objects. This list
 ### is useful for testing these functions.
-lonely <- c(forall.parsers,forfun.parsers)
-attr(lonely,"ex") <- function(){
+lonely <- structure(c(forall.parsers,forfun.parsers),ex=function(){
   f <- function # title
 ### description
   (x, ##<< arg x
@@ -536,7 +533,7 @@ attr(lonely,"ex") <- function(){
   src <- attr(f,"source")
   lonely$extract.xxx.chunks(src)
   lonely$prefixed.lines(src)
-}
+})
 
 extra.code.docs <- function # Extract documentation from code chunks
 ### Parse R code to extract inline documentation from comments around
@@ -659,6 +656,7 @@ extra.code.docs <- function # Extract documentation from code chunks
 default.parsers <-
   c(extra.code.docs=extra.code.docs, ## TODO: cleanup!
     sapply(forfun.parsers,forfun),
+    sapply(forall.parsers,forall),
     edit.package.file=function(desc,...){
       in.details <- setdiff(colnames(desc),"Description")
       details <- sprintf("%s: \\tab %s\\cr",in.details,desc[,in.details])
@@ -668,8 +666,7 @@ default.parsers <-
                   `tabular{ll}`=details))
       names(L) <- paste(desc[,"Package"],"-package",sep="")
       L
-    },
-    sapply(forall.parsers,forall)
+    }
     )
 
 setClass("DocLink", # Link documentation among related functions
@@ -894,6 +891,12 @@ apply.parsers <- function
     ## This is the argument list that each parser receives:
     L <- p(code=code,objs=objs,docs=docs,...)
     docs <- combine(docs,L)
+  }
+  ## post-process to collapse all character vectors
+  for(i in seq_along(docs)){
+    for(j in seq_along(docs[[i]])){
+      docs[[i]][[j]] <- paste(docs[[i]][[j]],collapse="\n")
+    }
   }
   if(verbose)cat("\n")
   docs
