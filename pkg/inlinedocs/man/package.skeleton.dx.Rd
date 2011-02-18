@@ -2,8 +2,8 @@
 \alias{package.skeleton.dx}
 \alias{inlinedocs	 }
 \title{Package skeleton deluxe}
-\description{Automates more of the setup process for a new source
-package. After inspecting the specified R code files to find
+\description{Generates Rd files for a package based on R code and DESCRIPTION
+metadata. After inspecting the specified R code files to find
 inline documentation, it calls the standard package.skeleton
 function, which creates bare Rd files. The inline documentation is
 added to these Rd files and then these files are copied to
@@ -12,7 +12,7 @@ added to these Rd files and then these files are copied to
 package.skeleton.dx(pkgdir = "..", parsers = NULL, namespace = FALSE, ...)
 }
 \arguments{
-  \item{pkgdir}{package directory where the DESCRIPTION file lives. Your code
+  \item{pkgdir}{Package directory where the DESCRIPTION file lives. Your code
 should be in pkgdir/R. We will setwd to pkgdir/R for the duration
 of the function, then switch back to where you were previously.}
   \item{parsers}{List of Parser functions, which will be applied in sequence to
@@ -22,10 +22,10 @@ pkgdir/R/.inlinedocs.R, if that file exists. If not, we use the
 list defined in options("inlinedocs.parsers"), if that is
 defined. If not, we use the package global default in the variable
 default.parsers.}
-  \item{namespace}{a logical indicating whether a NAMESPACE file should be generated
-for this package. If \code{TRUE}, all objects whose name starts with
-a letter, plus all S4 methods and classes are exported.}
-  \item{\dots}{Parameters to pass to Parser functions.}
+  \item{namespace}{A logical indicating whether a NAMESPACE file should be generated
+for this package. If \code{TRUE}, all objects whose name starts
+with a letter, plus all S4 methods and classes are exported.}
+  \item{\dots}{Parameters to pass to Parser Functions.}
 }
 
 

@@ -1,12 +1,13 @@
 \name{inlinedocExample<-}
 \alias{inlinedocExample<-}
 \title{inlinedocExample<-}
-\description{Attaching example code to attribute 'ex'.}
+\description{Attach example code to attribute 'ex'.}
 \usage{
 inlinedocExample(f) <- value
 }
 \arguments{
-  \item{f}{the function, to which to attach code for section 'examples' in documentation}
+  \item{f}{the function, to which to attach code for section 'examples' in
+documentation}
   \item{value}{the example code, usually the body of a function (see example)}
 }
 

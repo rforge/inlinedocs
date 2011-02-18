@@ -2,16 +2,18 @@
 fields <- c("Package","Maintainer","Author","Version",
             "License","Title","Description")
 
-`inlinedocExample<-` <- function (
-	### Attaching example code to attribute 'ex'.
-	f			##<< the function, to which to attach code for section 'examples' in documentation
-	, value		##<< the example code, usually the body of a function (see example)
+`inlinedocExample<-` <- structure(function
+### Attach example code to attribute 'ex'.
+(f,
+### the function, to which to attach code for section 'examples' in
+### documentation
+ value
+### the example code, usually the body of a function (see example)
 ) {
-	# see parsers.R examples.in.attr
+	## see parsers.R examples.in.attr
 	attr (f, "ex") <- value
 	f
-}
-inlinedocExample(`inlinedocExample<-`) <- function(){
+},ex=function(){
 	### Simple Hello-World function.
 	helloWorld <- function(){ cat('Hello World!\n')}
 	inlinedocExample(helloWorld) <- function(){
@@ -20,21 +22,21 @@ inlinedocExample(`inlinedocExample<-`) <- function(){
 		# function helloWorld
 		helloWorld()	# prints Hello World
 	}	
-}
+})
 		
 ### Default DESCRIPTION, written if it doesn't exist.  TODO, PhG:
 ### start with reasonable values here!
 empty.description <- matrix("",ncol=length(fields),dimnames=list(NULL,fields))
 
-package.skeleton.dx <- function # Package skeleton deluxe
-### Automates more of the setup process for a new source
-### package. After inspecting the specified R code files to find
+package.skeleton.dx <- structure(function # Package skeleton deluxe
+### Generates Rd files for a package based on R code and DESCRIPTION
+### metadata. After inspecting the specified R code files to find
 ### inline documentation, it calls the standard package.skeleton
 ### function, which creates bare Rd files. The inline documentation is
 ### added to these Rd files and then these files are copied to
 ### ../man. It will overwrite files in the pkgdir/man directory.
 (pkgdir="..",
-### package directory where the DESCRIPTION file lives. Your code
+### Package directory where the DESCRIPTION file lives. Your code
 ### should be in pkgdir/R. We will setwd to pkgdir/R for the duration
 ### of the function, then switch back to where you were previously.
  parsers=NULL,
@@ -45,13 +47,12 @@ package.skeleton.dx <- function # Package skeleton deluxe
 ### list defined in options("inlinedocs.parsers"), if that is
 ### defined. If not, we use the package global default in the variable
 ### default.parsers.
- # PhG: added to support NAMESPACE creation!
  namespace = FALSE,
-### a logical indicating whether a NAMESPACE file should be generated
-### for this package. If \code{TRUE}, all objects whose name starts with
-### a letter, plus all S4 methods and classes are exported.
+### A logical indicating whether a NAMESPACE file should be generated
+### for this package. If \code{TRUE}, all objects whose name starts
+### with a letter, plus all S4 methods and classes are exported.
  ...
-### Parameters to pass to Parser functions.
+### Parameters to pass to Parser Functions.
  ){
   ##alias<< inlinedocs	 
 	 
@@ -241,8 +242,7 @@ package.skeleton.dx <- function # Package skeleton deluxe
   }
   
   unlink(name,rec=TRUE)
-}
-inlinedocExample(package.skeleton.dx) <- function(){
+},ex=function(){
   library(inlinedocs)
 
   owd <- setwd(tempdir())
@@ -276,7 +276,7 @@ inlinedocExample(package.skeleton.dx) <- function(){
   ## cleanup: remove the test package from current workspace again
   unlink("silly",recursive=TRUE)
   setwd(owd)
-}
+})
 
 
 replace.one <- function
