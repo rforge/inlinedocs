@@ -569,7 +569,7 @@ extra.code.docs <- function # Extract documentation from code chunks
 	  # as.data.frame.matrix must be split into: m1 = as.data.frame and
 	  # m2 = matrix... here you got m1 = as, and m2 = data.frame.matrix!!!
 		  pattern <- "^([^\\.]+)\\.(.*)$"
-          doc$s3method=c(m1 <- gsub(pattern,"\\1",on,perl=TRUE),
+          doc$.s3method=c(m1 <- gsub(pattern,"\\1",on,perl=TRUE),
               m2 <- gsub(pattern,"\\2",on,perl=TRUE))
           if ( grepl("\\W",m1,perl=TRUE) ){
 			  m1 <- paste("`",m1,"`",sep="")
@@ -873,7 +873,7 @@ apply.parsers <- function
             if (any(generic %in% utils:::getKnownS3generics()) ||
                 utils:::findGeneric(generic, e) != "") {
                 object <- paste(parts[(i + 1):l], collapse = ".") 
-                docs[[name]]$s3method <- c(generic, object)
+                docs[[name]]$.s3method <- c(generic, object)
                 break
             }
         }
@@ -895,7 +895,7 @@ apply.parsers <- function
   ## post-process to collapse all character vectors
   for(i in seq_along(docs)){
     for(j in seq_along(docs[[i]])){
-      if(names(docs[[i]])[j]!="s3method")
+      if(names(docs[[i]])[j]!=".s3method")
       docs[[i]][[j]] <- paste(docs[[i]][[j]],collapse="\n")
     }
   }

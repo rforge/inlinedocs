@@ -234,8 +234,8 @@ package.skeleton.dx <- function # Package skeleton deluxe
     cat("\n", file = nmspFile, append = TRUE)
     for (N in unique(names(docs))) {
         d <- docs[[N]]
-        if (!is.null(d$s3method))
-            cat('S3method("', d$s3method[1], '", "', d$s3method[2], '")\n',
+        if (!is.null(d$.s3method))
+            cat('S3method("', d$.s3method[1], '", "', d$.s3method[2], '")\n',
                 sep = "", file = nmspFile, append = TRUE)
     }
   }
@@ -385,7 +385,7 @@ modify.Rd.file <- function
   ## Find and replace based on data in d
   txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
-    if ( "s3method" == torep ){         # s3method is a flag handled later
+    if ( ".s3method" == torep ){         # .s3method is a flag handled later
       next
     }
     cat(" ",torep,sep="")
@@ -427,15 +427,15 @@ modify.Rd.file <- function
      utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
    }
   
-  ## fix \method version if s3method
-  if ( !is.null(d$s3method) ){
-    pat <- paste(d$s3method,collapse=".")
-    rep <- paste("\\method{xx",d$s3method[1],"}{",d$s3method[2],"}",sep="")
+  ## fix \method version if .s3method
+  if ( !is.null(d$.s3method) ){
+    pat <- paste(d$.s3method,collapse=".")
+    rep <- paste("\\method{xx",d$.s3method[1],"}{",d$.s3method[2],"}",sep="")
     utxt <- gsub(pat,rep,utxt,fixed=TRUE)
     
     # PhG: there is the special case of generic<-.obj(x, ..., value) to rewrite
     # \method{generic}{obj}(x, ...) <- value
-    if (grepl("<-$", d$s3method[1])) {
+    if (grepl("<-$", d$.s3method[1])) {
         # 1) replace {generic<-} by {generic}
         utxt <- sub("<-[}]", "}", utxt)
         # 2) replace ..., value) by ...) <- value
@@ -463,7 +463,7 @@ modify.Rd.file <- function
                sep="")
   ## delete empty sections to suppress warnings in R CMD check
   txt <- gsub("\\\\[a-z]+[{]\\W*[}]","",txt)
-  if ( !is.null(d$s3method) ){
+  if ( !is.null(d$.s3method) ){
     ## and now remove the xx inserted above to prevent \method{[[}{...} falling
     ## foul of the above replacement!
     txt <- gsub("\\\\method{xx","\\method{",txt,fixed=TRUE)
