@@ -8,6 +8,8 @@
 \SweaveOpts{keep.source=TRUE}
 %% almost as usual
 \newcommand{\inlinedocs}{\pkg{inlinedocs}}
+\newcommand{\Rdoc}{\pkg{Rdoc}}
+\newcommand{\Roxygen}{\pkg{Roxygen}}
 \newcommand{\filepath}[1]{\texttt{#1}}
 \author{Toby Dylan Hocking\\INRIA Paris \And 
         Thomas Wutzler\\MPI for Biogeochemistry, Jena}
@@ -16,7 +18,7 @@
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{Toby Dylan Hocking, Thomas Wutzler} %% comma-separated
 \Plaintitle{Sustainable, extensible documentation generation using
-  \inlinedocs} %% without formatting
+  inlinedocs} %% without formatting
 %\Shorttitle{A Capitalized Title} %% a short title (if necessary)
 \newcommand{\R}{\proglang{R}}
 %% an abstract and keywords
@@ -31,8 +33,8 @@
   system for parsing these comments, which allows the syntax to be
   easily augmented.}
 
-\Keywords{Rd, documentation, documentation generation, literate
-  programming, \proglang{R}}
+\Keywords{\proglang{R}, Rd, documentation, documentation generation,
+  literate programming}
 
 \Plainkeywords{Rd, documentation, documentation generation, literate
   programming, R} %% without formatting
@@ -105,15 +107,36 @@ documents \citep{latex}. However, the goal of \inlinedocs\ is
 different. It aims for integration of Rd documentation inside of R
 code files, for documentation generation using markup in R comments.
 
-For documentation generation, there are already several different
-approaches, including the \code{package.skeleton} function which ships
-with base \R\ \citep{R}. After specifying some input R code files or
-objects to use for the package, it produces some bare-bones
-documentation that you must fill in using a text editor.
+For this purpose, there are already several different approaches,
+including the \code{package.skeleton} function which ships with base
+\R\ \citep{R}. After specifying some input R code files or objects to
+use for the package, it produces some bare-bones documentation that
+you must fill in using a text editor. Although \code{package.skeleton}
+is sufficient for creating small packages that are published once and
+forgotten, it offers no help for packages for which Rd files are
+frequently updated.
 
-roxygen
+The other existing approaches, \Rdoc\ and \Roxygen, attempt to address
+this sustainability problem using Rd generation from special comments
+in R code \citep{rdoc,roxygen}. The documentation is thus written
+closer to the actual code it documents, which is easier to
+maintain. These packages are a step in the right direction, but they
+have 3 key drawbacks:
 
-Rdoc
+\begin{enumerate}
+\item They only use comments to generate documentation, ignoring the
+  information already defined in the code. This is particularly
+  problematic for documenting function arguments, which requires the
+  repetition of the argument names in the function definition and the
+  documentation.
+\item The documentation for an object appears in comments above its
+  definition. These comment blocks can get quite large, and thus far
+  away from the actual code documented.
+\item Examples are defined either in comments or in supplementary R
+  code files. Examples in comments are not easy to test with the R
+  interpreter, and supplementary R code files are far away from the
+  code.
+\end{enumerate}
 
 \subsection{Documentation using inline comments}
 
@@ -235,20 +258,12 @@ construct can be nested. This means that a list entry can be a list
 itself, whose items are described by such a block. Note that the
 components of the list must have names.
 
-\subsection{Providing examples}
-The following example demonstrates attaching example code 
-to the \code{center} function by using the \code{ex}-attribute.
-<<>>=
-attr(center,"ex") <- function(){
-  x <- runif(10)
-  center(x)
-  center(x,method="median")
-}
-@
-
-Using this method in combination with the \code{structure} function
-when defining functions avoids the repetition of the function name. 
-Hence, this is the preferred method for defining examples.
+\subsection[Provide examples using the ex attribute]{Provide
+  examples using the \code{ex} attribute}
+The following code demonstrates the preferred method of documenting
+examples. It uses the \code{structure} function to define the example
+in the \code{ex} attribute of the object, thus avoiding repetition of
+the object name:
 <<>>=
 add2 <- structure(function(x){
   x+2
@@ -257,13 +272,12 @@ add2 <- structure(function(x){
 })
 @
 
-The methods for documenting examples were motivated by the desire to
+This method for documenting examples was motivated by the desire to
 express examples in R code rather than in R comments, and to keep the
-examples close to the object definition. When examples are in R code
-rather than comments, they are more easily transferred to the R
-interpreter, and thus are easier to debug. Furthermore, when examples
-are written close to the object definition, it is easier to keep
-examples up to date and informative.
+examples close to the object definition. When examples are in R code,
+they are easily transferred to the R interpreter, and thus are easy to
+debug. Furthermore, when examples are written close to the object
+definition, it is easier to keep examples up to date and informative.
 
 \subsection{Documenting S4 classes}
 
@@ -322,11 +336,11 @@ str(show)
 
 \hrulefill
 
-Parser Functions examine the lines of code that define the functions,
-and return the Documentation List of tags shown on the right. This
-list describes the tags in the Rd file that will be written for these
-functions. The names of the outer list specify the Rd file, and the
-names of the inner list specify the Rd tag.
+Parser Functions examine the lines of code on the left that define the
+functions, and return the Documentation List of tags shown on the
+right. This list describes the tags in the Rd files that will be
+written for these functions. The names of the outer list specify the
+Rd file, and the names of the inner list specify the Rd tag.
 
 To store parsed documentation, another intermediate representation
 that we considered instead of the Documentation List was the
@@ -345,10 +359,11 @@ The job of a Parser Function is to return a Documentation List for a
 package. To do this, it will require knowledge of what is defined in
 the package, so the following arguments are supplied by \inlinedocs:
 \begin{center}
-\begin{tabular}{cl}
+\begin{tabular}{ll}
   Argument & Description \\
   \hline
   \code{code} & Character vector of all lines of R code in the package.\\
+  \code{env} & Environment in which the lines of code are evaluated.\\
   \code{objs} & List of all R objects defined in the package.\\
   \code{docs} & Documentation List from previous Parser Functions.\\
   \code{desc} & 1-row matrix
@@ -374,6 +389,7 @@ specific Rd file, such as the following:
 
 <<>>=
 title.from.firstline <- function(src,...){
+  first <- src[1]
   if(grepl("#",first)){
     list(title=gsub("[^#]*#\\s*(.*)","\\1",first,perl=TRUE))
   }else list()
@@ -383,59 +399,47 @@ title.from.firstline <- function(src,...){
 This function takes \code{src}, the R code that defines a function,
 and looks for a comment on the first line. If there is a comment,
 \code{title.from.firstline} returns the comment as the title in an
-inner Documentation List. It would be nice to have a sensible default
-title even if it is not specified as a comment on the first line, so
-we can use another Parser Function such as the following:
+inner Documentation List. This a very simple and readable way to
+define a Parser Function.
 
-<<>>=
-title.from.name <- function(name,doc,...){
-  if("title"%in%names(doc))list() else
-  list(title=gsub("[._]"," ",name))
-}
-@ 
-
-This function takes the name of a function \code{name}, and the
-documentation already extracted for it \code{doc}. If no title has
-been specified by previous Parser Functions such as
-\code{title.from.firstline}, it returns an inner Documentation List
-with a title based on the object name.
-
-But how do these Parser Functions get access to the \code{src},
-\code{name}, and \code{doc} arguments for individual documentation
-objects?  To implement this strategy, we introduce the \code{forall}
-and \code{forfun} functions, which transform an object-specific Parser
-Function such as \code{title.from.name} to a Parser Function that can
-work on an entire package. These functions examine the \code{objs} and
-\code{docs} arguments, and call the object-specfic Parser Function on
-each object in turn. The \code{forfun} function applies to every
+But how do this Parser Function get access to the \code{src} argument
+for an individual function? We introduce the \code{forall} and
+\code{forfun} functions, which transform an object-specific Parser
+Function such as \code{title.from.firstline} to a Parser Function that
+can work on an entire package. These functions examine the \code{objs}
+and \code{docs} arguments, and call the object-specfic Parser Function
+on each object in turn. The \code{forfun} function applies to every
 function in the package, whereas the \code{forall} function applies to
 every documentation object in the package.
 
 Thus, when using a Parser Function such as
-\code{forfun(title.from.name)}, you can use the following arguments in
-the definition of \code{title.from.name}, in addition to those
-discussed above that are passed to every Parser Function:
+\code{forfun(title.from.firstline)}, you can use the following
+arguments in the definition of \code{title.from.firstline}, in
+addition to those discussed above that are passed to every Parser
+Function:
 \begin{center}
 \begin{tabular}{ll}
   Argument & Description \\
   \hline
   \code{o} & The R object.\\
   \code{name} & The name of the object.\\
-  \code{doc} & The inner Documentation List
-  already constructed for this object.\\
   \code{src} & The \code{"source"} attribute of the object.\\
+  \code{doc} & The inner Documentation List
+  already constructed for this object.
 \end{tabular}
 \end{center}
 
 The \code{parsers} argument to \code{package.skeleton.dx} allows
 control of the list of Parser Functions used to create the
-Documentation List for the package. They will be called in sequence,
-and their results will be combined to form the final Documentation
-List that will be used to write Rd files. This design choice of
-\inlinedocs\ allows the development of modular Parser functions. For
-example, there is one Parser Function for \verb+###+ comments, another
-for \verb+##<<+ comments, another for adding the author tag using the
-Maintainer line of the DESCRIPTION file, etc.
+Documentation List for the package. The Parser Functions will be
+called in sequence, and their results will be combined to form the
+final Documentation List that will be used to write Rd files.
+
+This design choice of \inlinedocs\ allows the development of modular
+Parser functions. For example, there is one Parser Function for
+\verb+###+ comments, another for \verb+##<<+ comments, another for
+adding the \code{author} tag using the Maintainer line of the
+DESCRIPTION file, etc.
 
 Furthermore, this design choice also allows easy extensions to the
 \inlinedocs\ syntax by simply writing a few new Parser
