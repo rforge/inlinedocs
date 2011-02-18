@@ -49,7 +49,7 @@ forall <- function
     objs <- objs[sapply(objs,subfun)]
     L <- list()
     on.exit(cat(sprintf("Parser Function failed on %s\n",N)))
-    for(N in names(docs)){
+    for(N in union(names(docs),names(objs))){
       o <- objs[[N]]
       L[[N]] <- FUN(src=attr(o,"source"),
                     name=N,objs=objs,o=o,docs=docs,doc=docs[[N]],...)

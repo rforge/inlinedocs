@@ -55,7 +55,7 @@ test.file <- function
   desc <- file.path(system.file(package="inlinedocs"),"silly","DESCRIPTION")
   file.copy(desc,pkgdir)
   file.copy(f,rdir)
-  package.skeleton.dx(pkgdir)
+  package.skeleton.dx(pkgdir,e$.parsers)
   cmd <- sprintf("%s CMD check %s",file.path(R.home("bin"), "R"),pkgdir)
   if(verbose)cat(cmd,"\n")
   checkLines <- system(cmd,intern=TRUE)
