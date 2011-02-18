@@ -24,14 +24,15 @@
 %% an abstract and keywords
 \Abstract{The concept of structured, interwoven code and documentation
   has existed for many years, but existing systems that implement this
-  for the \R\ programming language do not take advantage of
-  information present in the code. This article presents 2
-  contributions for documentation generation for the \R\ community. First, 
-  we propose a new syntax for inline documentation of \R\ code within
-  comments adjacent to the relevant code, which allows for highly
-  readable and maintainable code and documentation. Second, we propose an extensible
-  system for parsing these comments, which allows the syntax to be
-  easily augmented.}
+  for the \R\ programming language do not tightly integrate with \R\
+  code, leading to several drawbacks. This article attempts to address
+  these issues and presents 2 contributions for documentation
+  generation for the \R\ community. First, we propose a new syntax for
+  inline documentation of \R\ code within comments adjacent to the
+  relevant code, which allows for highly readable and maintainable
+  code and documentation. Second, we propose an extensible system for
+  parsing these comments, which allows the syntax to be easily
+  augmented.}
 
 \Keywords{\proglang{R}, Rd, documentation, documentation generation,
   literate programming}
@@ -105,7 +106,8 @@ For automatic report generation, the mature Sweave \citep{sweave}
 format allows integration of R code and results within \LaTeX\
 documents \citep{latex}. However, the goal of \inlinedocs\ is
 different. It aims for integration of Rd documentation inside of R
-code files, for documentation generation using markup in R comments.
+code files, for documentation generation using R code and markup in R
+comments.
 
 For this purpose, there are already several different approaches,
 including the \code{package.skeleton} function which ships with base
@@ -130,8 +132,8 @@ have 3 key drawbacks:
   repetition of the argument names in the function definition and the
   documentation.
 \item The documentation for an object appears in comments above its
-  definition. These comment blocks can get quite large, and thus far
-  away from the actual code documented.
+  definition. These comment blocks can grow to be quite large, and
+  thus far away from the actual code documented.
 \item Examples are defined either in comments or in supplementary R
   code files. Examples in comments are not easy to test with the R
   interpreter, and supplementary R code files are far away from the
@@ -153,8 +155,9 @@ discuss the design and implementation of \inlinedocs, and detail how
 the syntax can be extended. In \autoref{conclusions}, we conclude and
 offer some ideas for future improvements.
 
-\section[The inlinedocs syntax]{The \inlinedocs\ syntax for inline
-  documentation}
+\section[The inlinedocs syntax for inline documentation of R packages]{The
+  \inlinedocs\ syntax for inline
+  documentation of \R\ packages}
 \label{syntax}
 
 Documentation of \R-objects (i.e. variables, functions, arguments,
