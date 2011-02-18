@@ -135,12 +135,16 @@ have 3 key drawbacks:
 \item Examples are defined either in comments or in supplementary R
   code files. Examples in comments are not easy to test with the R
   interpreter, and supplementary R code files are far away from the
-  code.
+  actual code documented.
 \end{enumerate}
 
 \subsection{Documentation using inline comments}
 
-motivation via function arguments, etc.
+The \inlinedocs\ package addresses these issues by proposing a new
+syntax for inline documentation of \R\ packages. Using \inlinedocs,
+one writes documentation in comments right next to the relevant code,
+and examples in the \code{"ex"} attribute of the relevant object. The
+resulting code is free of duplication and incredibly easy to maintain.
 
 The remainder of the article is organized as follows. In
 \autoref{syntax}, we discuss the details of the \inlinedocs\ syntax
