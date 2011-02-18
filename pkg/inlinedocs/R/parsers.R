@@ -7,13 +7,16 @@ combine.character <- function(x,y)
 
 ### combine lists by adding elements or adding to existing elements
 combine.list <- function(x,y){
-  toadd <- !names(y)%in%names(x)
+  toadd <- if(".overwrite"%in%names(y)){
+    y <- y[names(y)!=".overwrite"]
+    rep(TRUE,length(y))
+  }else{
+    !names(y)%in%names(x)
+  }
   toup <- names(y)[!toadd]
-  ##if("doc"%in%names(x))return(x$doc)
-  ##if("doc"%in%names(y))return(y$doc)
   x[names(y)[toadd]] <- y[toadd]
   for(up in toup)x[[up]] <- combine(x[[up]],y[[up]])
-  return(x)
+  x
 ### A list, same type as x, but with added elements from y.
 }
 
@@ -512,6 +515,26 @@ forall.parsers <-
            }
            list(examples = ex)
          } else list()
+       },collapse=function(doc,...){
+         L <- lapply(doc,paste,collapse="\n")
+         L$.overwrite <- TRUE
+         L
+       },tag.s3methods=function(name,env,...){
+         parts <- strsplit(name, ".", fixed = TRUE)[[1]]
+         l <- length(parts)
+         if (l > 1) {
+           for (i in 1:(l - 1)) {
+             ## Look for a generic function (known by the system or defined
+             ## in the package) that matches that part of the function name
+             generic <- paste(parts[1:i], collapse = ".")
+             if (any(generic %in% utils:::getKnownS3generics()) ||
+                 utils:::findGeneric(generic, env) != "") {
+               object <- paste(parts[(i + 1):l], collapse = ".") 
+               return(list(.s3method=c(generic, object)))
+             }
+           }
+         }
+         list()
        }
        )
 
@@ -861,24 +884,6 @@ apply.parsers <- function
 
   docs <- list()
   
-  # PhG: Automatically determine who is S3 methods
-  for (name in names(objs)) {
-    parts <- strsplit(name, ".", fixed = TRUE)[[1]]
-	l <- length(parts)
-	if (l > 1) {
-        for (i in 1:(l - 1)) {
-            # Look for a generic function (known by the system or defined
-            # in the package) that matches that part of the function name
-            generic <- paste(parts[1:i], collapse = ".")
-            if (any(generic %in% utils:::getKnownS3generics()) ||
-                utils:::findGeneric(generic, e) != "") {
-                object <- paste(parts[(i + 1):l], collapse = ".") 
-                docs[[name]]$.s3method <- c(generic, object)
-                break
-            }
-        }
-    }
-  }
   ## apply parsers in sequence to code and objs
   for(i in seq_along(parsers)){
     N <- names(parsers[i])
@@ -889,7 +894,7 @@ apply.parsers <- function
     }
     p <- parsers[[i]]
     ## This is the argument list that each parser receives:
-    L <- p(code=code,objs=objs,docs=docs,...)
+    L <- p(code=code,objs=objs,docs=docs,env=e,...)
     docs <- combine(docs,L)
   }
   ## post-process to collapse all character vectors

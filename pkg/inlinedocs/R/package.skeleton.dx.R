@@ -431,7 +431,7 @@ modify.Rd.file <- function
   ## Find and replace based on data in d
   txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
-    if ( !grepl("^[.]",torep) ){         # .s3method is a flag handled later
+    if ( !grepl("^[.]",torep) ){## .flags should not be used for find-replace
       txt <- replace.one(torep,d[[torep]],txt)
     }
   }
