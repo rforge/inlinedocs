@@ -34,7 +34,7 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
 ### inline documentation, it calls the standard package.skeleton
 ### function, which creates bare Rd files. The inline documentation is
 ### added to these Rd files and then these files are copied to
-### ../man. It will overwrite files in the pkgdir/man directory.
+### pkgdir/man, possibly overwriting the previous files there.
 (pkgdir="..",
 ### Package directory where the DESCRIPTION file lives. Your code
 ### should be in pkgdir/R. We will setwd to pkgdir/R for the duration

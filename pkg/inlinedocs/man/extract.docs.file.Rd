@@ -19,4 +19,7 @@ documentation.}
 
 
 
-
+\examples{
+f <- system.file("silly","R","silly.R",package="inlinedocs")
+extract.docs.file(f)
+}

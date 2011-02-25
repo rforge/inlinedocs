@@ -7,7 +7,7 @@ metadata. After inspecting the specified R code files to find
 inline documentation, it calls the standard package.skeleton
 function, which creates bare Rd files. The inline documentation is
 added to these Rd files and then these files are copied to
-../man. It will overwrite files in the pkgdir/man directory.}
+pkgdir/man, possibly overwriting the previous files there.}
 \usage{
 package.skeleton.dx(pkgdir = "..", parsers = NULL, namespace = FALSE, ...)
 }

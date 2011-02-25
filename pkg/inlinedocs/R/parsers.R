@@ -920,7 +920,7 @@ non.descfile.names <-
 ### description file.
 nondesc.parsers <- default.parsers[non.descfile.names]
 
-extract.docs.file <- function
+extract.docs.file <- structure(function
 ### Apply all parsers relevant to extract info from just 1 code file.
 (f,
 ### File name of R code to read and parse.
@@ -932,4 +932,7 @@ extract.docs.file <- function
  ){
   if(is.null(parsers))parsers <- nondesc.parsers
   apply.parsers(readLines(f),parsers,verbose=FALSE,...)
-}
+},ex=function(){
+  f <- system.file("silly","R","silly.R",package="inlinedocs")
+  extract.docs.file(f)
+})
