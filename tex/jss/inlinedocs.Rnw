@@ -135,9 +135,9 @@ have 3 key drawbacks:
   definition. These comment blocks can grow to be quite large, and
   thus far away from the actual code documented.
 \item Examples are defined either in comments or in supplementary R
-  code files. Examples in comments are not easy to test with the R
-  interpreter, and supplementary R code files are far away from the
-  actual code documented.
+  code files. Examples in comments are not easy to test and debug with
+  the R interpreter, and supplementary R code files are far away from
+  the actual code documented.
 \end{enumerate}
 
 \subsection{Documentation using inline comments}
