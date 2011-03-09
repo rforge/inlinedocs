@@ -487,6 +487,9 @@ modify.Rd.file <- function
   }
   ## This doesn't work if there are quotes in the default values:
   ## gsub(",",paste("\n",paste(rep(" ",l=nchar(N)-1),collapse="")),utxt)
+
+  ## convert to dos line endings to avoid problems with svn
+  txt <- gsub("(?<!\r)\n","\r\n",txt,perl=TRUE)
   cat(txt,file=f)
   cat("\n")
 }
