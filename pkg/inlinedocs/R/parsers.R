@@ -892,8 +892,7 @@ apply.parsers <- function
   ## which in turn is inlinedocs when processing inlinedocs package, hence
   ## the clash. The following works (under R 2.12.2), so that the topenv()
   ## now finds e before finding the inlinedocs environment.
-  options(topLevelEnvironment=e)
-  old <- options(keep.source=TRUE)
+  old <- options(keep.source=TRUE,topLevelEnvironment=e)
   on.exit(options(old))
   exprs <- parse(text=code)
   for (i in exprs){
