@@ -505,7 +505,7 @@ called in sequence, and their results will be combined to form the
 final Documentation List that will be used to write Rd files.
 
 This design choice of \inlinedocs\ allows the development of modular
-Parser functions. For example, there is one Parser Function for
+Parser Functions. For example, there is one Parser Function for
 \verb+###+ comments, another for \verb+##<<+ comments, another for
 adding the \code{author} tag using the Maintainer line of the
 DESCRIPTION file, etc. Each of these Parser Functions is relatively
@@ -531,7 +531,7 @@ Documentation Lists, which assure that Parser Functions work as
 described. We also have unit tests which ensure that the generated Rd
 passes R CMD check without errors or warnings.
 
-Some work is still required fully to support S4 classes and the new
+Some work is still required to fully support S4 classes and the new
 reference classes.
 
 For the future, it would be nice to also have unit tests for the
