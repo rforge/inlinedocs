@@ -28,7 +28,7 @@ silly.example <- function
     res <- list(x=7, ##<< x coordinate
                 z= ##<< z describes everything else
                 ##describe<<
-                list(colour=green, ##<< colour of line
+                list(colour="green", ##<< colour of line
                      width=2),     ##<< width of line
                 ##end<<
                 ## and this line should get into documentation for z
@@ -53,3 +53,39 @@ setClass("Silly", # S4 classes can be documented as well
 
 ## creates "show" generic function. Documentation of this not yet supported.
 setMethod("show","Silly",function(object){cat("crashed ",object@crashes," times\n")})
+
+# following based on code from R.oo help(Object):
+
+setConstructorS3("Person", function # Person constructor
+### How to make a person object
+                 (name, ##<< name by which person known
+                  age ##<< age on entry to system
+                  ) {
+  ##details<< This system records age on entry to the system - it would be
+  ## better in most cases to record date of birth.
+  if (missing(name)) name <- NA;
+  if (missing(age))  age <- NA;
+
+  ##value<< Returns an R.oo object of class Person, with fields
+  extend(Object(), "Person",
+    .name=name, ##<<name
+    .age=age ##<<age
+  )
+})
+
+setMethodS3("as.character", "Person", function
+### Converts Person to character string
+            (x, ##<< R.oo Object of class Person
+             ...) {
+  paste(x$.name, "was", as.integer(x$.age), "years old.");
+})
+
+age_person <- function # make Person older
+### Increment Person's age
+(this,                 ##<< R.oo object of class Person
+ years,                ##<< how many years to add
+ ...)                  ##<< ignored here
+{
+  paste(this$.name, "was", as.integer(this$.age), "years old.");
+}
+setMethodS3("older", "Person", age_person)

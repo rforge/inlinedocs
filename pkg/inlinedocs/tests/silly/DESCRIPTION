@@ -9,4 +9,4 @@ Description: Attempt to exercise many variants of the extended ##<< tags for inl
 URL: http://inlinedocs.r-forge.r-project.org
 License: GPL-3
 LazyLoad: yes
-Depends: methods
+Depends: methods, R.oo

@@ -445,6 +445,40 @@ extract.xxx.chunks <- function # Extract documentation from a function
 ### with the string in this list (implemented in modify.Rd.file).
 }
 
+leadingS3generic <- function # check whether function name is an S3 generic
+### Determines whether a function name looks like an S3 generic function
+(name,                     ##<< name of function
+ env,                      ##<< environment to search for additional generics
+ ...)                      ##<< ignored here
+{
+  ##details<< This function is one of the default parsers, but exposed as
+  ## possibly of more general interest. Given a function name of the form
+  ## x.y.z it looks for the generic function x applying to objects of class
+  ## y.z and also for generic function x.y applying to objects of class z.
+  ##
+  parts <- strsplit(name, ".", fixed = TRUE)[[1]]
+  l <- length(parts)
+  if (l > 1) {
+    for (i in 1:(l - 1)) {
+      ## Look for a generic function (known by the system or defined
+      ## in the package) that matches that part of the function name
+      generic <- paste(parts[1:i], collapse = ".")
+      if (any(generic %in% utils:::getKnownS3generics()) ||
+          utils:::findGeneric(generic, env) != "") {
+        object <- paste(parts[(i + 1):l], collapse = ".") 
+        ##details<< Assumes that the first name which matches any known
+        ## generics is the target generic function, so if both x and x.y
+        ## are generic functions, will assume generic x applying to objects
+        ## of class y.z
+        ##value<< If a matching generic found returns a list with a single component:
+        return(list(.s3method=c(generic, object))) ##<< a character vector containing generic name and object name.
+      }
+    }
+  }
+  ##value<< If no matching generic functions are found, returns an empty list.
+  list()
+}
+
 ### Parsers for each function that are constructed automatically. This
 ### is a named list, and each element is a parser function for an
 ### individual object.
@@ -519,23 +553,7 @@ forall.parsers <-
          L <- lapply(doc,paste,collapse="\n")
          L$.overwrite <- TRUE
          L
-       },tag.s3methods=function(name,env,...){
-         parts <- strsplit(name, ".", fixed = TRUE)[[1]]
-         l <- length(parts)
-         if (l > 1) {
-           for (i in 1:(l - 1)) {
-             ## Look for a generic function (known by the system or defined
-             ## in the package) that matches that part of the function name
-             generic <- paste(parts[1:i], collapse = ".")
-             if (any(generic %in% utils:::getKnownS3generics()) ||
-                 utils:::findGeneric(generic, env) != "") {
-               object <- paste(parts[(i + 1):l], collapse = ".") 
-               return(list(.s3method=c(generic, object)))
-             }
-           }
-         }
-         list()
-       }
+       },tag.s3methods=leadingS3generic
        )
 
 ### List of parser functions that operate on single objects. This list
@@ -586,19 +604,13 @@ extra.code.docs <- function # Extract documentation from code chunks
         if(!"description"%in%names(doc) && !is.na(parsed[[on]]@description) ){
           doc$description <- parsed[[on]]@description
         }
-        if ( "setMethodS3" == parsed[[on]]@created ){
-          # PhG: this may be wrong! It does not catch correctly how the method
-	  # must be splitted in case of methods containing dots. for instance,
-	  # as.data.frame.matrix must be split into: m1 = as.data.frame and
-	  # m2 = matrix... here you got m1 = as, and m2 = data.frame.matrix!!!
-		  pattern <- "^([^\\.]+)\\.(.*)$"
-          doc$.s3method=c(m1 <- gsub(pattern,"\\1",on,perl=TRUE),
-              m2 <- gsub(pattern,"\\2",on,perl=TRUE))
-          if ( grepl("\\W",m1,perl=TRUE) ){
-			  m1 <- paste("`",m1,"`",sep="")
-          }
-          cat("S3method(",m1,",",m2,")\n",sep="")
-        }
+        ## if ( "setMethodS3" == parsed[[on]]@created ){
+        ##   gen <- leadingS3generic(on,topenv())
+        ##   if ( 0 < length(gen) ){
+        ##     doc$.s3method <- gen$.s3method
+        ##     cat("S3method(",gen$.s3method[1],",",gen$.s3method[2],")\n",sep="")
+        ##   }
+        ## }
       }
       if("title" %in% names(doc) && !"description" %in% names(doc) ){
         ## For short functions having both would duplicate, but a
@@ -695,7 +707,8 @@ default.parsers <-
 setClass("DocLink", # Link documentation among related functions
 ### The \code{.DocLink} class provides the basis for hooking together
 ### documentation of related classes/functions/objects. The aim is that
-### documentation sections missing from the child are
+### documentation sections missing from the child are inherited from
+### the parent class.
          representation(name="character", ##<< name of object
                         created="character", ##<< how created
                         parent="character", ##<< parent class or NA
@@ -872,6 +885,14 @@ apply.parsers <- function
 ### Additional arguments to pass to Parser Functions.
  ){
   e <- new.env()
+  ## KMP 2011-03-09 fix problem with DocLink when inlinedocs ran on itself
+  ## Error in assignClassDef(Class, classDef, where) :
+  ##   Class "DocLink" has a locked definition in package "inlinedocs"
+  ## Traced to "where" argument in setClassDef which defaults to topenv()
+  ## which in turn is inlinedocs when processing inlinedocs package, hence
+  ## the clash. The following works (under R 2.12.2), so that the topenv()
+  ## now finds e before finding the inlinedocs environment.
+  options(topLevelEnvironment=e)
   old <- options(keep.source=TRUE)
   on.exit(options(old))
   exprs <- parse(text=code)

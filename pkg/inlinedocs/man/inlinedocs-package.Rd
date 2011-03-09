@@ -7,8 +7,8 @@
 \tabular{ll}{Package: \tab inlinedocs\cr
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
-Version: \tab 1.5\cr
-Date: \tab 2010-10-20\cr
+Version: \tab 1.5.1\cr
+Date: \tab 2011-03-09\cr
 Author: \tab Inlinedocs development team\cr
 Maintainer: \tab Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>\cr
 URL: \tab http://inlinedocs.r-forge.r-project.org\cr
