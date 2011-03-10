@@ -1,0 +1,15 @@
+Index: lisp/ess-mode.el
+===================================================================
+--- lisp/ess-mode.el	(revision 4479)
++++ lisp/ess-mode.el	(working copy)
+@@ -487,7 +487,9 @@
+ 
+ 	      "\\(" space "\\s<.*\\s>\\)*"	; whitespace, comment
+ 	      ;; FIXME: in principle we should skip 'definition *= *' here
+-	      space "function\\s-*(" ; whitespace, function keyword, parenthesis
++	      space "\\(structure" space "(\\)?" ; funs constructed with attrs
++	      space "function\\s-*" ; whitespace, function keyword
++	      ;"(" TDH 2011-03-10 delete parenthesis for generality
+ 	      ))
+      )
+   ;; SJE: 2007-07-16 add to quieten byte-compiler.
