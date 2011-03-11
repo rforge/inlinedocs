@@ -52,7 +52,9 @@ setClass("Silly", # S4 classes can be documented as well
          ) ##<< this comment is ignored as it is outside setClass expression
 
 ## creates "show" generic function. Documentation of this not yet supported.
-setMethod("show","Silly",function(object){cat("crashed ",object@crashes," times\n")})
+setMethod("show","Silly",function(object){
+  cat("crashed ",object@crashes," times\n")
+})
 
 # following based on code from R.oo help(Object):
 
@@ -89,3 +91,14 @@ age_person <- function # make Person older
   paste(this$.name, "was", as.integer(this$.age), "years old.");
 }
 setMethodS3("older", "Person", age_person)
+
+# The following modifications to ESS variables allow C-c C-f to send a
+#  complete inlinedocs function. The mods are based on the variables as at
+# ESS 5.10.
+#
+# modifications to function pattern allow setConstructorS3 and inlinedocs documentation between keyword function and opening (
+# modifications to function start allow setConstructorS3, setMethodS3
+# Local Variables:
+# ess-function-pattern: "\\(\\(\\(\\s\"\\[?\\[?\\(\\sw\\|\\s_\\)*\\(<-\\)?\\(\\sw\\|\\s_\\)*\\s\"\\)\\|\\(\\(^\\|[ ]\\)\\(\\sw\\|\\s_\\)+\\)\\)\\s-*\\(<-\\|=\\)\\|^set\\(As\\|Method\\|MethodS3\\|ConstructorS3\\|Generic\\|GroupMethod\\|ReplaceMethod\\)(\\s\"\\[?\\[?\\(\\sw\\|\\s_\\)*\\s\",\\(\\s-\\|\n\\)*.*\\)\\(\\(\\s-\\|\n\\)*\\s<.*\\s>\\)*\\(\\s-\\|\n\\)*function\\s-*\\(?:\\(?:#.*\\)?\n\\s-*\\)*("
+# ess-set-function-start: "^set[MGARC][Ma-z]+\\(?:S3\\)\\s-?("
+# End:

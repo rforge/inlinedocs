@@ -361,6 +361,38 @@ using the inline documentation specified in the R code. After running
 date with the code, and the package should pass R CMD check without
 errors or warnings.
 
+\subsection{Relationship with ESS}
+\label{sec:ess}
+
+The choice of the trigger character strings is derived from the default
+behaviour of the automatic indentation provided by the ``Emacs speaks
+statistics'' add-on package for Emacs:
+\begin{itemize}
+\item \verb+###+ is automatically aligned to the left hand margin,
+  providing maximum space for comment text;
+\item \verb+##<<+ at line start is aligned with the start of adjacent code
+  lines, so that comments using this form in the middle of a function do
+  not obscure the code structure;
+\item A single \verb+#+ following code on a line is automatically placed
+  well to the right, which would be unduly restrictive when adding the
+  comments for function arguments and other lists, so the double \verb+##+
+  form was preferred.
+\end{itemize}
+
+The use of \verb+<<+ same-line comments was originally based on the Doxygen
+system, where C++ function parameters may be documented by \verb+///<+ on
+the same line as the parameter. The second \verb+<+ was initially added
+because it felt more natural when typing double \verb+##+ to also type
+double \verb+<<+. However that notation has a happy resemblance to the C++
+``put'' operator, so that the \verb+##SECTION<<+ notation may be thought of
+as putting the following documentation into the specified section.
+
+In ESS 5.10, the \verb+ess-function-pattern+ regular expression does not
+allow comments and/or newline between the keyword \verb+function+ and the
+parenthesis which opens the argument list. That may be remedied by
+replacing the trailing \verb+function\\s-*(+ with
+\verb+function\\s-*\\(?:\\(?:#.*\\)?\n\\s-*\\)*(+.
+
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
   generators}
