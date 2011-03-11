@@ -92,13 +92,22 @@ age_person <- function # make Person older
 }
 setMethodS3("older", "Person", age_person)
 
-# The following modifications to ESS variables allow C-c C-f to send a
-#  complete inlinedocs function. The mods are based on the variables as at
-# ESS 5.10.
-#
-# modifications to function pattern allow setConstructorS3 and inlinedocs documentation between keyword function and opening (
-# modifications to function start allow setConstructorS3, setMethodS3
-# Local Variables:
-# ess-function-pattern: "\\(\\(\\(\\s\"\\[?\\[?\\(\\sw\\|\\s_\\)*\\(<-\\)?\\(\\sw\\|\\s_\\)*\\s\"\\)\\|\\(\\(^\\|[ ]\\)\\(\\sw\\|\\s_\\)+\\)\\)\\s-*\\(<-\\|=\\)\\|^set\\(As\\|Method\\|MethodS3\\|ConstructorS3\\|Generic\\|GroupMethod\\|ReplaceMethod\\)(\\s\"\\[?\\[?\\(\\sw\\|\\s_\\)*\\s\",\\(\\s-\\|\n\\)*.*\\)\\(\\(\\s-\\|\n\\)*\\s<.*\\s>\\)*\\(\\s-\\|\n\\)*function\\s-*\\(?:\\(?:#.*\\)?\n\\s-*\\)*("
-# ess-set-function-start: "^set[MGARC][Ma-z]+\\(?:S3\\)\\s-?("
-# End:
+## The following modifications to ESS variables allow C-c C-f to send a
+##  complete inlinedocs function. The mods are based on the variables as at
+##  ESS 5.10. These are file-local variables - they may also be changed
+##  using ess-mode-hook or directory-local-variables.
+##
+## modifications to ess-function-pattern allow:
+## * setConstructorS3, setMethodS3
+## * inlinedocs documentation between keyword function and opening "("
+## * structure combining function and examples (note that R requires opening "(" to be on same line as keyword structure)
+## * ess-eval-function to be called with point anywhere after the function keyword.
+##
+## modifications to ess-set-function-start ensure that the sent object finishes
+##   at the closing ")", when the object definition uses
+##   setConstructorS3, setMethodS3 or <- structure
+##
+## Local Variables:
+## ess-function-pattern: "\\(\\(\\(\\s\"\\[?\\[?\\(\\sw\\|\\s_\\)*\\(<-\\)?\\(\\sw\\|\\s_\\)*\\s\"\\)\\|\\(\\(^\\|[ ]\\)\\(\\sw\\|\\s_\\)+\\)\\)\\s-*\\(<-\\|=\\)\\|^set\\(As\\|Method\\|MethodS3\\|ConstructorS3\\|Generic\\|GroupMethod\\|ReplaceMethod\\)(\\s\"\\[?\\[?\\(\\sw\\|\\s_\\)*\\s\",\\(\\s-\\|\n\\)*.*\\)\\(\\(\\s-\\|\n\\)*\\s<.*\\s>\\)*\\(\\s-\\|\n\\)*\\(structure\\s-*(\\s-*\\(?:\\(?:#.*\\)?\n\\s-*\\)*\\)?function\\b\\s-*\\(?:\\(?:#.*\\)?\n\\s-*\\)*(?"
+## ess-set-function-start: "\\(^set[MGARC][Ma-z]+\\(?:S3\\)?\\)\\|\\(.*<-\\s-*structure\\)\\s-*("
+## End:

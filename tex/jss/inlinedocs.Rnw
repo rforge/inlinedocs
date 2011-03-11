@@ -299,6 +299,7 @@ implicitly enables the same mechanism.
 
 \subsection[Provide examples using the ex attribute]{Provide
   examples using the \code{ex} attribute}
+\label{sec:exattr}
 The following code demonstrates the preferred method of documenting
 examples. It uses the \code{structure} function to define the example
 in the \code{ex} attribute of the object, thus avoiding repetition of
@@ -317,6 +318,14 @@ examples close to the object definition. When examples are in R code,
 they are easily transferred to the R interpreter, and thus are easy to
 debug. Furthermore, when examples are written close to the object
 definition, it is easier to keep examples up to date and informative.
+
+However the examples are provided, one significant advantage of the R
+package system is that \verb+R CMD check+ will run the examples and
+optionally compare the output with reference output. This allows automatic
+regression testing of functions (almost) for free. Combined with the
+simplicity of the \inlinedocs\ approach to generating a package, this makes
+it worthwhile generating informal packages for almost any collection of
+functions which might be reused over time, no matter how restricted their scope.
 
 \subsection{Documenting classes and methods}
 
@@ -387,11 +396,19 @@ double \verb+<<+. However that notation has a happy resemblance to the C++
 ``put'' operator, so that the \verb+##SECTION<<+ notation may be thought of
 as putting the following documentation into the specified section.
 
-In ESS 5.10, the \verb+ess-function-pattern+ regular expression does not
-allow comments and/or newline between the keyword \verb+function+ and the
-parenthesis which opens the argument list. That may be remedied by
-replacing the trailing \verb+function\\s-*(+ with
-\verb+function\\s-*\\(?:\\(?:#.*\\)?\n\\s-*\\)*(+.
+In ESS 5.10, an entire function may be sent for evaluation using
+\verb+ess-eval-function+ command. However the standard
+\verb+ess-function-pattern+ regular expression does not allow comments
+and/or newline between the keyword \verb+function+ and the parenthesis
+which opens the argument list. That may be remedied by replacing the
+trailing \verb+function\\s-*(+ with
+\verb+function\\b\\s-*\\(?:\\(?:#.*\\)?\n\\s-*\\)*(?+.
+
+Additional changes
+(documented on the web site) are required to
+that pattern and to \verb+ess-set-function-start+ are required to transmit
+a ``function with examples'' structure as described in section
+\ref{sec:exattr}. 
 
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
