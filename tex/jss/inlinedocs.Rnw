@@ -328,9 +328,9 @@ implicitly enables the same mechanism.
 \subsection[Provide examples using the ex attribute]{Provide
   examples using the \code{ex} attribute}
 \label{sec:exattr}
-The following code demonstrates the preferred method of documenting
-examples. It uses the \code{structure} function to define the example
-in the \code{ex} attribute of the object:
+The following code demonstrates the preferred method of writing
+examples. It uses the \code{structure()} function to define the
+example in the \code{ex} attribute of the object:
 <<>>=
 add2 <- structure(function (x) {
   x + 2
@@ -339,27 +339,13 @@ add2 <- structure(function (x) {
 })
 @
 
-%% PhG: may be is it worth to provide an alternate way to include examples
-%% that apporaches allows to update examples without updating the function
-%% definition
-
-Examples can also be added in a second step like here:
-<<>>=
-add2 <- function (x) {
-  x + 2
-}
-
-inlinedocExample(add2) <- function () {
-  add2(11) == 13
-}
-@
-
 This method for documenting examples was motivated by the desire to
-express examples in \R\  code rather than in \R\  comments, and to keep the
-examples close to the object definition. When examples are in \R\  code,
-they are easily transferred to the \R\  interpreter, and thus are easy to
-debug. Furthermore, when examples are written close to the object
-definition, it is easier to keep examples up to date and informative.
+express examples in \R\ code rather than in \R\ comments, and to keep
+the examples close to the object definition. When examples are in \R\
+code, they are easily transferred to the \R\ interpreter, and thus are
+easy to debug. Furthermore, when examples are written close to the
+object definition, it is easier to keep examples up to date and
+informative.
 
 % TDH 2011-03-14 this next paragraph isnt really specific to
 % inlinedocs, perhaps delete or clarify?
@@ -371,10 +357,6 @@ regression testing of functions (almost) for free. Combined with the
 simplicity of the \inlinedocs\ approach to generating a package, this makes
 it worthwhile generating informal packages for almost any collection of
 functions which might be reused over time, no matter how restricted their scope.
-
-%% PhG: I wonder if a runExample() function would not be nice to add in the
-%% inlinedocs package at this stage? So, examples could be checked *before*
-%% compiling the package in development
 
 \subsection{Documenting classes and methods}
 
