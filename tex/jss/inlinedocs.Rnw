@@ -189,164 +189,118 @@ offer some ideas for future improvements.
 \label{syntax}
 
 The main idea of \inlinedocs\ is to document an \R\ object using
-special comments directly adjacent to its source code. Adjacent
-\inlinedocs-comments are:
-
+\verb+###+ and \verb+##<<+ comments directly adjacent to its source
+code. Furthermore, \inlinedocs\ allows you to write documentation
+wherever it is most relevant in the code using \verb+##section<<+
+comments. These special comment strings are designed to work well with
+the default behavior of common editors, such as Emacs Speaks
+Statistics \citep{ESS}:  
 \begin{itemize}
-\item \verb+##<<+ on the same line as the the \R-object
-\item \verb+###+ on the lines directly following the \R-object
-\item \verb+###+ on the line directly before the \R-object
+\item \verb+###+ is automatically aligned to the left margin,
+  providing maximum space for comment text.
+\item \verb+##<<+ is aligned with the start of adjacent code lines, so
+  that comments using this form in the middle of a function do not
+  obscure the code structure.
 \end{itemize}
 
-Furthermore, \inlinedocs\ allows to put text of various documentation
-sections anywhere in the function header or body by using the
-\verb+##SECTION<<+ notation.
-
-The choice of the trigger character strings is derived from the default
-behaviour of the automatic indentation provided by the ``Emacs speaks
-statistics'' add-on package for Emacs:
-\begin{itemize}
-\item \verb+###+ is automatically aligned to the left hand margin,
-  providing maximum space for comment text;
-\item \verb+##<<+ at line start is aligned with the start of adjacent code
-  lines, so that comments using this form in the middle of a function do
-  not obscure the code structure;
-\item A single \verb+#+ following code on a line is automatically placed
-  well to the right, which would be unduly restrictive when adding the
-  comments for function arguments and other lists, so the double \verb+##+
-  form was preferred.
-\end{itemize}
-
-The use of \verb+<<+ same-line comments was originally based on the Doxygen
-system, where C++ function parameters may be documented by \verb+///<+ on
-the same line as the parameter. The second \verb+<+ was initially added
-because it felt more natural when typing double \verb+##+ to also type
-double \verb+<<+. However that notation has a happy resemblance to the C++
-``put'' operator, so that the \verb+##SECTION<<+ notation may be thought of
-as putting the following documentation into the specified section.
-
-The following subsections describe common usage of \inlinedocs\
-comments.
+The following subsections illustrate common usage of \inlinedocs\
+comments through \pkg{fermat}, an example package inspired by the
+\Roxygen\ vignette \citep{roxygen}.
 
 \subsection{Documenting function signatures and return values}
 
-%% PhG: in the functions arguments, I personally prefer to place the coma
-%% after the previous argument, which is a more common practice witn mutiline
-%% R code that is more readable if the last character clearly shows that the
-%% instruction is not finished. I change this in the examples, but feel free
-%% to change it back if you don't like that presentation
-
-The following examples demonstrates the basic documentation of a function.
+The following example demonstrates the minimal documentation you
+should provide for every function. Note that the location of white
+spaces, brackets, default arguments and commas is quite flexible.
 <<>>=
-foo <- function (
-  ### Adding two arguments
-  first,          ##<< the first argument 
-  second = 0      ##<< the second argument with a multi-line description
-    ## that is possibly better located in the details section
-){
-  first + second 
-  ### returns the sum of 
-  ### first and second
+fermat.test <- function
+### Test an integer for primality using Fermat's Little Theorem.
+(n 
+### The integer to test.
+ ){
+  a <- floor(runif(1,min=1,max=n))
+  a^n %% n == a
+### Whether the integer passes the Fermat test for a randomized
+### \eqn{0<a<n}.
 }
 @ 
 
 The comments are placed within sections of the corresponding 
-documentation:
+Rd file:
 \begin{itemize}
-\item Comment following the line of \code{function} is the description
-section.
-\item For each argument an item is created in the arguments section.
-\item Comments following a \code{return} statement or the last line of the body make up the
-value section.
+\item \verb+###+ comments following the line of \code{function}
+  form the \code{description} section.
+\item For each argument an item is created in the \code{arguments}
+  section using the immediately following \verb+###+ comments.
+\item \verb+###+ comments on the last line of the function form the
+  \code{value} section.
 \end{itemize} 
 
-Name, alias and title of the documentation are set to the function name. The
-location of white spaces, brackets, default arguments and commas is quite flexible.
+By default, \code{name}, \code{alias} and \code{title} Rd sections are
+set to the function name, so with this minimal level of documentation
+you should be able to get a working package that passes \code{R CMD
+  check} with no errors or warnings.
 
-The documentation styles may be mixed - for function return value, title
-and description, any \verb+###+ lines are processed first, then, in the
-order in which they occur in the source, the text from any corresponding
-\verb+##SECTION<<+ comments is appended.  Similar rules apply to function
-arguments and the \verb+##<<+ comments.
+\subsection{Inline titles, arguments, other sections, and list return values}
 
-\subsection{Documenting descriptions, links, and references}
-The comments of the following example are placed in the title, details, and
-seealso sections respectively.
+The following example shows some optional \inlinedocs\ comments that
+allow detailed and flexible specification of Rd files.
  
 <<>>=
-bar <- function (
-  ### Demonstrating section comments
-  ##title<< bar-Function
+is.pseudoprime <- function # Check an integer for pseudo-primality.
+### A number is pseudo-prime if it is probably prime, the basis of
+### which is the probabalistic Fermat test; if it passes two such
+### tests, the chances are better than 3 out of 4 that \eqn{n} is
+### prime.
+##references<< Abelson, Hal; Jerry Sussman, and Julie
+##Sussman. Structure and Interpretation of Computer
+##Programs. Cambridge: MIT Press, 1984.
+(n,    ##<< Integer to test for pseudoprimality.
+ times ##<< Number of Fermat tests to perform. More tests are more 
+       ## likely to give accurate results.
 ){
-  ##details<<
-  ## This comment will show up in the details section.
-  b <- rep(1,10)
-  for (i in 2:10) {
-    ##details<<
-    ## The cumulative sum, here, is calculated by a loop.\cr
-    ## Such comments can be placed anywhere in the code.
-    b[i] <- b[i - 1] + i
-  }
-  b
-  ### vector of cumulative sume of 1:10
-  ##seealso<< \code{\link{foo}}
-}
-@
-
-The \verb+##SECTION<<+ notation can be used for all documentation
-sections (references, source, note, author, seealso, title, keyword, \ldots)
-except for the examples section, which is handled in a special manner as
-shown below. 
-
-There may be multiple occurrences of each section type - normally
-concatenated as separate paragraphs, but special processing is applied to
-match the intended use of the following:
-\begin{description}
-\item[title] sections are concatenated into a single line;
-\item[description] sections should be brief, so are concatenated into a
-  single paragraph;
-\item[alias] contents are split to give one alias per line of text;
-\item[keyword] contents are split at white space, each generating a
-  separate \verb+\keyword+ entry;
-\end{description}
-
-\subsection{Documenting list entries}
-The documentation of list entries is conveniently done using \inlinedocs\ as
-shown in the following example.
-
-<<>>=
-center <- function (
-  ### Average of a sample
-  x,              ##<< numeric vector of samples
-  method = c(     ##<< method for calulating the center 
-    ##describe<<
-    mean = "mean",      ##<< arithmetic mean   
-    median = "median"), ##<< median
-    ##end<<
-  ...             ##<< further arguments passed to mean or median
-){
-  method <- match.arg(method)
-  res <- switch(method,
-    mean = mean(x,...),
-    median = median(x,...),
-    stop("center: unknown method."))
-  ##value<< a list with elements
-  list(method = method,     ##<< method of calculating the average
-       center = res)        ##<< the calculated average
+  result <- if(times==0)TRUE
+  ##seealso<< \code{\link{fermat.test}}
+  else if(fermat.test(n)) is.pseudoprime(n,times-1)
+  else FALSE
+  ##value<<
+  list(prime=result, ##<< logical TRUE if probably prime.
+       n=n,          ##<< integer tested.
+       times=times)  ##<< number of tests performed.
   ##end<<
 }
 @
 
-The list entries wrapped by \verb+##describe<<+ and \verb+##end<<+
-lines can be documented in the same way as function arguments. This
-construct can be nested. This means that a list entry can be a list
-itself, whose items are described by such a block. Note that the
-components of the list must have names. When nested \verb+##describe<<+
-blocks are used, \verb+##end<<+ terminates the current level only; any
-other \verb+##SECTION<<+ line terminates all the nested levels.
+On the first line, the \verb+#+ comment specifies the title.
+On an argument line, a \verb+##<<+ comment and any immediately
+following \verb+##+ lines specify its documentation.
+In each comment, arbitrary Rd may be written, as shown in the
+\verb+##seealso<<+ section above.
 
-Because functions often return lists, the \verb+##value<<+ section
-implicitly enables the same mechanism. 
+A \verb+##section<<+ comment can be used for any documentation section
+except for \code{examples}, which is handled in a special manner as
+shown below in section~\ref{sec:exattr}. Each \verb+##section<<+ may
+occur several times in a single documentation object. Each occurance
+is normally concatenated as separate paragraphs, but special
+processing is applied to match the intended use of the following:
+\begin{description}
+\item[title] sections are concatenated into a single line.
+\item[description] sections should be brief, so are concatenated into a
+  single paragraph.
+\item[alias] contents are split to give one alias per line of text.
+\item[keyword] contents are split at white space, each generating a
+  separate \verb+\keyword+ entry.
+\end{description}
+
+The \verb+###+ and \verb+##<<+ documentation styles may be freely
+mixed. In general, \verb+###+ or \verb+#+ lines are processed first,
+followed by any corresponding \verb+##<<+ or \verb+##section<<+
+comments.
+
+On the final line, the \verb+##value<<+ comment allows documentation
+of lists using the list names defined in the code. The list entries
+are documented using \verb+##<<+ in the same way as function
+arguments, and this construct can even be nested.
 
 \subsection[Provide examples using the ex attribute]{Provide
   examples using the \code{ex} attribute}
@@ -413,13 +367,13 @@ all the definitions are within a single source file and this
 {\code{package.skeleton.dx()} for generating Rd files}
 
 The main function that the \inlinedocs\ package provides is
-\code{package.skeleton.dx("pkgdir")}, which generates Rd
-files in \code{pkgdir/man}. This operates first by running
-\code{package.skeleton()} to generate blank Rd files, which are updated
-using the inline documentation specified in the \R\  code. After running
-\code{package.skeleton.dx()}, the package documentation will be up to
-date with the code, and the package should pass \code{R CMD check} without
-errors or warnings.
+\code{package.skeleton.dx("fermat")}, which processes R code found in
+\code{fermat/R}, and generates Rd files in \code{fermat/man}. This
+operates first by running \code{package.skeleton()} to generate blank
+Rd files, which are updated using the inline documentation specified
+in the \R\ code. After running \code{package.skeleton.dx()}, the
+package documentation will be up to date with the code, and the
+package should pass \code{R CMD check} without errors or warnings.
 
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
