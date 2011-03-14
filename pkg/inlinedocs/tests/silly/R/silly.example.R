@@ -52,9 +52,11 @@ setClass("Silly", # S4 classes can be documented as well
          ) ##<< this comment is ignored as it is outside setClass expression
 
 ## creates "show" generic function. Documentation of this not yet supported.
-setMethod("show","Silly",function(object){
-  cat("crashed ",object@crashes," times\n")
-})
+setMethod("show","Silly",function # show Silly object
+          (object)                ##<< an object of class Silly
+          {
+            cat("crashed ",object@crashes," times\n")
+          })
 
 # following based on code from R.oo help(Object):
 

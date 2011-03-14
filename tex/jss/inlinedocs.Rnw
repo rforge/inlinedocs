@@ -199,8 +199,31 @@ special comments directly adjacent to its source code. Adjacent
 \end{itemize}
 
 Furthermore, \inlinedocs\ allows to put text of various documentation
-sections anywhere in the function header or body of a function by using the
+sections anywhere in the function header or body by using the
 \verb+##SECTION<<+ notation.
+
+The choice of the trigger character strings is derived from the default
+behaviour of the automatic indentation provided by the ``Emacs speaks
+statistics'' add-on package for Emacs:
+\begin{itemize}
+\item \verb+###+ is automatically aligned to the left hand margin,
+  providing maximum space for comment text;
+\item \verb+##<<+ at line start is aligned with the start of adjacent code
+  lines, so that comments using this form in the middle of a function do
+  not obscure the code structure;
+\item A single \verb+#+ following code on a line is automatically placed
+  well to the right, which would be unduly restrictive when adding the
+  comments for function arguments and other lists, so the double \verb+##+
+  form was preferred.
+\end{itemize}
+
+The use of \verb+<<+ same-line comments was originally based on the Doxygen
+system, where C++ function parameters may be documented by \verb+///<+ on
+the same line as the parameter. The second \verb+<+ was initially added
+because it felt more natural when typing double \verb+##+ to also type
+double \verb+<<+. However that notation has a happy resemblance to the C++
+``put'' operator, so that the \verb+##SECTION<<+ notation may be thought of
+as putting the following documentation into the specified section.
 
 The following subsections describe common usage of \inlinedocs\
 comments.
@@ -348,8 +371,7 @@ object definition, it is easier to keep examples up to date and
 informative.
 
 % TDH 2011-03-14 this next paragraph isnt really specific to
-% inlinedocs, perhaps delete or clarify?
-
+% inlinedocs, perhaps delete or clarify? 
 However the examples are provided, one significant advantage of the \R\ 
 package system is that \verb+R CMD check+ will run the examples and
 optionally compare the output with reference output. This allows automatic
@@ -398,32 +420,6 @@ using the inline documentation specified in the \R\  code. After running
 \code{package.skeleton.dx()}, the package documentation will be up to
 date with the code, and the package should pass \code{R CMD check} without
 errors or warnings.
-
-\subsection{Editor support and workflow suggestions}
-\label{sec:ess}
-
-The choice of the trigger character strings is derived from the default
-behaviour of the automatic indentation provided by the ``Emacs speaks
-statistics'' add-on package for Emacs:
-\begin{itemize}
-\item \verb+###+ is automatically aligned to the left hand margin,
-  providing maximum space for comment text;
-\item \verb+##<<+ at line start is aligned with the start of adjacent code
-  lines, so that comments using this form in the middle of a function do
-  not obscure the code structure;
-\item A single \verb+#+ following code on a line is automatically placed
-  well to the right, which would be unduly restrictive when adding the
-  comments for function arguments and other lists, so the double \verb+##+
-  form was preferred.
-\end{itemize}
-
-The use of \verb+<<+ same-line comments was originally based on the Doxygen
-system, where C++ function parameters may be documented by \verb+///<+ on
-the same line as the parameter. The second \verb+<+ was initially added
-because it felt more natural when typing double \verb+##+ to also type
-double \verb+<<+. However that notation has a happy resemblance to the C++
-``put'' operator, so that the \verb+##SECTION<<+ notation may be thought of
-as putting the following documentation into the specified section.
 
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
@@ -594,8 +590,22 @@ Documentation Lists, which assure that Parser Functions work as
 described. We also have unit tests which ensure that the generated Rd
 passes \code{R CMD check} without errors or warnings.
 
-Some work is still required to fully support S4 classes and the new
-reference classes.
+Currently, the \inlinedocs\ package relies on \verb+keep.source+ to access
+the documentation associated with a function, but that mechanism appears
+not to work for S4 class methods. There is already a mechanism which uses
+\verb+parse+ on the source files to access S4 class definitions (via
+\verb+setClass+) and S3 class and method definitions using the \verb+R.oo+
+\verb+setConstructorS3+ and \verb+setMethodS3+ approach); it is intended to
+extend that in order to find and process \verb+setMethod+ calls (as well as
+the new \verb+setRefClass+ and \verb+$methods+ route for attaching methods
+to such classes). There is a further uncertainty whether to document the
+\verb+myFun+ method for \verb+myClass+ in \verb+myClass-class.Rd+ or
+\verb+myFun-methods.Rd+. The standard \verb+package.skeleton+ places the
+appropriate alias in both locations, and in order to avoid warnings from
+\verb+R CMD check+ the author must choose and delete one of those. A
+possible heuristic would be to say that if there is one definition for
+\verb+myFun+ then the documentation goes into \verb+myClass-class.Rd+,
+otherwise into \verb+myFun-methods.Rd+.
 
 For the future, we would like to make use of Rd manipulation tools
 such as \code{parse_Rd()}, as described by \cite{parseRd}. In
