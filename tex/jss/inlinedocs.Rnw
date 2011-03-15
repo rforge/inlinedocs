@@ -171,7 +171,7 @@ documentation, but they have three major drawbacks:
 The \inlinedocs\ package addresses the aforementioned issues by proposing
 a new syntax for inline documentation of \R\ packages. Using \inlinedocs,
 one writes documentation in comments right next to the relevant code,
-and examples in the \code{"ex"} attribute of the relevant object. The
+and examples in the \code{ex} attribute of the relevant object. The
 resulting code is free of duplication and very easy to maintain.
 
 %% PhG: incredibly easy to maintain appears a little too strong to me.
@@ -211,7 +211,7 @@ comments through \pkg{fermat}, an example package inspired by the
 
 The following example demonstrates the minimal documentation you
 should provide for every function. Note that the location of white
-spaces, brackets, default arguments and commas is quite flexible.
+space, brackets, default arguments and commas is quite flexible.
 <<>>=
 fermat.test <- function
 ### Test an integer for primality using Fermat's Little Theorem.
@@ -230,7 +230,7 @@ Rd file:
 \begin{itemize}
 \item \verb+###+ comments following the line of \code{function}
   form the \code{description} section.
-\item For each argument an item is created in the \code{arguments}
+\item For each argument, an item is created in the \code{arguments}
   section using the immediately following \verb+###+ comments.
 \item \verb+###+ comments on the last line of the function form the
   \code{value} section.
@@ -241,7 +241,7 @@ set to the function name, so with this minimal level of documentation
 you should be able to get a working package that passes \code{R CMD
   check} with no errors or warnings.
 
-\subsection{Inline titles, arguments, other sections, and list return values}
+\subsection{Inline titles, arguments, and other sections}
 
 The following example shows some optional \inlinedocs\ comments that
 allow detailed and flexible specification of Rd files.
@@ -259,15 +259,11 @@ is.pseudoprime <- function # Check an integer for pseudo-primality.
  times ##<< Number of Fermat tests to perform. More tests are more 
        ## likely to give accurate results.
 ){
-  result <- if(times==0)TRUE
+  if(times==0)TRUE
   ##seealso<< \code{\link{fermat.test}}
   else if(fermat.test(n)) is.pseudoprime(n,times-1)
   else FALSE
-  ##value<<
-  list(prime=result, ##<< logical TRUE if probably prime.
-       n=n,          ##<< integer tested.
-       times=times)  ##<< number of tests performed.
-  ##end<<
+### logical TRUE if n is probably prime.
 }
 @
 
@@ -297,32 +293,43 @@ mixed. In general, \verb+###+ or \verb+#+ lines are processed first,
 followed by any corresponding \verb+##<<+ or \verb+##section<<+
 comments.
 
+\subsection{Examples and named lists}
+
+The following code demonstrates inline documentation of named lists,
+and the preferred method of writing examples:
+<<>>=
+try.several.times <- structure(function
+### Test an integer for primality using different numbers of tests.
+(n,    ##<< integer to test for primality.
+ times ##<< vector of number of tests to try.
+ ){
+  is.prime <- sapply(times,function(t)is.pseudoprime(n,t))
+  ##value<< data.frame with columns:
+  data.frame(times, ##<< number of Fermat tests.
+             is.prime, ##<< TRUE if probably prime
+             n) ##<< Integer tested.
+  ##end<<
+},ex=function(){
+  try.several.times(6,1:5)
+  try.several.times(5,1:5)
+})
+@ 
+
 On the final line, the \verb+##value<<+ comment allows documentation
-of lists using the list names defined in the code. The list entries
-are documented using \verb+##<<+ in the same way as function
+of lists or data frames using the names defined in the code. The
+entries are documented using \verb+##<<+ in the same way as function
 arguments, and this construct can even be nested.
 
-\subsection[Provide examples using the ex attribute]{Provide
-  examples using the \code{ex} attribute}
 \label{sec:exattr}
-The following code demonstrates the preferred method of writing
-examples. It uses the \code{structure()} function to define the
-example in the \code{ex} attribute of the object:
-<<>>=
-add2 <- structure(function (x) {
-  x + 2
-}, ex = function () {
-  add2(11) == 13
-})
-@
 
-This method for documenting examples was motivated by the desire to
-express examples in \R\ code rather than in \R\ comments, and to keep
-the examples close to the object definition. When examples are in \R\
-code, they are easily transferred to the \R\ interpreter, and thus are
-easy to debug. Furthermore, when examples are written close to the
-object definition, it is easier to keep examples up to date and
-informative.
+The examples are written using \code{structure()} to put them in the
+\code{ex} attribute. This method for documenting examples was
+motivated by the desire to express examples in \R\ code rather than in
+\R\ comments, and to keep the examples close to the object
+definition. When examples are in \R\ code, they are easily transferred
+to the \R\ interpreter, and thus are easy to debug. Furthermore, when
+examples are written close to the object definition, it is easy to
+keep examples up to date and informative.
 
 % TDH 2011-03-14 this next paragraph isnt really specific to
 % inlinedocs, perhaps delete or clarify? 
@@ -535,7 +542,7 @@ the internal \inlinedocs\ Parser Functions.
 
 We have presented \inlinedocs, which is both a new syntax for inline
 documentation of \R\ packages, and an extensible system for parsing this
-syntax and generating the Rd files. It has been in development since
+syntax and generating Rd files. It has been in development since
 2009 on R-Forge \citep{rforge}, has seen several releases on CRAN, and
 is now considered stable.
 
