@@ -24,23 +24,19 @@
 
 (defvar ess-inlinedocs-arg-regexp "\\([^,)\n]+\\)"
   "regexp used to match argument names")
-;;(setq ess-inlinedocs-arg-regexp "\\([^,)\n]+\\)")
+
 (defun ess-inlinedocs-format-args ()
   "break function arguments apart and add blank inlinedocs comments"
   (interactive)
-  (ess-mark-function)
-  (re-search-forward "\\(function\\)" nil t)
-  (replace-match (concat "\\1" ess-inlinedocs-comment-prefix)) ;description
-  (while
-      (re-search-forward (concat "\\([ (,]\\)" ess-inlinedocs-arg-regexp "\\(,\\)") nil t)
+  (ess-beginning-of-function)
+  (let ((arg-regexp (concat "\\([ (,]\\)" ess-inlinedocs-arg-regexp "\\(,\\)")))
+    (while (let ((end (save-excursion (nth 1 (ess-end-of-function)))))
+	     (re-search-forward arg-regexp end t))
     (replace-match (concat "\\1\\2\\3" ess-inlinedocs-comment-prefix " "))
-    (beginning-of-line))
+    (beginning-of-line)))
   (re-search-forward (concat ess-inlinedocs-arg-regexp "\\(){\\)"))
   (replace-match (concat "\\1" ess-inlinedocs-comment-prefix " \\2"))
-  (let ((lookfor "function\n### "))
-    (re-search-backward lookfor)
-    (re-search-forward lookfor))
-)
-
-
-
+  (ess-beginning-of-function)
+  (re-search-forward "\\(function\\)" nil t)
+  (replace-match (concat "\\1" ess-inlinedocs-comment-prefix)) ;description
+  (backward-char))
