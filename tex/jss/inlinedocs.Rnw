@@ -134,12 +134,13 @@ frequently updated.
 
 % TDH 2011-03-14 This next paragraph is offtopic, perhaps delete if
 % space is required?
-
 For automatic report generation, the mature Sweave \citep{sweave}
-format, also included in the default installation of \R allows integration of \R\  code and results within \LaTeX\ documents \citep{latex}. However, the goal
-of \inlinedocs\ is different. It aims for integration of Rd documentation
-inside of \R\  code files, for documentation generation using \R\  code and markup
-in \R\  comments.
+format%, also included in the default installation of \R, 
+allows
+integration of \R\ code and results within \LaTeX\ documents
+\citep{latex}. However, the goal of \inlinedocs\ is different. It aims
+for integration of Rd documentation inside of \R\ code files, for
+documentation generation using \R\ code and markup in \R\ comments.
 
 The other existing approaches, \Rdoc\ and \Roxygen, attempt to address
 this sustainability problem using Rd generation from special comments
@@ -192,7 +193,8 @@ The main idea of \inlinedocs\ is to document an \R\ object using
 \verb+###+ and \verb+##<<+ comments directly adjacent to its source
 code. Furthermore, \inlinedocs\ allows you to write documentation
 wherever it is most relevant in the code using \verb+##section<<+
-comments. These special comment strings are designed to work well with
+comments.
+These special comment strings are designed to work well with
 the default behavior of common editors, such as Emacs Speaks
 Statistics \citep{ESS}:  
 \begin{itemize}
@@ -270,15 +272,16 @@ is.pseudoprime <- function # Check an integer for pseudo-primality.
 On the first line, the \verb+#+ comment specifies the title.
 On an argument line, a \verb+##<<+ comment and any immediately
 following \verb+##+ lines specify its documentation.
-In each comment, arbitrary Rd may be written, as shown in the
-\verb+##seealso<<+ section above.
 
-A \verb+##section<<+ comment can be used for any documentation section
-except for \code{examples}, which is handled in a special manner as
-shown below in section~\ref{sec:exattr}. Each \verb+##section<<+ may
-occur several times in a single documentation object. Each occurance
-is normally concatenated as separate paragraphs, but special
-processing is applied to match the intended use of the following:
+A \verb+##section<<+ comment can be used anywhere within a function,
+for any documentation section except \code{examples}, which is
+handled in a special manner as shown below in
+section~\ref{sec:exattr}. In each comment, arbitrary Rd may be
+written, as shown in the \verb+##seealso<<+ section above.  Each
+\verb+##section<<+ may occur several times in a single documentation
+object. Each occurance is normally concatenated as separate
+paragraphs, but special processing is applied to match the intended
+use of the following documentation sections:
 \begin{description}
 \item[title] sections are concatenated into a single line.
 \item[description] sections should be brief, so are concatenated into a
@@ -331,15 +334,19 @@ to the \R\ interpreter, and thus are easy to debug. Furthermore, when
 examples are written close to the object definition, it is easy to
 keep examples up to date and informative.
 
-% TDH 2011-03-14 this next paragraph isnt really specific to
-% inlinedocs, perhaps delete or clarify? 
-However the examples are provided, one significant advantage of the \R\ 
-package system is that \verb+R CMD check+ will run the examples and
-optionally compare the output with reference output. This allows automatic
-regression testing of functions (almost) for free. Combined with the
-simplicity of the \inlinedocs\ approach to generating a package, this makes
-it worthwhile generating informal packages for almost any collection of
-functions which might be reused over time, no matter how restricted their scope.
+The simplicity of adding examples and generating a package using
+\inlinedocs\ also allows for routine regression testing of functions
+with very little extra work. Even for small collections of functions,
+one can use \verb+R CMD check+ to run the examples and optionally
+check the output with reference output.
+
+% Since
+% moving to inlinedocs I find that whether or not I have a package in
+% mind, any function longer than a few lines tends to get inlinedocs
+% comments as I write it or soon after. The thought process tends to go:
+% This is a useful sequence of operations - make it a function - test it -
+% any possibility of reuse? - add comments if they are not already there -
+% think about regression testing/example input and output. 
 
 \subsection{Documenting classes and methods}
 
@@ -551,22 +558,26 @@ Documentation Lists, which assure that Parser Functions work as
 described. We also have unit tests which ensure that the generated Rd
 passes \code{R CMD check} without errors or warnings.
 
-Currently, the \inlinedocs\ package relies on \verb+keep.source+ to access
-the documentation associated with a function, but that mechanism appears
-not to work for S4 class methods. There is already a mechanism which uses
-\verb+parse+ on the source files to access S4 class definitions (via
-\verb+setClass+) and S3 class and method definitions using the \verb+R.oo+
-\verb+setConstructorS3+ and \verb+setMethodS3+ approach); it is intended to
-extend that in order to find and process \verb+setMethod+ calls (as well as
-the new \verb+setRefClass+ and \verb+$methods+ route for attaching methods
-to such classes). There is a further uncertainty whether to document the
-\verb+myFun+ method for \verb+myClass+ in \verb+myClass-class.Rd+ or
-\verb+myFun-methods.Rd+. The standard \verb+package.skeleton+ places the
-appropriate alias in both locations, and in order to avoid warnings from
-\verb+R CMD check+ the author must choose and delete one of those. A
-possible heuristic would be to say that if there is one definition for
-\verb+myFun+ then the documentation goes into \verb+myClass-class.Rd+,
-otherwise into \verb+myFun-methods.Rd+.
+Currently, the \inlinedocs\ package relies on the \code{source}
+attribute of a function to access its documentation, but that
+mechanism does not work for S4 methods. Instead, we currently
+use \code{parse()} on the source files to access S4 class definitions,
+and we
+% (via \verb+setClass+) and S3 class and method definitions using the
+% \verb+R.oo+ \verb+setConstructorS3+ and \verb+setMethodS3+
+% approach);
+intend to extend that in order to be able to generate documentation
+for S4 methods and reference classes.
+%(as well as the new \verb+setRefClass+ and \verb+$methods+ route
+%for attaching methods to such classes)
+% There is a further uncertainty whether to document the \verb+myFun+
+% method for \verb+myClass+ in \verb+myClass-class.Rd+ or
+% \verb+myFun-methods.Rd+. The standard \verb+package.skeleton+ places
+% the appropriate alias in both locations, but to avoid
+% warnings from \verb+R CMD check+ the author must delete one. A
+% possible heuristic would be to say that if there is one definition for
+% \verb+myFun+ then the documentation goes into \verb+myClass-class.Rd+,
+% otherwise into \verb+myFun-methods.Rd+.
 
 For the future, we would like to make use of Rd manipulation tools
 such as \code{parse_Rd()}, as described by \cite{parseRd}. In
