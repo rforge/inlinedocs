@@ -15,7 +15,8 @@ test.file <- function
   suppressWarnings(sys.source(f,e))
   ## these are the items to check for, in no particular order
   .result <- e$.result
-  result <- extract.docs.file(f,e$.parsers)
+  parsers <- e$.parsers
+  result <- extract.docs.file(f,parsers)
   for(FUN in names(.result)){
     if(verbose)cat(FUN,"")
     fun <- result[[FUN]]
@@ -47,6 +48,13 @@ test.file <- function
   ## finally make a package using this file and see if it passes
   ## without warnings
   if(!is.null(e$.dontcheck))return()
+  make.package.and.check(f,parsers)
+  if(verbose)cat("\n")
+}
+
+### Make a package by processing f with a standard DESCRIPTION, and
+### stop if there are errors or warnings.
+make.package.and.check <- function(f,parsers=default.parsers){
   pkgname <- sub(".[rR]$","",basename(f))
   pkgdir <- file.path(tempdir(),pkgname)
   if(file.exists(pkgdir))unlink(pkgdir,recursive=TRUE)
@@ -55,7 +63,8 @@ test.file <- function
   desc <- file.path(system.file(package="inlinedocs"),"silly","DESCRIPTION")
   file.copy(desc,pkgdir)
   file.copy(f,rdir)
-  package.skeleton.dx(pkgdir,e$.parsers)
+  print(pkgdir)
+  package.skeleton.dx(pkgdir,parsers)
   cmd <- sprintf("%s CMD check %s",file.path(R.home("bin"), "R"),pkgdir)
   if(verbose)cat(cmd,"\n")
   checkLines <- system(cmd,intern=TRUE)
@@ -64,7 +73,6 @@ test.file <- function
     print(warnLines)
     stop("WARNING encountered in package check!")
   }
-  if(verbose)cat("\n")
 }
 
 save.test.result <- function

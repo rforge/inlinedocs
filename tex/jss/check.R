@@ -1,3 +1,3 @@
 Stangle("inlinedocs.Rnw")
 library(inlinedocs)
-res <- extract.docs.file("inlinedocs.R")
+make.package.and.check("inlinedocs.R")
