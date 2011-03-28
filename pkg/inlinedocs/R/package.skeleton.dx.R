@@ -427,9 +427,18 @@ modify.Rd.file <- function
   # PhG: now restore masked function name, if any (case of %....% operators)
   if (!is.null(Nmask))
     dlines <- gsub(Nmask, N, dlines, fixed = TRUE)
+
+  ## sometimes (s4 classes) title is has \code{} blocks inside, which
+  ## causes problems with our find-replace regex inside replace.one,
+  ## so lets just put a simple title that works.
+  i <- grep("^\\\\title",dlines)
+  if(length(i)){
+    dlines[i] <- gsub("\\\\code[{][^}]*[}]","",dlines[i])
+  }
+  
+  txt <- paste(dlines,collapse="\n")
   
   ## Find and replace based on data in d
-  txt <- paste(dlines,collapse="\n")
   for(torep in names(d)){
     if ( !grepl("^[.]",torep) ){## .flags should not be used for find-replace
       txt <- replace.one(torep,d[[torep]],txt)
