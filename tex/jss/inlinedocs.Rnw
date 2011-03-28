@@ -1,6 +1,6 @@
 %  -*- compile-command: "make" -*- 
 \documentclass[article]{jss}
- 
+  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,12 +109,16 @@ options(prompt = ">>>", continue = ">>>")
 
 \section{Introduction}
 
-The \inlinedocs\ package introduces the concept of documenting a
-package using inline code and comments to the \R\ programming
-language. There are several existing packages that attempt to address
-this. We first review these alternate implementations, emphasing the
-key issues that justify the introduction of a new package like
-\inlinedocs.
+The standard way to distribute \R\ code is in a package along with Rd
+files that document the code. There are several existing methods for
+documenting a package by writing \R\ comments, which are later processed and
+converted into standard Rd files.
+%The new idea in
+%\inlinedocs\ is to write examples using actual \R\ code and
+%documentation in comments right next to the code. 
+We first review
+these efforts, emphasing the key issues that justify
+the introduction of a new package like \inlinedocs.
 
 \subsection[Existing documentation generation systems for R]{Existing
   documentation generation systems for \R}
@@ -123,14 +127,6 @@ key issues that justify the introduction of a new package like
 %% documentation because it does not use existing comments to fill Rd
 %% files. I would be more comfortable to present it as the starting point
 %% that is, the default R documentation tools...
-
-For package documentation generation, \R's \code{package.skeleton()} function
-ships with base \R\ \citep{R}. After specifying some input \R code files or
-objects to use for the package, it produces some bare-bones documentation that
-you must fill in using a text editor. Although \code{package.skeleton()}
-is sufficient for creating small packages that are published once and
-forgotten, it offers no help for packages for which Rd files are
-frequently updated.
 
 % TDH 2011-03-14 This next paragraph is offtopic, perhaps delete if
 % space is required?
@@ -141,6 +137,15 @@ integration of \R\ code and results within \LaTeX\ documents
 \citep{latex}. However, the goal of \inlinedocs\ is different. It aims
 for integration of Rd documentation inside of \R\ code files, for
 documentation generation using \R\ code and markup in \R\ comments.
+
+The \code{package.skeleton()} function
+that ships with base \R\ is intended to ease the generation of Rd
+files from \R\ code \citep{R}. After specifying some input \R\ code
+files or objects to use for the package, it produces some bare-bones
+documentation that you must fill in using a text editor. Although
+\code{package.skeleton()} is sufficient for creating small packages
+that are published once and forgotten, it offers little help for packages
+for which Rd files are frequently updated.
 
 The other existing approaches, \Rdoc\ and \Roxygen, attempt to address
 this sustainability problem using Rd generation from special comments
@@ -318,21 +323,23 @@ try.several.times <- structure(function
 })
 @ 
 
-On the final line, the \verb+##value<<+ comment allows documentation
-of lists or data frames using the names defined in the code. The
-entries are documented using \verb+##<<+ in the same way as function
-arguments, and this construct can even be nested.
+On the final lines of the function definition, a \verb+##value<<+
+comment allows documentation of lists or data frames using the names
+defined in the code. The entries are documented using \verb+##<<+ in
+the same way as function arguments, and this even works for nested
+lists.
 
 \label{sec:exattr}
 
 The examples are written using \code{structure()} to put them in the
-\code{ex} attribute. This method for documenting examples was
-motivated by the desire to express examples in \R\ code rather than in
-\R\ comments, and to keep the examples close to the object
-definition. When examples are in \R\ code, they are easily transferred
-to the \R\ interpreter, and thus are easy to debug. Furthermore, when
-examples are written close to the object definition, it is easy to
-keep examples up to date and informative.
+\code{ex} attribute as the body of a function without arguments. This
+method for documenting examples was motivated by the desire to express
+examples in \R\ code rather than in \R\ comments, and to keep the
+examples close to the object definition. When examples are in \R\
+code, they are easily transferred to the \R\ interpreter, and thus are
+easy to debug. Furthermore, when examples are written close to the
+object definition, it is easy to keep examples up to date and
+informative.
 
 The simplicity of adding examples and generating a package using
 \inlinedocs\ also allows for routine regression testing of functions
@@ -492,11 +499,11 @@ title.from.firstline <- function (src, ...) {
 }
 @
 
-This function takes \code{src}, the \R\  code that defines a function,
-and looks for a comment on the first line. If there is a comment,
-\code{title.from.firstline()} returns the comment as the title in an
-inner Documentation List. This a very simple and readable way to
-define a Parser Function.
+This function takes \code{src}, a character vector of \R\ code lines
+that define a function, and looks for a comment on the first line. If
+there is a comment, \code{title.from.firstline()} returns the comment
+as the title in an inner Documentation List. This a very simple and
+readable way to define a Parser Function.
 
 But how does this Parser Function get access to the \code{src} argument
 for an individual function? We introduce the \code{forall()} and
