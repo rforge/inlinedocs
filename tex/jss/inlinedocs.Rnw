@@ -131,7 +131,8 @@ the introduction of a new package like \inlinedocs.
 % TDH 2011-03-14 This next paragraph is offtopic, perhaps delete if
 % space is required?
 For automatic report generation, the mature Sweave \citep{sweave}
-format%, also included in the default installation of \R, 
+format 
+% , also included in the default installation of \R, 
 allows
 integration of \R\ code and results within \LaTeX\ documents
 \citep{latex}. However, the goal of \inlinedocs\ is different. It aims
@@ -142,7 +143,7 @@ The \code{package.skeleton()} function
 that ships with base \R\ is intended to ease the generation of Rd
 files from \R\ code \citep{R}. After specifying some input \R\ code
 files or objects to use for the package, it produces some bare-bones
-documentation that you must fill in using a text editor. Although
+documentation that must be filled in using a text editor. Although
 \code{package.skeleton()} is sufficient for creating small packages
 that are published once and forgotten, it offers little help for packages
 for which Rd files are frequently updated.
@@ -197,7 +198,7 @@ offer some ideas for future improvements.
 
 The main idea of \inlinedocs\ is to document an \R\ object using
 \verb+###+ and \verb+##<<+ comments directly adjacent to its source
-code. Furthermore, \inlinedocs\ allows you to write documentation
+code. Furthermore, \inlinedocs\ allows documentation
 wherever it is most relevant in the code using \verb+##section<<+
 comments.
 These special comment strings are designed to work well with
@@ -217,7 +218,7 @@ comments through \pkg{fermat}, an example package inspired by the
 
 \subsection{Documenting function signatures and return values}
 
-The following example demonstrates the minimal documentation you
+The following example demonstrates the minimal documentation a package author
 should provide for every function. Note that the location of white
 space, brackets, default arguments and commas is quite flexible.
 <<>>=
@@ -245,8 +246,8 @@ Rd file:
 \end{itemize} 
 
 By default, \code{name}, \code{alias} and \code{title} Rd sections are
-set to the function name, so with this minimal level of documentation
-you should be able to get a working package that passes \code{R CMD
+set to the function name, so this minimal level of documentation
+is enough to make a working package that passes \code{R CMD
   check} with no errors or warnings.
 
 \newpage
@@ -286,17 +287,17 @@ handled in a special manner as shown below in
 section~\ref{sec:exattr}. In each comment, arbitrary Rd may be
 written, as shown in the \verb+##seealso<<+ section above.  Each
 \verb+##section<<+ may occur several times in a single documentation
-object. Each occurance is normally concatenated as separate
+object. Each occurrence is normally concatenated as separate
 paragraphs, but special processing is applied to match the intended
 use of the following documentation sections:
-\begin{description}
-\item[title] sections are concatenated into a single line.
-\item[description] sections should be brief, so are concatenated into a
+\begin{itemize}
+\item \texttt{title} sections are concatenated into a single line.
+\item \texttt{description} sections should be brief, so are concatenated into a
   single paragraph.
-\item[alias] contents are split to give one alias per line of text.
-\item[keyword] contents are split at white space, each generating a
+\item \texttt{alias} contents are split to give one alias per line of text.
+\item \texttt{keyword} contents are split at white space, each generating a
   separate \verb+\keyword+ entry.
-\end{description}
+\end{itemize}
 
 The \verb+###+ and \verb+##<<+ documentation styles may be freely
 mixed. In general, \verb+###+ or \verb+#+ lines are processed first,
@@ -521,8 +522,8 @@ function in the package, whereas the \code{forall()} function applies to
 every documentation object in the package.
 
 Thus, when using a Parser Function such as
-\code{forfun(title.from.firstline)}, you can use the following
-arguments in the definition of \code{title.from.firstline}, in
+\code{forfun(title.from.firstline)}, the following
+arguments can be used in the definition of \code{title.from.firstline}, in
 addition to those discussed above that are passed to every Parser
 Function:
 \begin{center}
