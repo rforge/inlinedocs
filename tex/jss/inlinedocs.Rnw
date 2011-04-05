@@ -130,8 +130,8 @@ the introduction of a new package like \inlinedocs.
 
 % TDH 2011-03-14 This next paragraph is offtopic, perhaps delete if
 % space is required?
-For automatic report generation, the mature Sweave \citep{sweave}
-format 
+For automatic report generation and literate programming, the mature
+Sweave \citep{sweave} format
 % , also included in the default installation of \R, 
 allows
 integration of \R\ code and results within \LaTeX\ documents
@@ -142,7 +142,7 @@ documentation generation using \R\ code and markup in \R\ comments.
 The \code{package.skeleton()} function
 that ships with base \R\ is intended to ease the generation of Rd
 files from \R\ code \citep{R}. After specifying some input \R\ code
-files or objects to use for the package, it produces some bare-bones
+files or objects to use for the package, it produces some minimal
 documentation that must be filled in using a text editor. Although
 \code{package.skeleton()} is sufficient for creating small packages
 that are published once and forgotten, it offers little help for packages
@@ -214,7 +214,12 @@ Statistics \citep{ESS}:
 
 The following subsections illustrate common usage of \inlinedocs\
 comments through \pkg{fermat}, an example package inspired by the
-\Roxygen\ vignette \citep{roxygen}.
+\Roxygen\ vignette \citep{roxygen}. For brevity, only the most
+frequently used \inlinedocs\ features will be discussed, and the
+reader is directed to the \inlinedocs\ web site for complete
+documentation:
+
+\url{http://inlinedocs.r-forge.r-project.org/}
 
 \subsection{Documenting function signatures and return values}
 
@@ -224,8 +229,7 @@ space, brackets, default arguments and commas is quite flexible.
 <<>>=
 fermat.test <- function
 ### Test an integer for primality using Fermat's Little Theorem.
-(n 
-### The integer to test.
+(n ##<< The integer to test.
  ){
   a <- floor(runif(1,min=1,max=n))
   a^n %% n == a
@@ -240,7 +244,7 @@ Rd file:
 \item \verb+###+ comments following the line of \code{function}
   form the \code{description} section.
 \item For each argument, an item is created in the \code{arguments}
-  section using the immediately following \verb+###+ comments.
+  section using a \verb+##<<+ comment on the same line.
 \item \verb+###+ comments on the last line of the function form the
   \code{value} section.
 \end{itemize} 
@@ -266,9 +270,10 @@ is.pseudoprime <- function # Check an integer for pseudo-primality.
 ##Sussman. Structure and Interpretation of Computer
 ##Programs. Cambridge: MIT Press, 1984.
 (n,    ##<< Integer to test for pseudoprimality.
- times ##<< Number of Fermat tests to perform. More tests are more 
-       ## likely to give accurate results.
-){
+ times
+### Number of Fermat tests to perform. More tests are more likely to
+### give accurate results.
+ ){
   if(times==0)TRUE
   ##seealso<< \code{\link{fermat.test}}
   else if(fermat.test(n)) is.pseudoprime(n,times-1)
@@ -277,9 +282,10 @@ is.pseudoprime <- function # Check an integer for pseudo-primality.
 }
 @
 
-On the first line, the \verb+#+ comment specifies the title.
-On an argument line, a \verb+##<<+ comment and any immediately
-following \verb+##+ lines specify its documentation.
+On the first line, the \verb+#+ comment specifies the title.  On the
+lines after an argument, \verb+###+ comments specify its
+documentation. This is a useful alternative to inline \verb+##<<+
+comments for longer, multi-line documentation.
 
 A \verb+##section<<+ comment can be used anywhere within a function,
 for any documentation section except \code{examples}, which is
@@ -302,7 +308,8 @@ use of the following documentation sections:
 The \verb+###+ and \verb+##<<+ documentation styles may be freely
 mixed. In general, \verb+###+ or \verb+#+ lines are processed first,
 followed by any corresponding \verb+##<<+ or \verb+##section<<+
-comments.
+comments. Section \ref{extensible} will explain in more detail how
+comments are processed.
 
 \newpage
 \subsection{Examples and named lists}
