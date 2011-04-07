@@ -52,9 +52,16 @@ test.file <- function
   if(verbose)cat("\n")
 }
 
-### Make a package by processing f with a standard DESCRIPTION, and
-### stop if there are errors or warnings.
-make.package.and.check <- function(f,parsers=default.parsers,verbose=TRUE){
+make.package.and.check <- function
+### Assemble some R code into a package and process it using R CMD
+### check, stopping with an error if the check resulted in any errors
+### or warnings.
+(f, ##<< R code file name from which we will make a package
+ parsers=default.parsers,
+### Parsers to use to make the package documentation.
+ verbose=TRUE
+### print the check command line?
+ ){
   pkgname <- sub(".[rR]$","",basename(f))
   pkgdir <- file.path(tempdir(),pkgname)
   if(file.exists(pkgdir))unlink(pkgdir,recursive=TRUE)
