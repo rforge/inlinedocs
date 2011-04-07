@@ -215,9 +215,10 @@ Statistics \citep{ESS}:
 
 The following subsections illustrate common usage of \inlinedocs\
 comments through \pkg{fermat}, an example package inspired by the
-\Roxygen\ vignette \citep{roxygen}. For brevity, only the most
-frequently used \inlinedocs\ features will be discussed, and the
-reader is directed to the \inlinedocs\ web site for complete
+\Roxygen\ vignette \citep{roxygen}. The examples were processed and
+checked for validity using \inlinedocs\ version 1.6. For brevity, only
+the most frequently used \inlinedocs\ features will be discussed, and
+the reader is directed to the \inlinedocs\ web site for complete
 documentation:
 
 \url{http://inlinedocs.r-forge.r-project.org/}
