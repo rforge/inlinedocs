@@ -4,12 +4,14 @@
 \description{Make a package by processing f with a standard DESCRIPTION, and
 stop if there are errors or warnings.}
 \usage{
-make.package.and.check(f, parsers = default.parsers)
+make.package.and.check(f, parsers = default.parsers, verbose = TRUE)
 }
 \arguments{
   \item{f}{
 }
   \item{parsers}{
+}
+  \item{verbose}{
 }
 }
 

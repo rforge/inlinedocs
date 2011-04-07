@@ -48,13 +48,13 @@ test.file <- function
   ## finally make a package using this file and see if it passes
   ## without warnings
   if(!is.null(e$.dontcheck))return()
-  make.package.and.check(f,parsers)
+  make.package.and.check(f,parsers,verbose)
   if(verbose)cat("\n")
 }
 
 ### Make a package by processing f with a standard DESCRIPTION, and
 ### stop if there are errors or warnings.
-make.package.and.check <- function(f,parsers=default.parsers){
+make.package.and.check <- function(f,parsers=default.parsers,verbose=TRUE){
   pkgname <- sub(".[rR]$","",basename(f))
   pkgdir <- file.path(tempdir(),pkgname)
   if(file.exists(pkgdir))unlink(pkgdir,recursive=TRUE)
