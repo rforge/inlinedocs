@@ -3,7 +3,24 @@
 Attempt doc list to Rd list conversion, so we can generate Rd using
 tools:::print.Rd. See code in etc/parseRd.R
 
+== 1.6
+
+Fix warining when S4 classes are defined in package code, by setting
+the .packageName variable in the env in apply.parsers, so we don't get
+this warning anymore
+
+Warning in getPackageName(where) :
+  Created a package name, "2011-04-07 15:29:30", when none found
+
 == 1.5.1
+
+Bugfix for S4 classes by setting the globalenv in apply.parsers to the
+env where we eval the pkg code. We were getting this error
+
+Error in assign(mname, def, where) : 
+  cannot add bindings to a locked environment
+
+== 1.5
 
 Check to make sure we are not extracting too many documentation
 objects, relative to the stored .result in unit tests.
@@ -28,19 +45,6 @@ then we will stop with an error. this poses problems for testfiles
 with extensive dependencies and references (such as
 scatterplot.R). For these, just set the .dontcheck variable in the
 testfile.
-
-Bugfix for S4 classes by setting the globalenv to the env where we
-eval the pkg code. We were getting this error
-
-Error in assign(mname, def, where) : 
-  cannot add bindings to a locked environment
-
-Furthermore, fixed for when S4 classes are defined in package code, by
-setting the .packageName variable in the env, so we don't get this
-warning anymore
-
-Warning in getPackageName(where) :
-  Created a package name, "2011-04-07 15:29:30", when none found
 
 == 1.4 unit tests for Parser Functions using inst/testfiles/*.R and
 the .result variable in each. we check first if all contents of
