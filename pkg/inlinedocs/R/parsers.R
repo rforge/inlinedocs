@@ -954,5 +954,5 @@ extract.docs.file <- structure(function
   apply.parsers(readLines(f),parsers,verbose=FALSE,...)
 },ex=function(){
   f <- system.file("silly","R","silly.R",package="inlinedocs")
-  extract.docs.file(f)
+  extract.docs.file(f) ##FIXME: warning
 })

@@ -3,6 +3,8 @@
 Attempt doc list to Rd list conversion, so we can generate Rd using
 tools:::print.Rd. See code in etc/parseRd.R
 
+get rid of warnings on extract.docs.file(f) --- why??
+
 == 1.5 
 
 Check to make sure we are not extracting too many documentation
