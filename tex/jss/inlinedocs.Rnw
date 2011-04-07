@@ -12,7 +12,7 @@
 \newcommand{\Roxygen}{\pkg{Roxygen}}
 \newcommand{\filepath}[1]{\texttt{#1}}
 \author{Toby Dylan Hocking\\INRIA Paris \And 
-        Thomas Wutzler\\MPI for Biogeochemistry, Jena \And
+        Thomas Wutzler\\MPI-BGC Jena \And
         Keith Ponting\\Aurix Ltd., UK  \And
         Philippe Grosjean\\University of Mons, Belgium}
 \title{Sustainable, extensible documentation generation using \inlinedocs}
@@ -139,17 +139,17 @@ integration of \R\ code and results within \LaTeX\ documents
 for integration of Rd documentation inside of \R\ code files, for
 documentation generation using \R\ code and markup in \R\ comments.
 
-The \code{package.skeleton()} function
-that ships with base \R\ is intended to ease the generation of Rd
-files from \R\ code \citep{R}. After specifying some input \R\ code
-files or objects to use for the package, it produces some minimal
-documentation that must be filled in using a text editor. Although
-\code{package.skeleton()} is sufficient for creating small packages
-that are published once and forgotten, it offers little help for packages
+The \code{package.skeleton()} function that ships with base \R\ is
+intended to ease the generation of Rd files from \R\ code
+\citep{R}. After specifying some input \R\ code files or objects to
+use for the package, it produces some minimal documentation that must
+be filled in using a text editor. Although \code{package.skeleton()}
+is sufficient for creating small packages that are published once and
+forgotten, it offers little help for continued maintenance of packages
 for which Rd files are frequently updated.
 
 The other existing approaches, \Rdoc\ and \Roxygen, attempt to address
-this sustainability problem using Rd generation from special comments
+this sustainability problem using Rd generation from comments
 in \R\  code \citep{rdoc,roxygen}. The documentation is thus written
 closer to the code it documents, which is easier to maintain. These
 packages are a step toward seamless integration of code and
@@ -175,18 +175,17 @@ documentation, but they have three major drawbacks:
 
 \subsection{Documentation using inline comments}
 
-The \inlinedocs\ package addresses the aforementioned issues by proposing
-a new syntax for inline documentation of \R\ packages. Using \inlinedocs,
-one writes documentation in comments right next to the relevant code,
-and examples in the \code{ex} attribute of the relevant object. The
-resulting code is free of duplication and very easy to maintain.
-
-%% PhG: incredibly easy to maintain appears a little too strong to me.
+The \inlinedocs\ package addresses the aforementioned issues by
+proposing a new syntax for inline documentation of \R\ packages. Using
+\inlinedocs, one writes documentation in comments right next to the
+relevant code, and examples in the \code{ex} attribute of the relevant
+object. The resulting code is free of duplication and very easy to
+maintain.
 
 The remainder of the article is organized as follows. In
 \autoref{syntax}, we discuss the details of the \inlinedocs\ syntax
 for writing documentation in \R\  comments. In \autoref{extensible}, we
-discuss the design and implementation of \inlinedocs, and detail how
+discuss the design and implementation of \inlinedocs, and explain how
 the syntax can be extended. In \autoref{conclusions}, we conclude and
 offer some ideas for future improvements.
 
@@ -568,10 +567,15 @@ the internal \inlinedocs\ Parser Functions.
 \label{conclusions}
 
 We have presented \inlinedocs, which is both a new syntax for inline
-documentation of \R\ packages, and an extensible system for parsing this
-syntax and generating Rd files. It has been in development since
+documentation of \R\ packages, and an extensible system for parsing
+this syntax and generating Rd files. It has been in development since
 2009 on R-Forge \citep{rforge}, has seen several releases on CRAN, and
-is now considered stable.
+has been used to generate documentation for itself and several other
+\R\ packages. In practice, we have found that \inlinedocs\
+significantly reduces the amount of time it takes to create a package
+that passes \texttt{R CMD check}. In addition, \inlinedocs\
+facilitates rapid package updates since the documentation is written
+in comments right next to the relevant code.
 
 For quality assurance, we currently have implemented unit tests for
 Documentation Lists, which assure that Parser Functions work as
