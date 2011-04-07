@@ -895,10 +895,18 @@ apply.parsers <- function
   old <- options(keep.source=TRUE,topLevelEnvironment=e)
   on.exit(options(old))
   exprs <- parse(text=code)
+  ## TDH 2011-04-07 set this so that no warnings about creating a fake
+  ## package when we try to process S4 classes defined in code
+  e$.packageName <- "inlinedocs.processor"
   for (i in exprs){
-    tryCatch(eval(i, e),error=function(e){
+    ## TDH 2011-04-07 Disable this tryCatch since it makes it harder
+    ##to debug errors/warnings in the evaluated code
+
+    ##tryCatch({
+      eval(i, e)
+    ##},error=function(e){
       ##print(e)
-    })
+    ##})
   }
   objs <- sapply(ls(e),get,e,simplify=FALSE)
 
@@ -954,5 +962,6 @@ extract.docs.file <- structure(function
   apply.parsers(readLines(f),parsers,verbose=FALSE,...)
 },ex=function(){
   f <- system.file("silly","R","silly.R",package="inlinedocs")
-  extract.docs.file(f) ##FIXME: warning
+  extract.docs.file(f)
 })
+
