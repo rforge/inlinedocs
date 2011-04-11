@@ -119,7 +119,7 @@ converted into standard Rd files.
 %\inlinedocs\ is to write examples using actual \R\ code and
 %documentation in comments right next to the code. 
 We first review
-these efforts, emphasing the key issues that justify
+these efforts, emphasizing the key issues that justify
 the introduction of a new package like \inlinedocs.
 
 \subsection[Existing documentation generation systems for R]{Existing
@@ -303,7 +303,7 @@ is.pseudoprime <- function # Check an integer for pseudo-primality.
 On the first line, the \verb+#+ comment specifies the title.  On the
 lines after an argument, \verb+###+ comments specify its
 documentation. This is a useful alternative to inline \verb+##<<+
-comments for longer, multi-line documentation.
+comments for longer, multi-line documentation of function arguments.
 
 A \verb+##section<<+ comment can be used anywhere within a function,
 for any documentation section except \code{examples}, which is
