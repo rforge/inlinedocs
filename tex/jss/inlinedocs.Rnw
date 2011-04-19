@@ -1,6 +1,6 @@
-%  -*- compile-command: "make" -*- 
+%  -*- compile-command: "make" -*-
 \documentclass[article]{jss}
-  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11,7 +11,7 @@
 \newcommand{\Rdoc}{\pkg{Rdoc}}
 \newcommand{\Roxygen}{\pkg{Roxygen}}
 \newcommand{\filepath}[1]{\texttt{#1}}
-\author{Toby Dylan Hocking\\INRIA Paris \And 
+\author{Toby Dylan Hocking\\INRIA Paris \And
         Thomas Wutzler\\MPI-BGC Jena \And
         Keith Ponting\\Aurix Ltd., UK  \And
         Philippe Grosjean\\University of Mons, Belgium}
@@ -63,14 +63,14 @@
   Telephone: +33/1 39 63 54 99\\
   E-mail: \email{Toby.Hocking@inria.fr}\\
   URL: \url{http://cbio.ensmp.fr/~thocking/}\\
-  \\	
+  \\
   Thomas Wutzler\\
   Max Planck Institute for Biogeochemistry\\
   Hans-Kn\"oll-Strasse 10\\
   07745 Jena, Germany\\
   Telephone: +49/3641 576271\\
   E-mail: \email{twutz@bgc-jena.mpg.de}\\
-  \\	
+  \\
   Keith Ponting\\
   Aurix Ltd.\\
   Malvern Hills Science Park\\
@@ -104,7 +104,7 @@ library(inlinedocs)
 old <- options(prompt = ">>>", continue = ">>>")
 #print(.libPaths())
 .result <- list()
-@ 
+@
 
 %% include your article here, just as usual
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
@@ -117,7 +117,7 @@ documenting a package by writing \R\ comments, which are later processed and
 converted into standard Rd files.
 %The new idea in
 %\inlinedocs\ is to write examples using actual \R\ code and
-%documentation in comments right next to the code. 
+%documentation in comments right next to the code.
 We first review
 these efforts, emphasizing the key issues that justify
 the introduction of a new package like \inlinedocs.
@@ -134,7 +134,7 @@ the introduction of a new package like \inlinedocs.
 % space is required?
 For automatic report generation and literate programming, the mature
 Sweave \citep{sweave} format
-% , also included in the default installation of \R, 
+% , also included in the default installation of \R,
 allows
 integration of \R\ code and results within \LaTeX\ documents
 \citep{latex}. However, the goal of \inlinedocs\ is different. It aims
@@ -168,7 +168,7 @@ documentation, but they have three major drawbacks:
 \item The documentation for an object appears in comments above its
   definition. These comment blocks can grow to be quite large, and
   thus they tend to be far away from the relevant code.
-\item Examples are defined either in comments or in supplementary \R\ 
+\item Examples are defined either in comments or in supplementary \R\
   code files. Examples in comments are not easy to test and debug with
   the \R\  interpreter, and supplementary \R\ code files reintroduce the
   separation of code and documentation that these tools are supposed
@@ -202,9 +202,11 @@ The main idea of \inlinedocs\ is to document an \R\ object using
 code. Furthermore, \inlinedocs\ allows documentation
 wherever it is most relevant in the code using \verb+##section<<+
 comments.
+%% KMP 2011-04-19 - strictly ESS is not an editor. Following attempts to
+%% rephrase but maybe needs a reference for Emacs.
 These special comment strings are designed to work well with
-the default behavior of common editors, such as Emacs Speaks
-Statistics \citep{ESS}:  
+the default behavior of common editing environments, such as
+Emacs with the Emacs Speaks Statistics \citep{ESS} add-on package:
 \begin{itemize}
 \item \verb+###+ is automatically aligned to the left margin,
   providing maximum space for comment text.
@@ -244,7 +246,7 @@ fermat.test <- function
  description="Test an integer for primality using Fermat's Little Theorem.",
  "item{n}"="The integer to test.",
  value="Whether the integer passes the Fermat test for a randomized\n\\eqn{0<a<n}.")
-@ 
+@
 
 The comments correspond to the following sections of the
 \texttt{fermat.test.Rd} file:
@@ -253,9 +255,10 @@ The comments correspond to the following sections of the
   form the \code{description} section.
 \item For each argument, an item is created in the \code{arguments}
   section using a \verb+##<<+ comment on the same line.
-\item \verb+###+ comments on the last line of the function form the
+%% KMP 2011-04-19 - being very picky, but two lines cannot be on the last line.
+\item \verb+###+ comments at the end of the function form the
   \code{value} section.
-\end{itemize} 
+\end{itemize}
 
 By default, \code{name}, \code{alias} and \code{title} Rd sections are
 set to the function name, so this minimal level of documentation
@@ -267,7 +270,7 @@ is enough to make a working package that passes \code{R CMD
 
 The following example shows some optional \inlinedocs\ comments that
 allow detailed and flexible specification of Rd files.
- 
+
 <<>>=
 is.pseudoprime <- function # Check an integer for pseudo-primality.
 ### A number is pseudo-prime if it is probably prime, the basis of
@@ -298,7 +301,7 @@ is.pseudoprime <- function # Check an integer for pseudo-primality.
  "item{times}"="Number of Fermat tests to perform. More tests are more likely to\ngive accurate results.",
  seealso="\\code{\\link{fermat.test}}",
  value="logical TRUE if n is probably prime.")
-@ 
+@
 
 On the first line, the \verb+#+ comment specifies the title.  On the
 lines after an argument, \verb+###+ comments specify its
@@ -310,8 +313,11 @@ for any documentation section except \code{examples}, which is
 handled in a special manner as shown below in
 section~\ref{sec:exattr}. In each comment, arbitrary Rd may be
 written, as shown in the \verb+##seealso<<+ section above.  Each
-\verb+##section<<+ may occur several times in a single documentation
-object. Each occurrence is normally concatenated as separate
+%% KMP 2011-04-19 - "documentation object" felt confusing - used later with
+%% a different meaning. Also (picky again!), concatenation applies to
+%% multiple pieces, not to a single piece, hence change from singular to plural.
+\verb+##section<<+ may occur several times in the documentation for a single
+object. Such multiple occurrences are normally concatenated as separate
 paragraphs, but special processing is applied to match the intended
 use of the following documentation sections:
 \begin{itemize}
@@ -357,7 +363,7 @@ try.several.times <- structure(function
  "item{n}"="integer to test for primality.",
  "item{times}"="vector of number of tests to try.",
  value="data.frame with columns:\n\\item{times}{number of Fermat tests.}\n\\item{is.prime}{TRUE if probably prime}\n\\item{n}{Integer tested.}")
-@ 
+@
 
 On the final lines of the function definition, a \verb+##value<<+
 comment allows documentation of lists or data frames using the names
@@ -389,7 +395,7 @@ check the output with reference output.
 % comments as I write it or soon after. The thought process tends to go:
 % This is a useful sequence of operations - make it a function - test it -
 % any possibility of reuse? - add comments if they are not already there -
-% think about regression testing/example input and output. 
+% think about regression testing/example input and output.
 
 \newpage
 \subsection{Documenting classes and methods}
@@ -422,7 +428,7 @@ setClass("DocLink", # Link documentation among related functions
  "item{parent}"="parent class or NA",
  "item{code}"="actual source lines",
  "item{description}"="preceding description block")
-@ 
+@
 
 The inheritance referred to in this example is designed to avoid the
 need for repetitive documentation when defining a class hierarchy. The
@@ -435,7 +441,8 @@ all the definitions are within a single source file and this
 {\code{package.skeleton.dx()} for generating Rd files}
 
 The main function that the \inlinedocs\ package provides is
-\code{package.skeleton.dx("fermat")}, which processes R code found in
+\code{package.skeleton.dx}. For example,
+\code{package.skeleton.dx("fermat")} processes R code found in
 \code{fermat/R}, and generates Rd files in \code{fermat/man}. This
 operates first by running \code{package.skeleton()} to generate blank
 Rd files, which are updated using the inline documentation specified
@@ -472,8 +479,8 @@ following code and its corresponding Documentation List.
 \begin{minipage}{0.4\textwidth}
   R code\hrulefill
 <<echo=FALSE>>=
-cat(paste(readLines("doclist.R"), collapse = "\n")) 
-@ 
+cat(paste(readLines("doclist.R"), collapse = "\n"))
+@
 \end{minipage}
 \begin{minipage}{0.45\textwidth}
   Documentation List\hrulefill
@@ -656,6 +663,6 @@ generated by \inlinedocs.
 
 <<echo=FALSE>>=
 options(old)
-@ 
+@
 
 \end{document}
