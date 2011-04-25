@@ -7,7 +7,7 @@ Author: Inlinedocs development team
 Maintainer: Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>
 Description: Generates Rd files from R source code with comments, providing for quick, sustainable package development. The syntax keeps code and documentation close together, and is inspired by the Don't Repeat Yourself principle.
 URL: http://inlinedocs.r-forge.r-project.org
-Depends: methods, utils
+Depends: methods, utils, R (>= 2.9)
 License: GPL-3
 LazyLoad: yes
 
