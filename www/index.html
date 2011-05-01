@@ -110,17 +110,17 @@ break lines and add ### prefixes.</li>
 </ul></li>
 -->
 
-<li>You can add a description of a data item declared in your code by
+<li>You can add a description of a data item declared in your code 
+<a href="https://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/description-before.R?view=markup&amp;revision=259&amp;root=inlinedocs">by
 adding a ### comment on the line before the variable is first
-declared.</li>
+declared</a>.</li>
 
-<li>The DESCRIPTION file is used by inlinedocs for the Maintainer
-(this becomes the author section of the Rd files) and Package (this is
-used as the name argument to package.skeleton). DESCRIPTION is also
-used for constructing the pkgname-package Rd file, so you have to
-include these fields: Version License Description Title Author. If
-you're really lazy (like me), and you haven't written one yet,
-inlinedocs will create an empty DESCRIPTION file for you.
+<li>The DESCRIPTION file is used by inlinedocs, so please fill in at
+least these fields: Package Version License Description Title Author
+Maintainer. The most important field is Maintainer, which is copied to
+the author section of every generated Rd file. If you haven't written
+one yet, package.skeleton.dx() will create an empty DESCRIPTION file
+for you.
 </li>
 
 <li>You still have to document your datasets (the files in
@@ -132,7 +132,7 @@ shown below. This is more sustainable than putting test code in R
 comments, since debugging and changing commented code is a pain.</li>
 
 <li>For additional flexibility, inlinedocs now allows documentation of
-<a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/tests/silly/R/silly.example.R?view=markup&amp;revision=115&amp;root=inlinedocs">S4 class definitions (i.e. those which use
+<a href="https://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/silly.R?view=markup&amp;revision=156&amp;root=inlinedocs">S4 class definitions (i.e. those which use
 <tt>setClass</tt>)</a> and includes additional triggers based on the
 string "##&lt;&lt;". This means that most of the standard
 documentation sections can be filled in from wherever is relevant in
@@ -150,18 +150,19 @@ fermat example from roxygen" />
 </li>
 
 <li> ##&lt;&lt; at the end of a line can be used to add function
-argument descriptions on the same line as an argument name - any
-immediately following ## comment lines will also be included.  </li>
+argument descriptions on the same line as an argument name, and
+<a href="https://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/silly.R?view=markup&amp;revision=156&amp;root=inlinedocs">any
+immediately following ## comment lines will also be included</a>.  </li>
 
-<li> ##xxx&lt;&lt; as the first non-white space element on a line introduces
-a section of consecutive ## comment lines which will be placed in the
-"xxx" section of the documentation, where xxx is one of: alias,
-details, keyword, references, author, note, seealso, value, title or
-description. Multiple such chunks are concatenated appropriately - you
-can think of this as something like the C++ "put" operator putting
-chunks into that section.  For further details and examples of these
-look for &lt;&lt; in the source file <a
-href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/R/package.skeleton.dx.R?root=inlinedocs&amp;view=markup">package.skeleton.dx.R</a>
+<li> ##xxx&lt;&lt; as the first non-white space element on a line
+introduces a section of consecutive ## comment lines which will be
+placed in the "xxx" section of the documentation, where xxx is one of:
+alias, details, keyword, references, author, note, seealso, value,
+title or description. Multiple such chunks are concatenated
+appropriately, so you can think of this as something like the C++
+"put" operator putting chunks into that section. For further details
+and examples of these look for &lt;&lt; in the source
+file <a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/R/parsers.R?root=inlinedocs&amp;view=markup">parsers.R</a>.
 </li>
 
 <li> ##describe&lt;&lt; within such a documentation chunk allows a
@@ -169,14 +170,11 @@ href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/R/package.skele
 ##&lt;&lt; comments (as for the function arguments). All the following
 source lines until another ##xxx&lt;&lt; line will be scanned for such
 same-line comments. (##end&lt;&lt; may be used to end such a block and
-return to the same documentation chunk.) This allows named lists to be
-documented using the names actually in the code so that it is less
-easy to forget to document when you add an element.</li>
-
-<li>The package includes
-a <a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/tests/silly/R/silly.example.R?root=inlinedocs&amp;view=markup">silly
-example</a>, which (as the file name suggests) is a very silly
-function indeed but exercises most of these facilities.</li>
+return to the same documentation chunk.) This
+allows <a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/returnlist.R?view=markup&amp;revision=154&amp;root=inlinedocs">named
+lists to be documented using the names actually in the code</a> so
+that it is less easy to forget to document when you add an
+element.</li>
 
 <li>
 Some more examples of inlinedocs syntax can be found in the 
@@ -188,6 +186,7 @@ that they will work correctly.
 
 </ul>
 
+<!--
 <h1>NEW in version 1.2! Extending inlinedocs!</h1>
 
 <p>inlinedocs operates using a modular system of source code parsers,
@@ -268,6 +267,21 @@ then options("inlinedocs.parsers") (which you could define in your
 ~/.Rprofile). If neither of these is found, it will use
 inlinedocs::default.parsers. So you can use this feature to have
 project- and user-specific inlinedocs parsers!</p>
+-->
+
+<h2>Patch for ESS</h2>
+
+The useful C-c C-f ESS command currently doesn't work with some valid
+R inlinedocs function definitions. A temporary remedy is to download
+the ESS source and change the ess-function-pattern variable:
+
+<pre>
+wget http://ess.r-project.org/downloads/ess/ess-5.13.tgz
+tar -xzf ess-5.13.tgz
+cd ess-5.13
+wget https://r-forge.r-project.org/scm/viewvc.php/*checkout*/lisp/ess-function-pattern-patch/ess-function-pattern-more-general.patch?root=inlinedocs -O ess-function-pattern.patch
+patch -p0 &lt; ess-function-pattern.patch
+</pre>
 
 <p> Return to
 the <a href="http://r-forge.r-project.org/projects/inlinedocs/">project
