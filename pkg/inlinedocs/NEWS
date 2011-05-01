@@ -5,6 +5,10 @@ tools:::print.Rd. See code in etc/parseRd.R
 
 == 1.6
 
+Multiparagraph descriptions and unit test.
+
+Description before unit test.
+
 Fix warining when S4 classes are defined in package code, by setting
 the .packageName variable in the env in apply.parsers, so we don't get
 this warning anymore
