@@ -66,7 +66,7 @@ library(inlinedocs)
 package.skeleton.dx("/path/to/your/pkgdir")
 </pre>
 
-<p>Then you are done! You will get Rd files in pkgdir/man that are
+<p>Then you are done! You will get Rd files in <tt>pkgdir/man</tt> that are
 guaranteed to pass R CMD check! Some notes/tips:</p>
 
 <ul>
@@ -74,9 +74,9 @@ guaranteed to pass R CMD check! Some notes/tips:</p>
 <li>Use an editor where you can easily do line breaks in your
 comments, like <a href="http://www.gnu.org/software/emacs">Emacs</a>
 with <a href="http://ess.r-project.org">ESS</a>. Then you just type
-"###" and go on as long as you want with your comment. When you're
-done and you have a really long comment, do a M-q to automatically
-break lines and add ### prefixes.</li>
+<tt>###</tt> and go on as long as you want with your comment. When
+you're done and you have a really long comment, do a M-q to
+automatically break lines and add <tt>###</tt> prefixes.</li>
 
 <!--
 <li>Some more examples:<ul>
@@ -112,29 +112,32 @@ break lines and add ### prefixes.</li>
 
 <li>You can add a description of a data item declared in your code 
 <a href="https://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/description-before.R?view=markup&amp;revision=259&amp;root=inlinedocs">by
-adding a ### comment on the line before the variable is first
+adding a <tt>###</tt> comment on the line before the variable is first
 declared</a>.</li>
 
-<li>The DESCRIPTION file is used by inlinedocs, so please fill in at
-least these fields: Package Version License Description Title Author
-Maintainer. The most important field is Maintainer, which is copied to
-the author section of every generated Rd file. If you haven't written
-one yet, package.skeleton.dx() will create an empty DESCRIPTION file
-for you.
+<li>The <tt>DESCRIPTION</tt> file is used by inlinedocs, so please
+fill in at least these fields: <tt>Package Version License Description
+Title Author Maintainer</tt>. The most important field
+is <tt>Maintainer</tt>, which is copied to the author section of every
+generated Rd file. If you haven't written one
+yet, <tt>package.skeleton.dx()</tt> will create an
+empty <tt>DESCRIPTION</tt> file for you.
 </li>
 
 <li>You still have to document your datasets (the files in
-pkgdir/data) by writing an Rd file, but these don't change often, so
-that's no problem. To get started just use the prompt() function.</li>
+<tt>pkgdir/data</tt>) by writing an Rd file, but these don't change
+often, so that's no problem. To get started just use
+the <tt>prompt()</tt> function.</li>
 
-<li>To add inline examples for FUN, use the "ex" attribute of FUN, as
-shown below. This is more sustainable than putting test code in R
-comments, since debugging and changing commented code is a pain.</li>
+<li>To add inline examples for <tt>FUN</tt>, use the <tt>ex</tt>
+attribute of <tt>FUN</tt>, as shown below. This is more sustainable
+than putting test code in R comments, since debugging and changing
+commented code is a pain.</li>
 
 <li>For additional flexibility, inlinedocs now allows documentation of
 <a href="https://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/silly.R?view=markup&amp;revision=156&amp;root=inlinedocs">S4 class definitions (i.e. those which use
 <tt>setClass</tt>)</a> and includes additional triggers based on the
-string "##&lt;&lt;". This means that most of the standard
+string <tt>##&lt;&lt;</tt>. This means that most of the standard
 documentation sections can be filled in from wherever is relevant in
 the source code, as follows:
 
@@ -149,32 +152,58 @@ fermat example from roxygen" />
 
 </li>
 
-<li> ##&lt;&lt; at the end of a line can be used to add function
-argument descriptions on the same line as an argument name, and
+<li> <tt>##&lt;&lt;</tt> at the end of a line can be used to add
+function argument descriptions on the same line as an argument name,
+and
 <a href="https://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/silly.R?view=markup&amp;revision=156&amp;root=inlinedocs">any
-immediately following ## comment lines will also be included</a>.  </li>
+immediately following <tt>##</tt> comment lines will also be
+included</a>.  </li>
 
-<li> ##xxx&lt;&lt; as the first non-white space element on a line
-introduces a section of consecutive ## comment lines which will be
-placed in the "xxx" section of the documentation, where xxx is one of:
-alias, details, keyword, references, author, note, seealso, value,
-title or description. Multiple such chunks are concatenated
+<li> <tt>##xxx&lt;&lt;</tt> as the first non-white space element on a
+line introduces a section of consecutive <tt>##</tt> comment lines
+which will be placed in the <tt>xxx</tt> section of the documentation,
+where <tt>xxx</tt> is one of: 
+<tt>alias</tt>, 
+<tt>details</tt>,
+<tt>keyword</tt>,
+<tt>references</tt>,
+<tt>author</tt>,
+<tt>note</tt>,
+<tt>seealso</tt>,
+<tt>value</tt>,
+<tt>title</tt> or
+<tt>description</tt>. Multiple such chunks are concatenated
 appropriately, so you can think of this as something like the C++
 "put" operator putting chunks into that section. For further details
-and examples of these look for &lt;&lt; in the source
+and examples of these look for <tt>&lt;&lt;</tt> in the source
 file <a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/R/parsers.R?root=inlinedocs&amp;view=markup">parsers.R</a>.
 </li>
 
-<li> ##describe&lt;&lt; within such a documentation chunk allows a
-"describe" block within that chunk to be constructed using same-line
-##&lt;&lt; comments (as for the function arguments). All the following
-source lines until another ##xxx&lt;&lt; line will be scanned for such
-same-line comments. (##end&lt;&lt; may be used to end such a block and
-return to the same documentation chunk.) This
+<li><tt>##describe&lt;&lt;</tt> within such a documentation chunk
+allows a "describe" block within that chunk to be constructed using
+same-line <tt>##&lt;&lt;</tt> comments (as for the function
+arguments). All the following source lines until
+another <tt>##xxx&lt;&lt;</tt> line will be scanned for such same-line
+comments. <tt>##end&lt;&lt;</tt> may be used to end such a block and
+return to the same documentation chunk. This
 allows <a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/returnlist.R?view=markup&amp;revision=154&amp;root=inlinedocs">named
 lists to be documented using the names actually in the code</a> so
 that it is less easy to forget to document when you add an
 element.</li>
+
+<li>Be careful to use the right number of # ...
+
+<ul>
+<li><tt>#</tt> for the title.</li>
+<li><tt>##&lt;&lt;</tt> for documenting function arguments on the
+same line.</li>
+<li><tt>##section&lt;&lt;</tt> followed by <tt>##</tt> for arbitrary
+documentation sections.</li>
+<li><tt>###</tt> for description, function arguments, and return
+values.</li>
+</ul>
+
+</li>
 
 <li>
 Some more examples of inlinedocs syntax can be found in the 
