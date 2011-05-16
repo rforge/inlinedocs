@@ -563,15 +563,16 @@ there is a comment, \code{title.from.firstline()} returns the comment
 as the title in an inner Documentation List. This a very simple and
 readable way to define a Parser Function.
 
-But how does this Parser Function get access to the \code{src} argument
-for an individual function? We introduce the \code{forall()} and
-\code{forfun()} functions, which transform an object-specific Parser
-Function such as \code{title.from.firstline} to a Parser Function that
-can work on an entire package. These functions examine the \code{objs}
-and \code{docs} arguments, and call the object-specific Parser Function
-on each object in turn. The \code{forfun()} function applies to every
-function in the package, whereas the \code{forall()} function applies to
-every documentation object in the package.
+But how does this Parser Function get access to the \code{src}
+argument, the source code of an individual function? We introduce the
+\code{forall()} and \code{forfun()} functions, which transform an
+object-specific Parser Function such as \code{title.from.firstline} to
+a Parser Function that can work on an entire package. These functions
+examine the \code{objs} and \code{docs} arguments, and call the
+object-specific Parser Function on each object in turn. The
+\code{forfun()} function applies to every function in the package,
+whereas the \code{forall()} function applies to every documentation
+object in the package.
 
 Thus, when using a Parser Function such as
 \code{forfun(title.from.firstline)}, the following
