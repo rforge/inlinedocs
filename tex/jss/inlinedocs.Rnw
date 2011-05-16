@@ -504,11 +504,14 @@ To store parsed documentation, another intermediate representation
 that we considered instead of the Documentation List was the
 \code{"Rd"} object, as described by \cite{new-r-help}. It is a
 recursive structure of lists and character strings, which is similar
-to the Documentation List format of \inlinedocs. However, from the
-point of view of a Parser Function programmer, creating all the
-attrbute tags to make a valid \code{"Rd"} object is too
-cumbersome. Documentation lists allow rapid development of Parser
-Functions which are straightforward to read, write, and modify.
+to the Documentation List format of \inlinedocs.
+% However, from the
+% point of view of a Parser Function programmer, creating all the
+% attrbute tags to make a valid \code{"Rd"} object is too
+% cumbersome.
+However, we chose the Documentation List format since it allows rapid
+development of Parser Functions which are straightforward to read,
+write, and modify.
 
 \subsection[Structure of a Parser Function and forall/forfun]{Structure of a
   Parser Function and \code{forall()}/\code{forfun()}}
