@@ -1,4 +1,4 @@
-install.packages("inlinedocs")
+install.packages("inlinedocs",repos="http://r-forge.r-project.org")
 library(inlinedocs)
 f <- system.file("testfiles/fermat.R",package="inlinedocs")
 test.file(f)
