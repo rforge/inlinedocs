@@ -1,0 +1,6 @@
+install.packages("inlinedocs")
+library(inlinedocs)
+f <- system.file("testfiles/fermat.R",package="inlinedocs")
+test.file(f)
+fermat <- file.path(tempdir(),"fermat")
+package.skeleton.dx(fermat)

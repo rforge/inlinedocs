@@ -15,7 +15,7 @@
         Thomas Wutzler\\MPI-BGC Jena \And
         Keith Ponting\\Aurix Ltd., UK  \And
         Philippe Grosjean\\University of Mons, Belgium}
-\title{Sustainable, extensible documentation generation using \inlinedocs}
+\title{Sustainable, Extensible Documentation Generation using \inlinedocs}
 
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{Toby Dylan Hocking, Thomas Wutzler, Keith Ponting, Philippe Grosjean} %% comma-separated
@@ -185,11 +185,12 @@ object. The resulting code is free of duplication and very easy to
 maintain.
 
 The remainder of the article is organized as follows. In
-\autoref{syntax}, we discuss the details of the \inlinedocs\ syntax
-for writing documentation in \R\  comments. In \autoref{extensible}, we
-discuss the design and implementation of \inlinedocs, and explain how
-the syntax can be extended. In \autoref{conclusions}, we conclude and
-offer some ideas for future improvements.
+Section~\ref{syntax}, we discuss the details of the \inlinedocs\
+syntax for writing documentation in \R\ comments. In
+Section~\ref{extensible}, we discuss the design and implementation of
+\inlinedocs, and explain how the syntax can be extended. In
+Section~\ref{conclusions}, we conclude and offer some ideas for future
+improvements.
 
 \newpage
 \section[The inlinedocs syntax for inline documentation of R packages]{The
@@ -215,7 +216,7 @@ Emacs with the Emacs Speaks Statistics \citep{ESS} add-on package:
   obscure the code structure.
 \end{itemize}
 
-The following subsections illustrate common usage of \inlinedocs\
+The following Sections illustrate common usage of \inlinedocs\
 comments through \pkg{fermat}, an example package inspired by the
 \Roxygen\ vignette \citep{roxygen}. The examples were processed and
 checked for validity using \inlinedocs\ version 1.6. For brevity, only
@@ -475,22 +476,24 @@ correspond to Rd files in the package, and the elements of the inner
 list correspond to tags in an Rd file. For example, consider the
 following code and its corresponding Documentation List.
 
-\begin{small}
 \begin{minipage}{0.4\textwidth}
   R code\hrulefill
+\begin{scriptsize}
 <<echo=FALSE>>=
 cat(paste(readLines("doclist.R"), collapse = "\n"))
 @
+\end{scriptsize}
 \end{minipage}
 \begin{minipage}{0.45\textwidth}
   Documentation List\hrulefill
+\begin{scriptsize}
 <<echo=FALSE,result=TRUE>>=
 dl <- extract.docs.file("doclist.R")
 show <- lapply(dl, function (L) L[!names(L) %in% c("definition", "format")])
 str(show)
 @
+\end{scriptsize}
 \end{minipage}
-\end{small}
 
 \hrulefill
 
@@ -513,6 +516,7 @@ However, we chose the Documentation List format since it allows rapid
 development of Parser Functions which are straightforward to read,
 write, and modify.
 
+\newpage
 \subsection[Structure of a Parser Function and forall/forfun]{Structure of a
   Parser Function and \code{forall()}/\code{forfun()}}
 
