@@ -136,7 +136,7 @@ For automatic report generation and literate programming, the mature
 Sweave \citep{sweave} format
 % , also included in the default installation of \R,
 allows
-integration of \R\ code and results within \LaTeX\ documents
+integration of \R\ code and results within \pkg{\LaTeX}\ documents
 \citep{latex}. However, the goal of \inlinedocs\ is different. It aims
 for integration of Rd documentation inside of \R\ code files, for
 documentation generation using \R\ code and markup in \R\ comments.
@@ -205,9 +205,9 @@ wherever it is most relevant in the code using \verb+##section<<+
 comments.
 %% KMP 2011-04-19 - strictly ESS is not an editor. Following attempts to
 %% rephrase but maybe needs a reference for Emacs.
-These special comment strings are designed to work well with
-the default behavior of common editing environments, such as
-Emacs with the Emacs Speaks Statistics \citep{ESS} add-on package:
+These special comment strings are designed to work well with the
+default behavior of common editing environments, such as \pkg{Emacs}
+with the \pkg{Emacs Speaks Statistics} \citep{ESS} add-on package:
 \begin{itemize}
 \item \verb+###+ is automatically aligned to the left margin,
   providing maximum space for comment text.
