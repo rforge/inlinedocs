@@ -123,8 +123,10 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   if (length(pkgnames)) {
     # PhG: A civilized function returns the system in the same state it was
     # before => detach loaded packages at the end!
-    on.exit(try(for (pkg in pkgnames) detach(paste("package", pkg, sep = ":"),
-        unload = TRUE, character.only = TRUE), silent = TRUE), add = TRUE)
+    on.exit(suppressWarnings({
+      try(for (pkg in pkgnames)detach(paste("package", pkg, sep = ":"),
+        unload = TRUE, character.only = TRUE), silent = TRUE)
+    }), add = TRUE)
     # PhG: Shouldn't we need to check that packages are loaded and shouldn't
     # we exit with an explicit error message if not? Note: we don't use version
     # information here. That means we may well load wrong version of the

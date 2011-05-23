@@ -3,17 +3,6 @@
 Attempt doc list to Rd list conversion, so we can generate Rd using
 tools:::print.Rd. See code in etc/parseRd.R
 
-Still getting warnings after package.skeleton.dx(), why?
-
-There were 26 warnings (use warnings() to see them)
-> warnings()
-Warning messages:
-1: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-2: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-...
-
 == 1.6
 
 Remove support for examples.after.return.
@@ -21,6 +10,17 @@ Remove support for examples.after.return.
 Multiparagraph descriptions and unit test.
 
 Description before unit test.
+
+Suppress warnings when we attempt to detach loaded packages, in order
+to avoid these warnings:
+
+> warnings()
+Warning messages:
+1: In FUN(X[[2L]], ...) :
+  Created a package name, "2011-05-11 14:11:30", when none found
+2: In FUN(X[[2L]], ...) :
+  Created a package name, "2011-05-11 14:11:30", when none found
+...
 
 Fix warining when S4 classes are defined in package code, by setting
 the .packageName variable in the env in apply.parsers, so we don't get
