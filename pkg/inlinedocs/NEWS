@@ -12,57 +12,11 @@ Warning messages:
   Created a package name, "2011-05-11 14:11:30", when none found
 2: In FUN(X[[2L]], ...) :
   Created a package name, "2011-05-11 14:11:30", when none found
-3: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-4: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-5: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-6: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-7: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-8: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-9: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-10: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-11: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-12: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-13: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-14: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-15: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-16: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-17: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-18: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-19: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-20: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-21: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-22: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-23: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-24: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-25: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-26: In FUN(X[[2L]], ...) :
-  Created a package name, "2011-05-11 14:11:30", when none found
-
+...
 
 == 1.6
+
+Remove support for examples.after.return.
 
 Multiparagraph descriptions and unit test.
 

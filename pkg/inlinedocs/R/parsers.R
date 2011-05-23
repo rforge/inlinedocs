@@ -89,57 +89,6 @@ kill.prefix.whitespace <- function
 ### Character vector of code lines with preceding whitespace removed.
 }
 
-examples.after.return <- function
-### Get examples from inline definitions after return()
-### PhG: this does not work well! Think of these situations:
-### 1) You have multiple return() in the code of your function,
-### 2) You have return() appearing is some example code, ...
-### I can hardly propose a hack here. The whole code of the function
-### must be parsed, and one must determine which one is the last line
-### of code that is actually executed.
-###
-### I make two propositions here
-### 1) to keep the same mechanism that has the advantage of simplicity
-###    but to use a special tag
-###    ##examples<< or #{{{examples to separate
-###    function code from examples explicitly, and
-### 2) to place the example in an "ex" attribute
-###    attached to the function
-###    (see next parser). That solution will be also interesting for
-###    documenting datasets, something not done yet by inlinedocs!
-(src,name="",...) { 
-  ## Look for the examples mark
-  m <- grep("^\\s*(##examples<<|#\\{\\{\\{examples)", src)
-  if (!length(m)) return(list())
-  if (length(m) > 1)
-    warning("More than one examples tag for ", name,
-            ". Taking the last one")
-  m <- m[length(m)]
-  ## Look for the lines containing return value comments just before
-  r <- grep("\\s*### ", src[1:(m-1)])
-    if (!length(r)) {
-      value <- NULL
-    } else {
-      ## Only take consecutive lines before the mark
-      keep <- rev((m - rev(r)) == 1:length(r))
-      if (!any(keep)) {
-        value <- NULL
-      } else {
-        value <- decomment(src[r[keep]])
-      }
-    }
-  ## Collect now the example code beneath the mark
-  ex <- src[(m + 1):(length(src) - 1)]
-  ## Possibly eliminate a #}}} tag
-  ex <- ex[!grepl("#}}}", ex)]
-  ## Eliminate leading tabulations or four spaces
-  ex <- kill.prefix.whitespace(ex)
-  ## Add an empty line before and after example
-  ex <- c("", ex, "")
-  ## Return examples and value
-  list(examples = ex, value = value)
-}
-
 prefixed.lines <- structure(function(src,...){
 ### The primary mechanism of inline documentation is via consecutive
 ### groups of lines matching the specified prefix regular expression
@@ -484,7 +433,6 @@ leadingS3generic <- function # check whether function name is an S3 generic
 ### individual object.
 forfun.parsers <-
   list(prefixed.lines=prefixed.lines,
-       examples.after.return=examples.after.return,
        extract.xxx.chunks=extract.xxx.chunks,
        ## title from first line of function def
        title.from.firstline=function(src,...){
