@@ -22,7 +22,7 @@ Warning messages:
   Created a package name, "2011-05-11 14:11:30", when none found
 ...
 
-Fix warining when S4 classes are defined in package code, by setting
+Fix warning when S4 classes are defined in package code, by setting
 the .packageName variable in the env in apply.parsers, so we don't get
 this warning anymore
 
