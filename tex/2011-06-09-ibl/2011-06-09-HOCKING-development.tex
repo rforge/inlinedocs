@@ -1,0 +1,84 @@
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+\documentclass{beamer}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[all]{xy}
+
+\title{Collaborative statistical software development using R-Forge\\
+  \url{http://R-Forge.R-Project.org/}}
+\author{Toby Dylan Hocking \\ toby.hocking AT inria.fr}
+\date{9 June 2011}
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+\newcommand{\framet}[2]{\frame[containsverbatim]{
+\begin{itemize}
+\frametitle{#1}{#2}
+\end{itemize}
+}}
+
+\begin{document}
+\setkeys{Gin}{width=\textwidth}
+\frame{\titlepage}
+
+\section{The R development model}
+
+\begin{frame}
+\frametitle{How do the authors of R write code?}
+\begin{tabular}{ccc}
+  Tool & R-core & R-Forge \\
+  \hline
+  mail & r-help@r-project.org & pkg-help@lists.r-forge.r-project.org\\
+  public svn & http://svn.r-project.org/R/trunk & svn://svn.r-forge.r-project.org/svnroot/pkg \\
+  dev svn & https://dev@svn.r-project.org/R/trunk & svn+ssh://dev@svn.r-forge.r-project.org/svnroot/pkg \\
+  web & www.r-project.org & pkg.r-forge.r-project.org \\
+  bugs & bugs.r-project.org & r-forge.r-project.org/tracker/?group\_id=496
+\end{tabular}
+\end{frame}
+
+\section{Using Subversion with R-Forge}
+
+\section{Conclusions}
+
+\framet{References for learning more about R-Forge}{
+\item The definitive guide: help.start() then
+  \href{http://cran.r-project.org/doc/manuals/R-exts.html}{Writing R
+    Extensions}
+\item The built-in package generator: ?package.skeleton
+\item roxygen
+  \begin{itemize}
+  \item library(roxygen)
+  \item ?roxygenize
+  \item \url{http://roxygen.org/roxygen.pdf}
+  \end{itemize}
+\item R.oo:Rdoc
+  \begin{itemize}
+  \item library(R.oo)
+  \item ?Rdoc (not very much documentation)
+  \item \url{http://www.aroma-project.org/developers}
+  \end{itemize}
+\item inlinedocs
+  \begin{itemize}
+  \item library(inlinedocs)
+  \item ?inlinedocs
+  \item \url{http://inlinedocs.r-forge.r-project.org}
+  \end{itemize}
+\item Contact me directly: toby.hocking AT inria.fr,
+  \url{http://cbio.ensmp.fr/~thocking/}
+}
+
+\end{document}
+
