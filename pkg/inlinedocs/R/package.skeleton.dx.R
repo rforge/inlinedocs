@@ -131,43 +131,15 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
     # we exit with an explicit error message if not? Note: we don't use version
     # information here. That means we may well load wrong version of the
     # packages... and that is NOT detected as an error!
-    #for(pkg in pkgnames)try(library(pkg,character.only=TRUE),silent=TRUE)
     pkgmissing <- character(0)
     for (pkg in pkgnames) {
-        res <- try(library(pkg, character.only = TRUE), silent = TRUE)
-        if (inherits(res, "try-error"))
-            pkgmissing <- c(pkgmissing, pkg)
+      if(!require(pkg, character.only = TRUE)){
+        pkgmissing <- c(pkgmissing, pkg)
+      }
     }
     if (length(pkgmissing))
         stop("Need missing package(s): ", paste(pkgmissing, collapse = ", "))
   }
-
-  ## Essentially inlinedocs is this function, package.skeleton.dx,
-  ## that turn R/*.R, tests/*.R, and DESCRIPTION files into Rd
-  # PhG: this is tests/*.R, not test/*.R. Also, it is a bit ennoying to mix
-  # examples and tests in tests/*.R... It means that your 'tests'/'examples'
-  # will be run twice! Moreover, adding something to 'tests' causes a large
-  # overhead in compiling R packages on Mac OS X. For packages without C or
-  # FORTRAN code to compile (like those targetted by inlinedocs), it is
-  # easy to compile the packages using R CMD build on a Mac without any other
-  # addition... In case there is something in /tests, one has to install almost
-  # 2Gb of latest version of Xtools, downloaded on Mac web site after login
-  # (Gaps!). So, if one could avoid this painfull task, it would be wonderful!
-  # My suggestion would be to place example code in the /ex subdirtectory of the
-  # source of the package...
-  ## files. This is done by parsing them and making a list called
-  ## "docs" that summarizes them. This list is then used to edit the
-  ## Rd files output by package.skeleton and produce the final Rd
-  ## files. The old way of creating the docs list is rather
-  ## monolithic, and for maintenance purposes I would like to begin
-  ## modularization of this process. What is the best way to do this?
-  ## I propose that package.skeleton.dx() starts docs as an empty
-  ## list, then parses the concatenated R files as "objs," reads their
-  ## text as "code," reads the package description as "desc," then
-  ## passes these to a list of functions that will sequentially add
-  ## things to docs. This will make extension of inlinedocs quite
-  ## easy, since all you would need to do is write a new parser
-  ## function and add it to the list.
 
   ## for the parser list, first try reading package-specific
   ## configuration file

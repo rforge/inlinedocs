@@ -62,15 +62,18 @@ make.package.and.check <- function
  verbose=TRUE
 ### print the check command line?
  ){
-  pkgname <- sub(".[rR]$","",basename(f))
+  print(f)
+  pkgname <- sub("[.][rR]$","",basename(f))
+  print(pkgname)
   pkgdir <- file.path(tempdir(),pkgname)
+  print(pkgdir)
   if(file.exists(pkgdir))unlink(pkgdir,recursive=TRUE)
   rdir <- file.path(pkgdir,"R")
+  print(rdir)
   dir.create(rdir,recursive=TRUE)
-  desc <- file.path(system.file(package="inlinedocs"),"silly","DESCRIPTION")
+  desc <- system.file(file.path("silly","DESCRIPTION"),package="inlinedocs")
   file.copy(desc,pkgdir)
   file.copy(f,rdir)
-  print(pkgdir)
   package.skeleton.dx(pkgdir,parsers)
   cmd <- sprintf("%s CMD check %s",file.path(R.home("bin"), "R"),pkgdir)
   if(verbose)cat(cmd,"\n")
