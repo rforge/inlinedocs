@@ -3,7 +3,15 @@
 Attempt doc list to Rd list conversion, so we can generate Rd using
 tools:::print.Rd. See code in etc/parseRd.R
 
+== 1.7
+
+Try to get more tests working: R CMD check and Rd conversion to
+doclist checks.
+
 == 1.6
+
+Only do R CMD check in tests when we run interactively. If not
+CRAN/R-Forge gives a weird error.
 
 Remove support for examples.after.return.
 
