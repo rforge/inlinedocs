@@ -1,8 +1,30 @@
 % -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
 \documentclass{beamer}
-\usepackage{graphicx}
 \usepackage{hyperref}
-\usepackage[all]{xy}
+\usepackage{tikz}
+\SweaveOpts{echo=FALSE,width=4.5,height=3.5}
+ 
+% Some problems encountered when using pgfSweave... 1. Some old
+% versions of certain R packages gave an error Graphics API version
+% mismatch. Solution: update.packages(checkBuilt=TRUE,ask=FALSE)
+% 2. need to \usepackage{tikz} in the header and process on the
+% command line with pgfsweave test.Rnw or in R with
+% library(pgfSweave);pgfSweave("test.Rnw",pdf=TRUE). 3. Try to get the
+% simple example in
+% http://cran.at.r-project.org/web/packages/pgfSweave/vignettes/pgfSweave.pdf
+% to work before anything else. 4. ERROR PGF >= 2.10 is required to
+% use pgfSweave, you are using version 2.00.... NEED to install
+% https://help.ubuntu.com/community/LaTeX#Add%20on%20packages ...
+% cd && mkdir texmf && cp -r pgf/tex texmf && texhash texmf .....
+% then finally do R CMD pgfsweave test.Rnw 5. There seems to be some
+% problems with Emacs setting up the environment. when I launch emacs
+% from .xsession it is unable to find the R user library, so it can't
+% find the tikz/pgfsweave packages. how to fix? open emacs from a
+% shell...
+
+<<>>=
+.libPaths(c("~/lib64/R/library", .libPaths()))
+@
 
 \title{Collaborative statistical software development using R-Forge\\
   \url{http://R-Forge.R-Project.org/}}
@@ -49,12 +71,36 @@
 \end{tabular}
 \end{frame}
 
-\framet{R-Forge is becoming the hub of R package development}{
-  
-}
+\begin{frame}
+  \frametitle{R-Forge is becoming the hub of R package development}
+<<fig=TRUE,tikz=TRUE,external=TRUE>>=
+sorted.projects <- read.csv("project.stats.csv",header=TRUE, 
+                            colClasses=c("POSIXct","factor","integer"))
+sorted.projects$count <- 1:nrow(sorted.projects)
+par(mar=c(5,4,4,4))
+plot(count~registered,sorted.projects,type="s",las=1,
+     xlab="Date of project registration",
+     ylab="Total number of projects on R-Forge")
+last.line <- tail(sorted.projects,1)
+last.date <- last.line$registered
+axis(3,last.date,format(last.date,"%e %B %Y"))
+axis(4,last.line$count,las=1)
+@ 
+\end{frame}
 
 \begin{frame}
-  \frametitle{Collaboration level of projects}{
+\frametitle{Collaboration level of R-Forge projects}
+
+<<results=tex>>=
+users <- read.csv("project.users.csv",header=TRUE,
+                  colClasses=c("factor","factor"))
+users.per.project <- sort(table(users$project))
+freq <- as.data.frame(table(users.per.project))
+names(freq) <- c("Developers in the project","Number of projects")
+library(xtable)
+print(xtable(freq,align="rrr"),floating=FALSE,include.rownames=FALSE)
+@ 
+
 \end{frame}
 
 \section{Using Subversion with R-Forge}

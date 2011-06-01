@@ -16,4 +16,4 @@ users <- read.csv("project.users.csv",header=TRUE,
 users.per.project <- sort(table(users$project))
 freq <- table(users.per.project)
 library(xtable)
-xtable(freq)
+print(xtable(freq),floating=FALSE)
