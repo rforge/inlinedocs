@@ -1,9 +1,10 @@
 % -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
 \documentclass{beamer}
+\usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{tikz}
 \SweaveOpts{echo=FALSE,width=4.5,height=3.5}
- 
+  
 % Some problems encountered when using pgfSweave... 1. Some old
 % versions of certain R packages gave an error Graphics API version
 % mismatch. Solution: update.packages(checkBuilt=TRUE,ask=FALSE)
@@ -19,8 +20,8 @@
 % then finally do R CMD pgfsweave test.Rnw 5. There seems to be some
 % problems with Emacs setting up the environment. when I launch emacs
 % from .xsession it is unable to find the R user library, so it can't
-% find the tikz/pgfsweave packages. how to fix? open emacs from a
-% shell...
+% find the tikz/pgfsweave packages. how to fix? put . ~/.bashrc into
+% .xsession.
 
 <<>>=
 .libPaths(c("~/lib64/R/library", .libPaths()))
@@ -56,7 +57,7 @@
 \setkeys{Gin}{width=\textwidth}
 \frame{\titlepage}
 
-\section{The R development model}
+\section{R-Forge: democratizing the R development model}
 
 \begin{frame}
 \frametitle{How do the authors of R write code?}
@@ -103,32 +104,41 @@ print(xtable(freq,align="rrr"),floating=FALSE,include.rownames=FALSE)
 
 \end{frame}
 
-\section{Using Subversion with R-Forge}
+\section{R-Forge services}
+
+\subsection{Managing projects using the web site}
+
+\subsection{Uploading code and a project web page using Subversion}
+
+\begin{frame}
+  \frametitle{Icon overlays display the version control state}
+  \includegraphics{Overlays}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clicking menu items performs Subversion commands}
+  \includegraphics[height=\textheight,keepaspectratio]{ContextMenuDirControl}
+\end{frame}
 
 \section{Conclusions}
 
-\framet{References for learning more about R-Forge}{
-\item The definitive guide: help.start() then
-  \href{http://cran.r-project.org/doc/manuals/R-exts.html}{Writing R
-    Extensions}
-\item The built-in package generator: ?package.skeleton
-\item roxygen
+\framet{Learning more about collaborative software development}{
+  \item \url{http://R-Forge.R-project.org}
+    \begin{itemize}
+\item 6 page introduction PDF:
+  \href{http://download.r-forge.r-project.org/RJournal_2009-1_Theussl+Zeileis.pdf}{Stefan
+    Theu\ss l and Achim Zeileis. Collaborative software development using
+    R-Forge. The R Journal, 1(1):9-14, May 2009}.
+\item 10 page user's manual PDF:
+  \href{http://r-forge.r-project.org/R-Forge_Manual.pdf}{detailed
+    technical documentation}.
+\item Email R-Forge@R-Project.org
+\end{itemize}
+\item Subversion -- translations available!
   \begin{itemize}
-  \item library(roxygen)
-  \item ?roxygenize
-  \item \url{http://roxygen.org/roxygen.pdf}
-  \end{itemize}
-\item R.oo:Rdoc
-  \begin{itemize}
-  \item library(R.oo)
-  \item ?Rdoc (not very much documentation)
-  \item \url{http://www.aroma-project.org/developers}
-  \end{itemize}
-\item inlinedocs
-  \begin{itemize}
-  \item library(inlinedocs)
-  \item ?inlinedocs
-  \item \url{http://inlinedocs.r-forge.r-project.org}
+  \item Version Control with Subversion: \url{http://svnbook.red-bean.com/}
+  \item Windows GUI download: \url{http://tortoisesvn.net/downloads.html}
+  \item Windows GUI documentation: \url{http://tortoisesvn.net/downloads.html}
   \end{itemize}
 \item Contact me directly: toby.hocking AT inria.fr,
   \url{http://cbio.ensmp.fr/~thocking/}
