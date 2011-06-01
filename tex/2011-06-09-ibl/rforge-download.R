@@ -54,7 +54,7 @@ project.stats <- data.frame(registered=register.datetime,
                             row.names=NULL)
 
 ## to parse user info off the project page we need this function
-str_match_perl_all <- function(string,pattern){
+str_match_all_perl <- function(string,pattern){
   parsed <- gregexpr(pattern,string,perl=TRUE)
   lapply(seq_along(parsed),function(i){
     r <- parsed[[i]]
@@ -71,7 +71,7 @@ str_match_perl_all <- function(string,pattern){
 }
 get.user.ids <- function(html){
   user.pattern <- "org/users/(?<id>[^/]+)/\">(?<name>[^<]+)"
-  parsed <- str_match_perl_all(html,user.pattern)
+  parsed <- str_match_all_perl(html,user.pattern)
   not.empty <- parsed[sapply(parsed,nrow)>0]
   found <- do.call(rbind,not.empty)
   found[,"id"]
