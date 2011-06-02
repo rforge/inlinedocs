@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{tikz}
-\SweaveOpts{echo=FALSE,width=4.5,height=3.5}
+\SweaveOpts{echo=FALSE,width=4.5,height=3.5,cache=TRUE}
   
 % Some problems encountered when using pgfSweave... 1. Some old
 % versions of certain R packages gave an error Graphics API version
