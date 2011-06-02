@@ -72,6 +72,12 @@
 \end{tabular}
 \end{frame}
 
+\begin{frame}[containsverbatim]
+<<echo=TRUE>>=
+Sys.time()
+@   
+\end{frame}
+
 \begin{frame}
   \frametitle{R-Forge is becoming the hub of R package development}
 <<fig=TRUE,tikz=TRUE,external=TRUE>>=
@@ -82,6 +88,7 @@ par(mar=c(5,4,4,4))
 plot(count~registered,sorted.projects,type="s",las=1,
      xlab="Date of project registration",
      ylab="Total number of projects on R-Forge")
+title(sub=Sys.time())
 last.line <- tail(sorted.projects,1)
 last.date <- last.line$registered
 axis(3,last.date,format(last.date,"%e %B %Y"))
