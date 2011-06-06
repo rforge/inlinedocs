@@ -72,12 +72,6 @@
 \end{tabular}
 \end{frame}
 
-\begin{frame}[containsverbatim]
-<<echo=TRUE>>=
-Sys.time()
-@   
-\end{frame}
-
 \begin{frame}
   \frametitle{R-Forge is becoming the hub of R package development}
 <<fig=TRUE,tikz=TRUE,external=TRUE>>=
@@ -88,7 +82,6 @@ par(mar=c(5,4,4,4))
 plot(count~registered,sorted.projects,type="s",las=1,
      xlab="Date of project registration",
      ylab="Total number of projects on R-Forge")
-title(sub=Sys.time())
 last.line <- tail(sorted.projects,1)
 last.date <- last.line$registered
 axis(3,last.date,format(last.date,"%e %B %Y"))
@@ -96,18 +89,43 @@ axis(4,last.line$count,las=1)
 @ 
 \end{frame}
 
-\begin{frame}
-\frametitle{Collaboration level of R-Forge projects}
-
-<<results=tex>>=
+\begin{frame}[containsverbatim]
+  \frametitle{Collaboration level of R-Forge projects}
+ \begin{small}
+\begin{minipage}{2in}
+<<echo=FALSE,results=tex>>=
+if(!file.exists("project.users.csv"))download.file("http://r-forge.r-project.org/scm/viewvc.php/*checkout*/tex/2011-06-09-ibl/project.users.csv?root=inlinedocs","project.users.csv")
 users <- read.csv("project.users.csv",header=TRUE,
                   colClasses=c("factor","factor"))
 users.per.project <- sort(table(users$project))
-freq <- as.data.frame(table(users.per.project))
-names(freq) <- c("Developers in the project","Number of projects")
+freq <- rev(table(users.per.project))
+Developers <- rev(users.per.project)[1:nrow(freq)]
+Project <- names(Developers)
+last.dev <- tail(Developers,1)
+last.shown <- sum(last.dev==Developers)
+if(freq[as.character(last.dev)] > last.shown){
+  toedit <- which(Developers==8)
+  Developers[toedit] <- "."
+  Project[toedit] <- "."
+}
 library(xtable)
-print(xtable(freq,align="rrr"),floating=FALSE,include.rownames=FALSE)
+xt <- xtable(data.frame(Project,Developers),align="rlr")
+print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
 @ 
+\end{minipage}
+\begin{minipage}{1.5in}
+<<echo=FALSE,results=tex>>=
+last.dev <- tail(Developers[-toedit],1)
+toadd <- which(last.dev==names(freq))+1
+names(freq)[toadd] <- paste("\\hline",names(freq)[toadd])
+ft <- data.frame(Developers=names(freq),`Number of projects`=freq,
+                 check.names=FALSE)
+xt <- xtable(ft,align="rrr")
+print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
+@ 
+\end{minipage}
+\end{small}
+\end{frame}
 
 \end{frame}
 
@@ -116,6 +134,16 @@ print(xtable(freq,align="rrr"),floating=FALSE,include.rownames=FALSE)
 \subsection{Managing projects using the web site}
 
 \subsection{Uploading code and a project web page using Subversion}
+
+\begin{frame} \frametitle{Subversion allows multiple authors to work
+    on the same file at the same time}
+  \includegraphics[width=\textwidth]{svn-1}
+\end{frame}
+
+\begin{frame} \frametitle{And automatically merges changes from each
+    author together}
+  \includegraphics[width=\textwidth]{svn-2}
+\end{frame}
 
 \begin{frame}
   \frametitle{Icon overlays display the version control state}

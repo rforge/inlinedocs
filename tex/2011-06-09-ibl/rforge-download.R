@@ -9,12 +9,6 @@ users <- read.csv("project.users.csv",header=TRUE,
                   colClasses=c("factor","factor"))
 home <- readLines(home.conn <- url("http://r-forge.r-project.org/"))
 close(home.conn)
-get.first <- function(html,before,match){
-  pattern <- sprintf("%s(%s)",before,match)
-  p <- regexpr(pattern,html,perl=TRUE)
-  st <- attr(p,"capture.start")
-  substr(html,st,st+attr(p,"capture.length")-1)
-}
 lines.after.recently <- paste(home[-(1:grep("Recently",home))],collapse="")
 most.recent.project <- get.first(lines.after.recently,"projects/","[^/]+")
 ## now download the most recent project page to get its project id
@@ -31,21 +25,7 @@ get.registration <- function(html){
   parsed <- get.first(html,"Registered:&nbsp;","[^<]+")
   as.POSIXct(strptime(parsed,"%Y-%m-%d %H:%M"))
 }
-str_match_all_perl<- function(string,pattern){
-  parsed <- gregexpr(pattern,string,perl=TRUE)
-  lapply(seq_along(parsed),function(i){
-    r <- parsed[[i]]
-    starts <- attr(r,"capture.start")
-    if(r[1]==-1)return(matrix(nrow=0,ncol=1+ncol(starts)))
-    names <- attr(r,"capture.names")
-    lengths <- attr(r,"capture.length")
-    full <- substring(string[i],r,r+attr(r,"match.length")-1)
-    subs <- substring(string[i],starts,starts+lengths-1)
-    m <- matrix(c(full,subs),ncol=length(names)+1)
-    colnames(m) <- c("",names)
-    m
-  })
-}
+source("regexp.R")
 ### lookup a project name from id by looking at the scm page
 get.project.from.id <- function(project.id){
   scm.url <- sprintf("http://r-forge.r-project.org/scm/?group_id=%d",project.id)
