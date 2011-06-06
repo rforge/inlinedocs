@@ -1,60 +1,37 @@
-str_match_perl <- function(string,pattern){
-  parsed <- regexpr(pattern,string,perl=TRUE)
-  captured.text <- substr(string,parsed,parsed+attr(parsed,"match.length")-1)
-  captured.text[captured.text==""] <- NA
-  if(is.null(attr(parsed,"capture.start")))return(matrix(captured.text,ncol=1))
-  captured.groups <- do.call(rbind,lapply(seq_along(string),function(i){
-    st <- attr(parsed,"capture.start")[i,]
-    if(is.na(parsed[i]) || parsed[i]==-1)return(rep(NA,length(st)))
-    substring(string[i],st,st+attr(parsed,"capture.length")[i,]-1)
-  }))
-  result <- cbind(captured.text,captured.groups)
-  colnames(result) <- c("",attr(parsed,"capture.names"))
-  result
+## The point of this script is to read the current state of R-Forge as
+## saved in the csv files, then hit the R-Forge website as few times
+## as possible to download info about new projects. NOTE: people can
+## leave/join existing projects, which may make the project.users.csv
+## table invalid!
+project.stats <- read.csv("project.stats.csv",header=TRUE,
+                          colClasses=c("POSIXct","factor","integer"))
+users <- read.csv("project.users.csv",header=TRUE,
+                  colClasses=c("factor","factor"))
+home <- readLines(home.conn <- url("http://r-forge.r-project.org/"))
+close(home.conn)
+get.first <- function(html,before,match){
+  pattern <- sprintf("%s(%s)",before,match)
+  p <- regexpr(pattern,html,perl=TRUE)
+  st <- attr(p,"capture.start")
+  substr(html,st,st+attr(p,"capture.length")-1)
 }
-home <- readLines(url("http://r-forge.r-project.org/"))
-lines.after.recently <- home[-(1:grep("Recently",home))]
-project.anchor <-
-  paste('<a href="',
-        '(?<url>https?://r-forge.r-project.org/projects/',
-        '(?<project>[a-z]+)',
-        '/)">(?<project_name>[^<]+)</a>',
-        sep="")
-parsed <- str_match_perl(lines.after.recently,project.anchor)
-parsed[!is.na(parsed[,2]),]
-most.recent.project <- parsed[!is.na(parsed[,2]),"project"][1]
+lines.after.recently <- paste(home[-(1:grep("Recently",home))],collapse="")
+most.recent.project <- get.first(lines.after.recently,"projects/","[^/]+")
 ## now download the most recent project page to get its project id
 download.project.html <- function(project){
   project.url.format <- "http://r-forge.r-project.org/projects/%s/"
   project.url <- sprintf(project.url.format,project)
   conn <- url(project.url)
-  html <- readLines(conn)
+  html <- paste(readLines(conn),collapse="")
   close(conn)
   html
 }
-project.html <- download.project.html(most.recent.project)
-parsed <- str_match_perl(project.html,"group_id=(?<group_id>[0-9]+)")
-most.recent.project.id <- as.integer(parsed[!is.na(parsed[,1]),"group_id"][1])
-## test parsing text strings into dates and plotting
-datestr <- c("2011-05-30 18:43","2010-05-01 01:01")
-test <- as.POSIXct(strptime(datestr,"%Y-%m-%d %H:%M"))
-xyplot(y~date,data.frame(date=test,y=rnorm(length(test))))
 ## extract the project registration datetime
-grep("Registered",project.html,value=TRUE)
 get.registration <- function(html){
-  parsed <- str_match_perl(html,"Registered:&nbsp;(?<datetime>[^<]+)")
-  register.string <- parsed[!is.na(parsed[,1]),"datetime"][1]
-  as.POSIXct(strptime(register.string,"%Y-%m-%d %H:%M"))
+  parsed <- get.first(html,"Registered:&nbsp;","[^<]+")
+  as.POSIXct(strptime(parsed,"%Y-%m-%d %H:%M"))
 }
-register.datetime <- get.registration(project.html)
-## collect the data into a data.frame
-project.stats <- data.frame(registered=register.datetime,
-                            project=most.recent.project,
-                            id=most.recent.project.id,
-                            row.names=NULL)
-
-## to parse user info off the project page we need this function
-str_match_all_perl <- function(string,pattern){
+str_match_all_perl<- function(string,pattern){
   parsed <- gregexpr(pattern,string,perl=TRUE)
   lapply(seq_along(parsed),function(i){
     r <- parsed[[i]]
@@ -69,69 +46,75 @@ str_match_all_perl <- function(string,pattern){
     m
   })
 }
-get.user.ids <- function(html){
-  user.pattern <- "org/users/(?<id>[^/]+)/\">(?<name>[^<]+)"
-  parsed <- str_match_all_perl(html,user.pattern)
-  not.empty <- parsed[sapply(parsed,nrow)>0]
-  found <- do.call(rbind,not.empty)
-  found[,"id"]
-}
-inlinedocs.html <- download.project.html("inlinedocs")
-get.user.ids(inlinedocs.html)
-
-## collect the users info from the most recent project page
-user <- get.user.ids(project.html)
-project.users <- data.frame(user,project=most.recent.project,row.names=NULL)
-
 ### lookup a project name from id by looking at the scm page
 get.project.from.id <- function(project.id){
   scm.url <- sprintf("http://r-forge.r-project.org/scm/?group_id=%d",project.id)
   print(scm.url)
   scm.html <- tryCatch({
     conn <- url(scm.url)
-    html <- readLines(conn)
+    html <- paste(readLines(conn),collapse="")
     close(conn)
     html
   },error=function(e)"")
-  parsed <- str_match_perl(scm.html,"svnroot/(?<project>[^<]+)")
-  matched <- which(!is.na(parsed[,1]))
-  if(length(matched))parsed[matched[1],"project"] else NA
-### project name or NA if we couldn't do the lookup.
+  get.first(scm.html,"svnroot/","[^<]+")
+### project name or "" if we couldn't do the lookup.
 }
 
-## first, lookup all ids from 1 to the most recent, and if the id is
-## not in the project.stats table, lookup the project name.
-for(project.id in 1:most.recent.project.id){
-  print(project.id)
-  if(!project.id%in%project.stats$id){
-    project <- get.project.from.id(project.id)
-    if(!is.na(project)){
-      newline <- data.frame(registered=NA,
-                            project,
-                            id=project.id,
-                            row.names=NULL)
-      print(newline)
-      project.stats <- rbind(project.stats,newline)
+## to parse user info off the project page we need this function
+get.user.ids <- function(html){
+  user.pattern <- "org/users/(?<id>[^/]+)/\">(?<name>[^<]+)"
+  str_match_all_perl(paste(html,collapse=""),user.pattern)[[1]][,"id"]
+}
+project.html <- download.project.html(most.recent.project)
+most.recent.project.id <-
+  as.integer(get.first(project.html,"group_id=","[0-9]+"))
+last.id <- tail(sorted.projects,1)$id
+if(most.recent.project.id>last.id){
+  register.datetime <- get.registration(project.html)
+  ## collect the data into a data.frame
+  new.stats <- data.frame(registered=register.datetime,
+                          project=most.recent.project,
+                          id=most.recent.project.id,
+                          row.names=NULL)
+  project.stats <- rbind(project.stats,new.stats)
+  ## collect the users info from the most recent project page
+  user <- get.user.ids(project.html)
+  new.users <- data.frame(user,project=most.recent.project,row.names=NULL)
+  users <- rbind(users,new.users)
+
+  ## first, lookup all ids from 1 to the most recent, and if the id is
+  ## not in the project.stats table, lookup the project name.
+  for(project.id in last.id:most.recent.project.id){
+    print(project.id)
+    if(!project.id%in%project.stats$id){
+      project <- get.project.from.id(project.id)
+      if(project!=""){
+        newline <- data.frame(registered=NA,
+                              project,
+                              id=project.id,
+                              row.names=NULL)
+        print(newline)
+        project.stats <- rbind(project.stats,newline)
+      }
+    }
+  }
+
+  ## then, lookup all projects with missing registration info
+  for(project in with(project.stats,project[is.na(registered)])){
+    print(project)
+    project.html <- download.project.html(project)
+    registered <- get.registration(project.html)
+    print(registered)
+    project.stats[project.stats$project==project,"registered"] <- registered
+    user <- get.user.ids(project.html)
+    if(!is.null(user)){
+      newlines <- data.frame(user,project,row.names=NULL)
+      print(newlines)
+      users <- rbind(users,newlines)
     }
   }
 }
-
-## then, lookup all projects with missing registration info
-for(project in with(project.stats,project[is.na(registered)])){
-  print(project)
-  project.html <- download.project.html(project)
-  registered <- get.registration(project.html)
-  print(registered)
-  project.stats[project.stats$project==project,"registered"] <- registered
-  user <- get.user.ids(project.html)
-  if(!is.null(user)){
-    newlines <- data.frame(user,project,row.names=NULL)
-    print(newlines)
-    project.users <- rbind(project.users,newlines)
-  }
-}
-
 sorted.projects <- project.stats[order(project.stats$id),]
 write.csv(sorted.projects,"project.stats.csv",row.names=FALSE,quote=FALSE)
 
-write.csv(project.users,"project.users.csv",row.names=FALSE,quote=FALSE)
+write.csv(users,"project.users.csv",row.names=FALSE,quote=FALSE)
