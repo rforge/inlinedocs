@@ -73,6 +73,18 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{The developers and maintainers of R-Forge}
+  \begin{tabular}{ccc}
+    \includegraphics[width=1in]{theussl}&
+    \includegraphics[width=1in]{zeileis}&
+    \includegraphics[width=1in]{hornik}\\
+    Stefan Theu\ss l &
+    Achim Zeileis &
+    Kurt Hornik
+  \end{tabular}
+\end{frame}
+
+\begin{frame}
   \frametitle{R-Forge is becoming the hub of R package development}
 <<fig=TRUE,tikz=TRUE,external=TRUE>>=
 sorted.projects <- read.csv("project.stats.csv",header=TRUE, 
@@ -127,13 +139,42 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
 \end{small}
 \end{frame}
 
-\end{frame}
-
 \section{R-Forge services}
+
+\begin{frame}
+  \frametitle{Core features}
+  \begin{itemize}
+  \item Web-based project administration.
+  \item Subversion (SVN) for source code and website management.
+  \item Daily checking and building/compilation of packages on the
+    R-Forge server.
+  \item CRAN-style web repository from which you can download
+    packages:\\
+  \texttt{install.packages("inlinedocs",\\
+      repos="http://R-Forge.R-Project.org")}
+  \item Everything backed up, so you don't have to worry about it!
+  \end{itemize}
+\end{frame}
 
 \subsection{Managing projects using the web site}
 
 \subsection{Uploading code and a project web page using Subversion}
+
+\begin{frame}
+  \frametitle{Repository structure}
+  pkg
+  www
+\end{frame}
+
+\begin{frame}
+  \frametitle{What R-Forge is NOT}
+  \begin{itemize}
+  \item unlimited storage. Don't put binary files in SVN. There are
+    only 5 machines.
+  \item instantaneous package builds. When you check code into SVN, it
+    is NOT immediately compiled on their server. Only once a night.
+  \end{itemize}
+\end{frame}
 
 \begin{frame} \frametitle{Subversion allows multiple authors to work
     on the same file at the same time}
@@ -180,4 +221,3 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
 }
 
 \end{document}
-
