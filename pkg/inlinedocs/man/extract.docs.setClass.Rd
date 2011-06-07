@@ -31,7 +31,8 @@ written. It is given a vanilla content if there are no specific
 \code{##details<<} documentation chunks.}
 
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

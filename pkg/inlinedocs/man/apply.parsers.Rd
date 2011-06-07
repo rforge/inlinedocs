@@ -15,7 +15,8 @@ apply.parsers(code, parsers = default.parsers, verbose = FALSE, ...)
 
 \value{A list of extracted documentation from code.}
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 
