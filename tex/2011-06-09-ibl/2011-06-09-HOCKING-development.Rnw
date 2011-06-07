@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{tikz}
-\SweaveOpts{echo=FALSE,width=4.5,height=3.5,cache=TRUE}
+\SweaveOpts{echo=FALSE,width=4.5,height=3.5}
   
 % Some problems encountered when using pgfSweave... 1. Some old
 % versions of certain R packages gave an error Graphics API version
@@ -58,17 +58,29 @@
 \frame{\titlepage}
 
 \section{R-Forge: democratizing the R development model}
-
+\newcommand{\coreforge}[3]{
+         & \textbf{#1}\\
+   R-Core & #2\\
+   R-Forge &  #3\\
+   }
 \begin{frame}
-\frametitle{How do the authors of R write code?}
-\begin{tabular}{ccc}
-  Tool & R-core & R-Forge \\
+\frametitle{How do the R-Core developers manager their code?}
+\begin{tabular}{ll}
+  \coreforge{Email lists}{r-help@r-project.org}{
+    pkg-help@lists.r-forge.r-project.org}
   \hline
-  mail & r-help@r-project.org & pkg-help@lists.r-forge.r-project.org\\
-  public svn & http://svn.r-project.org/R/trunk & svn://svn.r-forge.r-project.org/svnroot/pkg \\
-  dev svn & https://dev@svn.r-project.org/R/trunk & svn+ssh://dev@svn.r-forge.r-project.org/svnroot/pkg \\
-  web & www.r-project.org & pkg.r-forge.r-project.org \\
-  bugs & bugs.r-project.org & r-forge.r-project.org/tracker/?group\_id=496
+  \coreforge{Public Subversion access}{http://svn.r-project.org/R/trunk}{
+    svn://svn.r-forge.r-project.org/svnroot/pkg}
+  \hline
+  \coreforge{Developer Subversion access}{
+    https://dev@svn.r-project.org/R/trunk}{
+    svn+ssh://dev@svn.r-forge.r-project.org/svnroot/pkg}
+  \hline
+  \coreforge{Public web site}{http://www.r-project.org}{
+    http://pkg.r-forge.r-project.org}
+  \hline
+  \coreforge{Bug tracking website}{https://bugs.r-project.org}{
+    http://r-forge.r-project.org/tracker/?group\_id=496}
 \end{tabular}
 \end{frame}
 
@@ -100,7 +112,7 @@ axis(3,last.date,format(last.date,"%e %B %Y"))
 axis(4,last.line$count,las=1)
 @ 
 \end{frame}
-
+ 
 \begin{frame}[containsverbatim]
   \frametitle{Collaboration level of R-Forge projects}
  \begin{small}
@@ -139,8 +151,6 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
 \end{small}
 \end{frame}
 
-\section{R-Forge services}
-
 \begin{frame}
   \frametitle{Core features}
   \begin{itemize}
@@ -156,9 +166,7 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
   \end{itemize}
 \end{frame}
 
-\subsection{Managing projects using the web site}
-
-\subsection{Uploading code and a project web page using Subversion}
+\section{Uploading code and a project web page using Subversion}
 
 \begin{frame}
   \frametitle{Repository structure}
@@ -179,15 +187,32 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
 \begin{frame} \frametitle{Subversion allows multiple authors to work
     on the same file at the same time}
   \includegraphics[width=\textwidth]{svn-1}
+  \begin{itemize}
+  \item \texttt{svn checkout} is performed once per client
+    computer. It downloads the project code from the R-Forge server.
+  \item \texttt{svn commit} is performed every time you want to upload
+    changes to the server.
+  \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{And automatically merges changes from each
+\begin{frame} \frametitle{And automatically* merges changes from each
     author together}
+  \texttt{svn update}
+  
   \includegraphics[width=\textwidth]{svn-2}
+  
+  Second panel ``A new merged version is created''
+  \begin{itemize}
+  \item \textbf{merGe \texttt{G}}: if Harry and Sally edited different
+    parts of the file, then they are merged automatically into $A^*$.
+  \item \textbf{Conflict \texttt{C}}: otherwise, Harry must manually
+    decide how to combine the conflicting changes to form $A^*$.
+  \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Icon overlays display the version control state}
+\begin{frame} \frametitle{Windows TortoiseSVN: icon overlays display
+    the version control state}
+  \url{http://tortoisesvn.net/downloads.html}
   \includegraphics{Overlays}
 \end{frame}
 
@@ -214,7 +239,6 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
   \begin{itemize}
   \item Version Control with Subversion: \url{http://svnbook.red-bean.com/}
   \item Windows GUI download: \url{http://tortoisesvn.net/downloads.html}
-  \item Windows GUI documentation: \url{http://tortoisesvn.net/downloads.html}
   \end{itemize}
 \item Contact me directly: toby.hocking AT inria.fr,
   \url{http://cbio.ensmp.fr/~thocking/}
