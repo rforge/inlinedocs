@@ -27,7 +27,7 @@
 .libPaths(c("~/lib64/R/library", .libPaths()))
 @
 
-\title{Collaborative statistical software development using R-Forge\\
+\title{Collaborative R package development using\\
   \url{http://R-Forge.R-Project.org/}}
 \author{Toby Dylan Hocking \\ toby.hocking AT inria.fr}
 \date{9 June 2011}
@@ -93,6 +93,7 @@
         tracker, ...
       \item Subversion for source code and website management.
       \item Everything backed up, so you don't have to worry about it!
+      \item Access to your code from any internet-connected computer.
       \end{itemize}
     \item But with features specific to R packages:
       \begin{itemize}
@@ -108,6 +109,13 @@
 
 \begin{frame}
   \frametitle{The R-Forge Administration and Development Team}
+  \begin{small}
+  Source: R-Forge User's Manual SVN Revision 210, February 15, 2011\\
+  \url{http://www.wu.ac.at/statmath/faculty_staff/faculty/khornik}\\
+  \url{http://wi.wu-wien.ac.at/mis/pages/en/team}\\
+  \url{http://statmath.wu.ac.at/~theussl/}\\
+  \url{http://statmath.wu.ac.at/~zeileis/}
+  \end{small}
   \begin{tabular}{cccc}
     \includegraphics[width=1in]{hornik}&
     \includegraphics[width=1in]{meyer}&
@@ -118,13 +126,6 @@
     Stefan Theu\ss l &
     Achim Zeileis 
   \end{tabular}
-  \begin{small}
-  Source: R-Forge User's Manual SVN Revision 210, February 15, 2011\\
-  \url{http://www.wu.ac.at/statmath/faculty_staff/faculty/khornik}\\
-  \url{http://wi.wu-wien.ac.at/mis/pages/en/team}\\
-  \url{http://statmath.wu.ac.at/~theussl/}\\
-  \url{http://statmath.wu.ac.at/~zeileis/}
-  \end{small}
 \end{frame}
 
 \begin{frame}
@@ -133,81 +134,28 @@
 sorted.projects <- read.csv("project.stats.csv",header=TRUE, 
                             colClasses=c("POSIXct","factor","integer"))
 sorted.projects$count <- 1:nrow(sorted.projects)
-par(mar=c(3,3.5,2,3))
+par(mar=c(3,4,2,3))
 plot(count~registered,sorted.projects,type="s",las=1,
-     #xlab="Date of project registration",
      xlab="",
-     #main="Source: R-Forge project web pages",
-     #main="R-Forge is becoming the hub of R package development",
      ylab="Total number of projects on R-Forge")
 last.line <- tail(sorted.projects,1)
 last.date <- last.line$registered
-##text(last.date~0,label="Source: R-Forge project web pages")
+user2008 <- as.POSIXct("2008-08-13")
+yhat <- with(sorted.projects,approx(registered,count,user2008))$y
+points(user2008,yhat,pch=20)
+text(user2008,yhat,"R-Forge announcement\nat useR 2008",adj=c(-0.1,1.1))
 axis(3,last.date,format(last.date,"%e %B %Y"))
 axis(4,last.line$count,las=1)
 @ 
 {\small Source: R-Forge project web pages.}
 \end{frame}
   
-\begin{frame}[containsverbatim]
-  \frametitle{Collaboration level of R-Forge projects}
- \begin{small}
-\begin{minipage}{2in}
-<<echo=FALSE,results=tex>>=
-if(!file.exists("project.users.csv"))download.file("http://r-forge.r-project.org/scm/viewvc.php/*checkout*/tex/2011-06-09-ibl/project.users.csv?root=inlinedocs","project.users.csv")
-users <- read.csv("project.users.csv",header=TRUE,
-                  colClasses=c("factor","factor"))
-users.per.project <- sort(table(users$project))
-freq <- rev(table(users.per.project))
-Developers <- rev(users.per.project)[1:nrow(freq)]
-Project <- names(Developers)
-last.dev <- tail(Developers,1)
-last.shown <- sum(last.dev==Developers)
-if(freq[as.character(last.dev)] > last.shown){
-  toedit <- which(Developers==8)
-  Developers[toedit] <- "."
-  Project[toedit] <- "."
-}
-library(xtable)
-xt <- xtable(data.frame(Project,Developers),align="rlr")
-print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
-@ 
-\end{minipage}
-\begin{minipage}{1.5in}
-<<echo=FALSE,results=tex>>=
-last.dev <- tail(Developers[-toedit],1)
-toadd <- which(last.dev==names(freq))+1
-names(freq)[toadd] <- paste("\\hline",names(freq)[toadd])
-ft <- data.frame(Developers=names(freq),`Number of projects`=freq,
-                 check.names=FALSE)
-xt <- xtable(ft,align="rrr")
-print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
-@ 
-\end{minipage}
-\\ Source: R-Forge project web pages.
-\end{small}
-\end{frame}
-
-\begin{frame}
-  \frametitle{What R-Forge is NOT}
-  \begin{description}
-  \item[NOT unlimited storage.] There is currently no imposed limit on
-    SVN repository size. However, if projects begin to abuse disk
-    space, R-Forge will impose a limit. In particular, \textbf{do not
-      put binary files in SVN}. Exception: very small or very
-    infrequently updated files, like images for a project website.
-  \item[NOT instantaneous package builds.] When you check code into
-    SVN, it is NOT immediately compiled on their server. In fact, the
-    build and check process occurs only once per night.
-  \end{description}
-\end{frame}
-
 \section{Uploading code and a project web page using Subversion}
 
 \begin{frame} \frametitle{Registering yourself and a project on
     R-Forge}
   \begin{itemize}
-  \item First create an account:\\
+  \item First create a free account:\\
     {\small\url{https://r-forge.r-project.org/account/register.php}}\\
     For example, \textbf{dev}
   \item Then ask for a new project:\\
@@ -240,20 +188,35 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
   \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Windows TortoiseSVN: icon overlays display
+    the version control state, like \texttt{svn status}}
+  \url{http://tortoisesvn.net/downloads.html}
+  \includegraphics{Overlays}
+  {\scriptsize \\Image from\\ 
+    \url{http://tortoisesvn.net/docs/release/TortoiseSVN_en/tsvn-dug.html}}
+\end{frame}
+
 \begin{frame} \frametitle{Daily Subversion commands with an R-Forge
     project}
   \begin{itemize}
     \item \texttt{svn add file.R} to start tracking changes on
-      \textt{file.R}.
+      \texttt{file.R}.
     \item \texttt{svn commit -m 'fixed the plotting bug'} to upload
       changes to the R-Forge server.
     \item \texttt{svn status} to list the files that have changed
       since the last commit.
     \item \texttt{svn diff} to show the lines which have changed since
       the last commit.
-    \item \texttt{svn up} to download the most recent code from the
+    \item \texttt{svn update} to download the most recent code from the
       R-Forge server.
   \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Windows TortoiseSVN: clicking menu items
+    performs Subversion commands}
+  \includegraphics[height=0.7\textheight,keepaspectratio]{ContextMenuDirControl}
+  {\scriptsize \\Image from\\ 
+    \url{http://tortoisesvn.net/docs/release/TortoiseSVN_en/tsvn-dug.html}}
 \end{frame}
 
 \begin{frame} \frametitle{Subversion allows multiple authors to
@@ -265,7 +228,8 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
   \item \texttt{svn commit} is performed every time you want to upload
     changes to the server.
   \end{itemize}
-  {\scriptsize \\Images adapted from\\
+  
+  {\scriptsize Images adapted from\\
     \url{http://svnbook.red-bean.com/en/1.5/svn.basic.vsn-models.html}}
 \end{frame}
 
@@ -278,12 +242,58 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
   Second panel ``A new merged version is created''
   \begin{itemize}
   \item \textbf{merGe \texttt{G}}: if Harry and Sally edited different
-    parts of the file, then they are merged automatically into $A^*$.
+    parts of the file, then they are automatically merged into $A^*$.
   \item \textbf{Conflict \texttt{C}}: otherwise, Harry must manually
     decide how to combine the conflicting changes to form $A^*$.
   \end{itemize}
-  {\scriptsize \\Images adapted from\\
+  
+  {\scriptsize Images adapted from\\
     \url{http://svnbook.red-bean.com/en/1.5/svn.basic.vsn-models.html}}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\begin{minipage}{2in}
+  Most collaborative projects
+  
+ \begin{small}
+<<echo=FALSE,results=tex>>=
+if(!file.exists("project.users.csv"))download.file("http://r-forge.r-project.org/scm/viewvc.php/*checkout*/tex/2011-06-09-ibl/project.users.csv?root=inlinedocs","project.users.csv")
+users <- read.csv("project.users.csv",header=TRUE,
+                  colClasses=c("factor","factor"))
+users.per.project <- sort(table(users$project))
+freq <- rev(table(users.per.project))
+Developers <- rev(users.per.project)[1:nrow(freq)]
+Project <- names(Developers)
+last.dev <- tail(Developers,1)
+last.shown <- sum(last.dev==Developers)
+if(freq[as.character(last.dev)] > last.shown){
+  toedit <- which(Developers==8)
+  Developers[toedit] <- "."
+  Project[toedit] <- "."
+}
+library(xtable)
+xt <- xtable(data.frame(Project,Developers),align="rlr")
+print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
+@ 
+\end{small}
+\end{minipage}
+\begin{minipage}{1.5in}
+  All projects
+  
+  \begin{small}
+<<echo=FALSE,results=tex>>=
+last.dev <- tail(Developers[-toedit],1)
+toadd <- which(last.dev==names(freq))+1
+names(freq)[toadd] <- paste("\\hline",names(freq)[toadd])
+ft <- data.frame(Developers=names(freq),`Number of projects`=freq,
+                 check.names=FALSE)
+xt <- xtable(ft,align="rrr")
+print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
+@ 
+\end{small}
+\end{minipage}
+
+Source: R-Forge project web pages.
 \end{frame}
 
 \begin{frame} \frametitle{More infrequently used or complicated
@@ -296,33 +306,32 @@ print(xt,floating=FALSE,sanitize.text.function=identity,include.rownames=FALSE)
   \item \texttt{svn up -r 35} to download code version 35 from the
     R-Forge server.
   \end{itemize}
+  \item \texttt{svn resolve} to manually resolve conflicts.
 \item Complicated, see the Subversion manual for details:
   \begin{itemize}
   \item \texttt{svn merge} to revert back to a previous version of
     code, or merge with another branch.
-  \item \texttt{svn resolve} to manually resolve conflicts.
   \end{itemize}
   \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Windows TortoiseSVN: icon overlays display
-    the version control state, like \texttt{svn status}}
-  \url{http://tortoisesvn.net/downloads.html}
-  \includegraphics{Overlays}
-  {\scriptsize \\Image from\\ 
-    \url{http://tortoisesvn.net/docs/release/TortoiseSVN_en/tsvn-dug.html}}
+\section{Caveats and references}
+
+\begin{frame}
+  \frametitle{What R-Forge is NOT}
+  \begin{description}
+  \item[NOT unlimited storage.] There is currently no imposed limit on
+    SVN repository size. However, if projects begin to abuse disk
+    space, R-Forge will impose a limit. In particular, \textbf{do not
+      put binary files in SVN}. Exception: very small or very
+    infrequently updated files, like images for a project website.
+  \item[NOT instantaneous package builds.] When you check code into
+    SVN, it is NOT immediately compiled on their server. In fact, the
+    build and check process occurs only once per night.
+  \end{description}
 \end{frame}
 
-\begin{frame} \frametitle{Windows TortoiseSVN: clicking menu items
-    performs Subversion commands}
-  \includegraphics[height=0.7\textheight,keepaspectratio]{ContextMenuDirControl}
-  {\scriptsize \\Image from\\ 
-    \url{http://tortoisesvn.net/docs/release/TortoiseSVN_en/tsvn-dug.html}}
-\end{frame}
-
-\section{Conclusions}
-
-\framet{Learning more about collaborative software development}{
+\framet{Learning more about collaborative R package development}{
   \item \url{http://R-Forge.R-project.org}
     \begin{itemize}
 \item 6 page introduction PDF:
