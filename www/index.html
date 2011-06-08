@@ -215,17 +215,17 @@ that they will work correctly.
 
 </ul>
 
-<!--
-<h1>NEW in version 1.2! Extending inlinedocs!</h1>
+<h2>Extending the inlinedocs syntax with your own Parser Functions</h2>
 
 <p>inlinedocs operates using a modular system of source code parsers,
-so it is very simple to extend. To do this, you just need to write a custom
-parser function that takes your source as input and returns a
-list of documentation objects. For example, by default inlinedocs
-copies the Maintainer line of the DESCRIPTION file to the author
-section of the Rd file. To use the Author line from DESCRIPTION
-instead, do this:</p>
-
+so it is very simple to extend. To do this, you just need to write a
+custom Parser Function that takes your source as input and returns a
+list of documentation objects. For example, see the <tt>simple</tt>
+function in
+<a href="http://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/alternate.R?view=markup&amp;revision=204&amp;root=inlinedocs">testfiles/alternate.R</a>,
+which can be used as a Parser Function in the <tt>parsers</tt>
+argument to <tt>package.skeleton.dx()</tt>.</p>
+<!--
 <pre>
 ### This function will be applied to every object in your package.
 author.from.author &lt;- function(desc,...){
