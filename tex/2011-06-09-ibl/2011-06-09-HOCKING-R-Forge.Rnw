@@ -305,8 +305,8 @@ Source: R-Forge project web pages.
     versioned copying, moving, or making directories.
   \item \texttt{svn up -r 35} to download code version 35 from the
     R-Forge server.
-  \end{itemize}
   \item \texttt{svn resolve} to manually resolve conflicts.
+  \end{itemize}
 \item Complicated, see the Subversion manual for details:
   \begin{itemize}
   \item \texttt{svn merge} to revert back to a previous version of
