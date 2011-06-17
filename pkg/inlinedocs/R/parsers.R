@@ -46,6 +46,7 @@ forall <- function
  ){
   FUN <- FUN
   f <- function(objs,docs,...){
+    if(length(objs)==0)return(list())
     objs <- objs[sapply(objs,subfun)]
     L <- list()
     on.exit(cat(sprintf("Parser Function failed on %s\n",N)))
