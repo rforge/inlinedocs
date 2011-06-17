@@ -3,10 +3,14 @@
 Attempt doc list to Rd list conversion, so we can generate Rd using
 tools:::print.Rd. See code in etc/parseRd.R
 
-== 1.7
-
 Try to get more tests working: R CMD check and Rd conversion to
 doclist checks.
+
+== 1.7
+
+bugfix for when there are no objects defined in the
+package. previously forall functions would stop with an error, now we
+test for this condition before the line where we would get the error.
 
 == 1.6
 
