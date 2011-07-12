@@ -39,7 +39,7 @@ test <- function
 ### the return value
 ##seealso<< foobar
 }
-src <- attr(test,"source")
+src <- getSource(test)
 prefixed.lines(src)
 extract.xxx.chunks(src)
 }

@@ -22,7 +22,7 @@ is useful for testing these functions.}
          sum=x+y) ##<< their sum
     ##end<<
   }
-  src <- attr(f,"source")
+  src <- getSource(f)
   lonely$extract.xxx.chunks(src)
   lonely$prefixed.lines(src)
 }

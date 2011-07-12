@@ -12,6 +12,10 @@ bugfix for when there are no objects defined in the
 package. previously forall functions would stop with an error, now we
 test for this condition before the line where we would get the error.
 
+getSource(FUN) function from Duncan Murdoch used to extract function
+source code, instead of attr(FUN,"source") for compatibility with
+R>=2.14.
+
 == 1.6
 
 Only do R CMD check in tests when we run interactively. If not

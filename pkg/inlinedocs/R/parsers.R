@@ -20,6 +20,18 @@ combine.list <- function(x,y){
 ### A list, same type as x, but with added elements from y.
 }
 
+
+getSource <- function
+### Extract a function's source code.
+(fun.obj
+### A function.
+ ) {
+      srcref <- attr(fun.obj, "srcref")
+      if (!is.null(srcref)) unlist(strsplit(as.character(srcref), "\n"))
+      else attr(fun.obj, "source")
+### Source code lines as a character vector.
+}
+
 ### Prefix for code comments used with grep and gsub.
 prefix <- "^[ \t]*###[ \t]*"
 
@@ -52,7 +64,7 @@ forall <- function
     on.exit(cat(sprintf("Parser Function failed on %s\n",N)))
     for(N in union(names(docs),names(objs))){
       o <- objs[[N]]
-      L[[N]] <- FUN(src=attr(o,"source"),
+      L[[N]] <- FUN(src=getSource(o),
                     name=N,objs=objs,o=o,docs=docs,doc=docs[[N]],...)
     }
     on.exit()## remove warning message
@@ -146,7 +158,7 @@ test <- function
 ### the return value
 ##seealso<< foobar
 }
-src <- attr(test,"source")
+src <- getSource(test)
 prefixed.lines(src)
 extract.xxx.chunks(src)
 })
@@ -483,7 +495,7 @@ forall.parsers <-
            ## Special case for code contained in a function
            if (inherits(ex, "function")) {
              ## If source is available, start from there
-             src <- attr(ex, "source")
+             src <- getSource(ex)
              if (!is.null(src)) {
                ex <- src
              } else { ## Use the body of the function
@@ -520,7 +532,7 @@ lonely <- structure(c(forall.parsers,forfun.parsers),ex=function(){
          sum=x+y) ##<< their sum
     ##end<<
   }
-  src <- attr(f,"source")
+  src <- getSource(f)
   lonely$extract.xxx.chunks(src)
   lonely$prefixed.lines(src)
 })
@@ -578,7 +590,7 @@ extra.code.docs <- function # Extract documentation from code chunks
     } else if(0 == length(res) && inherits(objs[[on]],"standardGeneric")){
       NULL
     } else if(0 == length(res) && "function" %in% class(o)
-              && 1 == length(osource <- attr(o,"source"))
+              && 1 == length(osource <- getSource(o))
               && grepl(paste("UseMethod(",on,")",sep="\""),osource)
               ){
       ## phew - this should only pick up R.oo S3 generic definitions like:
