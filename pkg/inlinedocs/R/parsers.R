@@ -131,7 +131,7 @@ prefixed.lines <- structure(function(src,...){
   for(i in seq_along(starts)){
     start <- clines[starts[i]]
     end <- clines[ends[i]]
-    lab <- if(all(grepl("^\\s*#",src[end:(length(src)-1)])))"value"
+    lab <- if(all(gsub("[ }]","",src[(end+1):length(src)])==""))"value"
     else if(start==2)"description"
     else if(is.arg()){
       ##twutz: strip leading white spaces and brackets and ,
@@ -503,6 +503,7 @@ forall.parsers <-
              }
              ## Eliminate leading and trailing code
              ex <- ex[-c(1, length(ex))]
+             if(ex[1]=="{")ex <- ex[-1]
              ## all the prefixes
              ex <- kill.prefix.whitespace(ex)
              ## Add an empty line before and after example

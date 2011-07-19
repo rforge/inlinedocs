@@ -424,6 +424,8 @@ modify.Rd.file <- function
   m <- regexpr("usage[{][^}]*[}]",txt)
   Mend <- m+attr(m,"match.length")
   utxt <- substr(txt,m,Mend)
+  ## multiple lines for the PDF!
+  utxt <- gsub(", ",",\n",utxt)
   if(length(grep("usage[{]data",utxt))){
      utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
    }

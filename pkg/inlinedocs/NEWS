@@ -8,6 +8,11 @@ doclist checks.
 
 == 1.7
 
+blank lines allowed after value comments.
+
+usage section broken over lines in modify.Rd.file for prettying pdf
+output.
+
 bugfix for when there are no objects defined in the
 package. previously forall functions would stop with an error, now we
 test for this condition before the line where we would get the error.
