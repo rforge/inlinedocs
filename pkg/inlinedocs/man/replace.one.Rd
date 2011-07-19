@@ -4,7 +4,9 @@
 \description{Do find and replace for one element of an inner documentation list
 on 1 Rd file.}
 \usage{
-replace.one(torep, REP, txt)
+replace.one(torep,
+REP,
+txt)
 }
 \arguments{
   \item{torep}{tag to find.}

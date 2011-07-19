@@ -3,7 +3,8 @@
 \title{print allfun}
 \description{Print method for functions constructed using forall.}
 \usage{
-\method{print}{allfun}(x, ...)
+\method{print}{allfun}(x,
+...)
 }
 \arguments{
   \item{x}{

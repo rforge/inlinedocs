@@ -4,7 +4,10 @@
 \description{Parse code to r objs, then run all the parsers and return the
 documentation list.}
 \usage{
-apply.parsers(code, parsers = default.parsers, verbose = FALSE, ...)
+apply.parsers(code,
+parsers = default.parsers,
+verbose = FALSE,
+...)
 }
 \arguments{
   \item{code}{Character vector of code lines.}

@@ -3,7 +3,9 @@
 \title{check whether function name is an S3 generic}
 \description{Determines whether a function name looks like an S3 generic function}
 \usage{
-leadingS3generic(name, env, ...)
+leadingS3generic(name,
+env,
+...)
 }
 \arguments{
   \item{name}{name of function}

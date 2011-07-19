@@ -8,7 +8,9 @@ can be used in the parser list of package.skeleton.dx(). TODO:
 Modularize this into separate Parsers Functions for S4 classes,
 prefixes, ##<<blocks, etc. Right now it is not very clean!}
 \usage{
-extra.code.docs(code, objs, ...)
+extra.code.docs(code,
+objs,
+...)
 }
 \arguments{
   \item{code}{Code lines in a character vector containing multiple R objects to

@@ -9,7 +9,10 @@ function, which creates bare Rd files. The inline documentation is
 added to these Rd files and then these files are copied to
 pkgdir/man, possibly overwriting the previous files there.}
 \usage{
-package.skeleton.dx(pkgdir = "..", parsers = NULL, namespace = FALSE, ...)
+package.skeleton.dx(pkgdir = "..",
+parsers = NULL,
+namespace = FALSE,
+...)
 }
 \arguments{
   \item{pkgdir}{Package directory where the DESCRIPTION file lives. Your code
@@ -38,7 +41,6 @@ with a letter, plus all S4 methods and classes are exported.}
 
 \examples{
 library(inlinedocs)
-
 owd <- setwd(tempdir())
 
 ## get the path to the silly example package that is provided with
@@ -55,7 +57,6 @@ package.skeleton.dx("silly")
 file.show( c(file.path("silly","R","silly.R"),
              file.path("silly","man","silly.example.Rd") ),
           header=c("source","rd") )
-
 ## check the package to see if generated documentation passes
 ## without WARNINGs
 cmd <- sprintf("\%s CMD check silly",file.path(R.home("bin"), "R"))

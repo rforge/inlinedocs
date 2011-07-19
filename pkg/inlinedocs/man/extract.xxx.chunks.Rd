@@ -4,7 +4,9 @@
 \description{Given source code of a function, return a list describing inline
 documentation in that source code.}
 \usage{
-extract.xxx.chunks(src, name.fun = "(unnamed function)", ...)
+extract.xxx.chunks(src,
+name.fun = "(unnamed function)",
+...)
 }
 \arguments{
   \item{src}{The source lines of the function to examine, as a character
@@ -36,6 +38,7 @@ sections will appear under a section \code{Objects from the Class}. That
 section typically includes information about construction methods
 as well as other description of class objects (but note that the
 class Slots are documented in a separate section).
+but this should not appear, because separated by a blank line
 
 Each separate extra section appears as a new
 paragraph except that: \itemize{\item empty sections (no

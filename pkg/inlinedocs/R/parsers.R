@@ -131,7 +131,8 @@ prefixed.lines <- structure(function(src,...){
   for(i in seq_along(starts)){
     start <- clines[starts[i]]
     end <- clines[ends[i]]
-    lab <- if(all(gsub("[ }]","",src[(end+1):length(src)])==""))"value"
+    processed <- gsub("#.*","",gsub("[ }]","",src[(end+1):length(src)]))
+    lab <- if(all(processed==""))"value"
     else if(start==2)"description"
     else if(is.arg()){
       ##twutz: strip leading white spaces and brackets and ,

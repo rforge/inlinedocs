@@ -11,7 +11,8 @@ collected as follows into documentation sections:\describe{
 These may be added to by use of the  constructs
 described below.}
 \usage{
-prefixed.lines(src, ...)
+prefixed.lines(src,
+...)
 }
 \arguments{
   \item{src}{

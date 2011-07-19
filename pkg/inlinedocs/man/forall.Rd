@@ -5,7 +5,8 @@
 checked by subfun, parse source using FUN and return the resulting
 documentation list.}
 \usage{
-forall(FUN, subfun = function(x) TRUE)
+forall(FUN,
+subfun = function(x) TRUE)
 }
 \arguments{
   \item{FUN}{Function to apply to each element in the package.}

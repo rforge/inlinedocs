@@ -3,7 +3,8 @@
 \title{combine}
 \description{combine lists or character strings}
 \usage{
-combine(x, y)
+combine(x,
+y)
 }
 \arguments{
   \item{x}{

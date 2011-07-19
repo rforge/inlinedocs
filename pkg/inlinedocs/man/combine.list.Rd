@@ -3,7 +3,8 @@
 \title{combine list}
 \description{combine lists by adding elements or adding to existing elements}
 \usage{
-\method{combine}{list}(x, y)
+\method{combine}{list}(x,
+y)
 }
 \arguments{
   \item{x}{
