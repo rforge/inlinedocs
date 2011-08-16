@@ -136,10 +136,10 @@ prefixed.lines <- structure(function(src,...){
     else if(start==2)"description"
     else if(is.arg()){
       ##twutz: strip leading white spaces and brackets and ,
-      arg <- gsub("^[ \t(,]*", "", src[start - 1])	
+      arg <- gsub("^[ \t(,]*", "", src[start - 1])
       arg <- gsub("^([^=,]*)[=,].*", "\\1", arg)
       ##twutz: remove trailing whitespaces
-      arg <- gsub("^([^ \t]*)([ \t]+)$","\\1",arg)	
+      arg <- gsub("^([^ \t]*)([ \t]+)$","\\1",arg)
       arg <- gsub("...", "\\dots", arg, fix = TRUE)
       paste("item{",arg,"}",sep="")
     } else {
@@ -428,7 +428,7 @@ leadingS3generic <- function # check whether function name is an S3 generic
       generic <- paste(parts[1:i], collapse = ".")
       if (any(generic %in% utils:::getKnownS3generics()) ||
           utils:::findGeneric(generic, env) != "") {
-        object <- paste(parts[(i + 1):l], collapse = ".") 
+        object <- paste(parts[(i + 1):l], collapse = ".")
         ##details<< Assumes that the first name which matches any known
         ## generics is the target generic function, so if both x and x.y
         ## are generic functions, will assume generic x applying to objects
@@ -812,6 +812,12 @@ extract.docs.setClass <- function # S4 class inline documentation
   docs <- combine(docs,lonely$prefixed.lines(chunk.source))
   docs$title <- lonely$title.from.firstline(chunk.source)
   ##details<<
+  ## If there is no explicit title on the first line of setClass, then
+  ## one is made up from the class name.
+  if ( 0 == length(docs$title) ){
+    docs$title <- list(title=paste(class.name,"S4 class"))
+  }
+  ##details<<
   ## The class definition skeleton includes an \code{Objects from the Class}
   ## section, to which any \code{##details<<} documentation chunks are
   ## written. It is given a vanilla content if there are no specific
@@ -874,7 +880,7 @@ apply.parsers <- function
   objs <- sapply(ls(e),get,e,simplify=FALSE)
 
   docs <- list()
-  
+
   ## apply parsers in sequence to code and objs
   for(i in seq_along(parsers)){
     N <- names(parsers[i])

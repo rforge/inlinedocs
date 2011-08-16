@@ -25,6 +25,9 @@ arguments, so may be documented by  comments on
 the same line or  comments at the beginning of the
 following line.
 
+If there is no explicit title on the first line of setClass, then
+one is made up from the class name.
+
 The class definition skeleton includes an \code{Objects from the Class}
 section, to which any \code{##details<<} documentation chunks are
 written. It is given a vanilla content if there are no specific
