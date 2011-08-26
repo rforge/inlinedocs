@@ -10,6 +10,7 @@ users <- read.csv("project.users.csv",header=TRUE,
 home <- readLines(home.conn <- url("http://r-forge.r-project.org/"))
 close(home.conn)
 lines.after.recently <- paste(home[-(1:grep("Recently",home))],collapse="")
+source("regexp.R")
 most.recent.project <- get.first(lines.after.recently,"projects/","[^/]+")
 ## now download the most recent project page to get its project id
 download.project.html <- function(project){
@@ -25,7 +26,6 @@ get.registration <- function(html){
   parsed <- get.first(html,"Registered:&nbsp;","[^<]+")
   as.POSIXct(strptime(parsed,"%Y-%m-%d %H:%M"))
 }
-source("regexp.R")
 ### lookup a project name from id by looking at the scm page
 get.project.from.id <- function(project.id){
   scm.url <- sprintf("http://r-forge.r-project.org/scm/?group_id=%d",project.id)
@@ -48,6 +48,7 @@ get.user.ids <- function(html){
 project.html <- download.project.html(most.recent.project)
 most.recent.project.id <-
   as.integer(get.first(project.html,"group_id=","[0-9]+"))
+sorted.projects <- project.stats[order(project.stats$id),]
 last.id <- tail(sorted.projects,1)$id
 if(most.recent.project.id>last.id){
   register.datetime <- get.registration(project.html)
@@ -87,7 +88,7 @@ if(most.recent.project.id>last.id){
     print(registered)
     project.stats[project.stats$project==project,"registered"] <- registered
     user <- get.user.ids(project.html)
-    if(!is.null(user)){
+    if(length(user)){
       newlines <- data.frame(user,project,row.names=NULL)
       print(newlines)
       users <- rbind(users,newlines)

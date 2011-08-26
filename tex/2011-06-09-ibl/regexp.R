@@ -3,12 +3,15 @@ str_match_all_perl<- function(string,pattern){
   lapply(seq_along(parsed),function(i){
     r <- parsed[[i]]
     starts <- attr(r,"capture.start")
-    if(r[1]==-1)return(matrix(nrow=0,ncol=1+ncol(starts)))
-    names <- attr(r,"capture.names")
-    lengths <- attr(r,"capture.length")
-    full <- substring(string[i],r,r+attr(r,"match.length")-1)
-    subs <- substring(string[i],starts,starts+lengths-1)
-    m <- matrix(c(full,subs),ncol=length(names)+1)
+    names <- colnames(starts)
+    m <- if(r[1]==-1){
+      matrix(nrow=0,ncol=1+ncol(starts))
+    }else{
+      lengths <- attr(r,"capture.length")
+      full <- substring(string[i],r,r+attr(r,"match.length")-1)
+      subs <- substring(string[i],starts,starts+lengths-1)
+      matrix(c(full,subs),ncol=length(names)+1)
+    }
     colnames(m) <- c("",names)
     m
   })
