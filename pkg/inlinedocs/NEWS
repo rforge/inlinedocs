@@ -6,6 +6,10 @@ tools:::print.Rd. See code in etc/parseRd.R
 Try to get more tests working: R CMD check and Rd conversion to
 doclist checks.
 
+== 1.8, 21 Oct 2011
+
+bugfix for R CMD check with R.2.14.
+
 == 1.7
 
 blank lines allowed after value comments.

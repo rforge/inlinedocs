@@ -269,9 +269,10 @@ extract.xxx.chunks <- function # Extract documentation from a function
       ## block until terminated by a subsequent \code{##}\emph{xxx}\code{<<} line.
       if ( "describe" == new.field ){
         ##details<< Such regions may be nested, but not in such a way
-        ## that the first element in a \code{describe} is another \code{describe}.
-        ## Thus there must be at least one \code{##<<} comment between each
-        ## pair of \code{##describe<<} comments.
+        ## that the first element in a \code{describe} is another
+        ## \code{describe}.  Thus there must be at least one
+        ## \code{##<<} comment between each pair of
+        ## \code{##describe<<} comments.
         if ( first.describe ){
           stop("consecutive ##describe<< at line",k,"in",name.fun)
         } else {

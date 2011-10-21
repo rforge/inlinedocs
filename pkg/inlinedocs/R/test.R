@@ -26,7 +26,9 @@ test.file <- function
       .res <- .fun[[N]]
       res <- fun[[N]]
       if(is.null(res) || is.na(res) || is.na(.res) || .res!=res){
-        stop(f,":\n\n",res,"\nin ",FUN,"$",N,", expected:\n\n",.res,"\n")
+        cat("\n-----\n",res,"\n-----\nin ",FUN,
+            "$",N,", expected:\n-----\n",.res,"\n-----\n")
+        stop("docs mismatch in ",f)
       }
     }
     ## now check and see if there are no additional items!

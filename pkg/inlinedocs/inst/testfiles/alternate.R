@@ -14,7 +14,8 @@ simple <- function(src,...){#title a simple Parser Function
 testfun <- function(x,y,z){#item{x} the first arg
   a <- (x+y)*z # just a regular comment
   a #value the sum of the first two times the third
-}#description a useless formula
+  #description a useless formula
+}
 
 .result <- list(testfun=list(`item{x}`="the first arg",
                   value="the sum of the first two times the third",
