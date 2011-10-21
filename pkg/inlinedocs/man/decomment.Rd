@@ -12,8 +12,7 @@ decomment(comments)
 
 \value{String without prefixes or newlines.}
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

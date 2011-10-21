@@ -57,9 +57,10 @@ list. All subsequent "same line"  comments go into that
 block until terminated by a subsequent \emph{xxx} line.
 
 Such regions may be nested, but not in such a way
-that the first element in a \code{describe} is another \code{describe}.
-Thus there must be at least one  comment between each
-pair of \code{##describe<<} comments.
+that the first element in a \code{describe} is another
+\code{describe}.  Thus there must be at least one
+ comment between each pair of
+\code{##describe<<} comments.
 
 When nested \code{describe} blocks are used, a comment-only
 line with \code{##end<<} terminates the current level only; any
@@ -69,8 +70,7 @@ all open describe blocks.}
 name N we will look for N\{...\} in the Rd file and replace it
 with the string in this list (implemented in modify.Rd.file).}
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 \note{\code{alias} extras are automatically split at new lines.
 
 \code{keyword} extras are automatically split at white space,

@@ -33,14 +33,14 @@ with a letter, plus all S4 methods and classes are exported.}
 
 
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 
 
 \examples{
 library(inlinedocs)
+
 owd <- setwd(tempdir())
 
 ## get the path to the silly example package that is provided with
@@ -57,6 +57,7 @@ package.skeleton.dx("silly")
 file.show( c(file.path("silly","R","silly.R"),
              file.path("silly","man","silly.example.Rd") ),
           header=c("source","rd") )
+
 ## check the package to see if generated documentation passes
 ## without WARNINGs
 cmd <- sprintf("\%s CMD check silly",file.path(R.home("bin"), "R"))

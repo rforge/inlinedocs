@@ -6,9 +6,17 @@ tools:::print.Rd. See code in etc/parseRd.R
 Try to get more tests working: R CMD check and Rd conversion to
 doclist checks.
 
+Rd generation for attrSetter<- functions?
+
 == 1.8, 21 Oct 2011
 
-bugfix for R CMD check with R.2.14.
+Remove inlinedocExample<- since this was deprecated and now giving a
+WARNING on package check.
+
+Take \author for Rd files from Author: section of DESCRIPTION, instead
+of Maintainer: section.
+
+bugfix for getSource, for R CMD check with R.2.14.
 
 == 1.7
 

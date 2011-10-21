@@ -23,8 +23,7 @@ the parent class.}
 No methods defined with class "DocLink" in the signature.
 }
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

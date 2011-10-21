@@ -21,8 +21,7 @@ parse for documentation.}
 
 \value{named list of lists, one for each object to document.}
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

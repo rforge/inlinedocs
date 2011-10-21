@@ -27,7 +27,10 @@ getSource <- function
 ### A function.
  ) {
       srcref <- attr(fun.obj, "srcref")
-      if (!is.null(srcref)) unlist(strsplit(as.character(srcref), "\n"))
+      if (!is.null(srcref)) {
+        ##unlist(strsplit(as.character(srcref), "\n"))
+        as.character(srcref)
+      }
       else attr(fun.obj, "source")
 ### Source code lines as a character vector.
 }
@@ -256,11 +259,13 @@ extract.xxx.chunks <- function # Extract documentation from a function
     }
   while ( k <= length(src) ){
     line <- src[k]
+    ##print(line)
+    ##if(grepl("^$",line))browser()
     if ( grepl(extra.regexp,line,perl=TRUE) ){
       ## we have a new extra chunk - first get field name and any payload
       new.field <- gsub(extra.regexp,"\\1",line,perl=TRUE)
       new.contents <- gsub(extra.regexp,"\\2",line,perl=TRUE)
-
+      ##cat(new.field,"\n-----\n",new.contents,"\n\n")
       ##details<< As a special case, the construct \code{##describe<<} causes
       ## similar processing to the main function arguments to be
       ## applied in order to construct a describe block within the
@@ -479,7 +484,7 @@ forfun.parsers <-
 forall.parsers <-
   list(## Fill in author from DESCRIPTION and titles.
        author.from.description=function(desc,...){
-         list(author=desc[,"Maintainer"])
+         list(author=desc[,"Author"])
        },
        ## The format section sometimes causes problems, so erase it.
        erase.format=function(...){

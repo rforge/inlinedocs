@@ -11,8 +11,7 @@ getSource(fun.obj)
 
 \value{Source code lines as a character vector.}
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 
