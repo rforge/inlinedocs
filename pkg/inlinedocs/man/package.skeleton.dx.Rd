@@ -12,6 +12,7 @@ pkgdir/man, possibly overwriting the previous files there.}
 package.skeleton.dx(pkgdir = "..",
 parsers = NULL,
 namespace = FALSE,
+excludePattern = FALSE,
 ...)
 }
 \arguments{
@@ -28,6 +29,8 @@ default.parsers.}
   \item{namespace}{A logical indicating whether a NAMESPACE file should be generated
 for this package. If \code{TRUE}, all objects whose name starts
 with a letter, plus all S4 methods and classes are exported.}
+  \item{excludePattern}{
+}
   \item{\dots}{Parameters to pass to Parser Functions.}
 }
 

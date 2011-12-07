@@ -29,6 +29,9 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
 ### A logical indicating whether a NAMESPACE file should be generated
 ### for this package. If \code{TRUE}, all objects whose name starts
 ### with a letter, plus all S4 methods and classes are exported.
+ excludePattern=FALSE,
+### A regular expression matching the files that are not to be processed e.g. because 
+### inlinedocs can not handle them yet (like generic function definitions)
  ...
 ### Parameters to pass to Parser Functions.
  ){
@@ -143,6 +146,9 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   # man page!
   code_files <- if(!"Collate"%in%colnames(desc))Sys.glob("*.R")
   else strsplit(gsub("\\s+"," ",desc[,"Collate"]),split=" ")[[1]]
+  code_files =grep(excludePattern,code_files,invert=TRUE,value=TRUE)
+  print(excludePattern)
+  print(code_files)
   # PhG: one must consider a potential Encoding field in DESCRIPTION file!
   # which is used also for .R files according to Writing R Extensions
   if ("Encoding" %in% colnames(desc)) {
@@ -150,7 +156,7 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
     on.exit(options(encoding = oEnc), add = TRUE)
   }
   code <- do.call(c,lapply(code_files,readLines))
-  
+  #print(code)
   docs <- apply.parsers(code,parsers,verbose=TRUE,desc=desc)
 
   ## Make package skeleton and edit Rd files (eventually just don't
