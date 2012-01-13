@@ -376,34 +376,9 @@ modify.Rd.file <- function
     fend <- closing[closing>fstart][1]-1
     dlines[fstart:fend] <- gsub("[{}]","",dlines[fstart:fend])
   }
-  ## At least in my code, any remaining % symbols are in \usage sections
-  ## as function arguments. These promptly break Rd check because you end
-  ## up with unterminated strings. Just in case, the following regexp only
-  ## modifies those % symbols which follow something other than %.
-  ## (a more complicated version would attempt to do so only within strings.)
-  dlines <- gsub("([^%])%","\\1\\\\%",dlines,perl=TRUE)
-  
-  # PhG: now restore masked function name, if any (case of %....% operators)
-  if (!is.null(Nmask))
-    dlines <- gsub(Nmask, N, dlines, fixed = TRUE)
 
-  ## sometimes (s4 classes) title is has \code{} blocks inside, which
-  ## causes problems with our find-replace regex inside replace.one,
-  ## so lets just put a simple title that works.
-  i <- grep("^\\\\title",dlines)
-  if(length(i)){
-    dlines[i] <- gsub("\\\\code[{][^}]*[}]","",dlines[i])
-  }
-  
   txt <- paste(dlines,collapse="\n")
   
-  ## Find and replace based on data in d
-  for(torep in names(d)){
-    if ( !grepl("^[.]",torep) ){## .flags should not be used for find-replace
-      txt <- replace.one(torep,d[[torep]],txt)
-    }
-  }
-
   ## Fix usage
   m <- regexpr("usage[{][^}]*[}]",txt)
   Mend <- m+attr(m,"match.length")
@@ -450,6 +425,35 @@ modify.Rd.file <- function
                gsub("\\\\([^%])","\\\\\\\\\\1",utxt),
                substr(txt,Mend+1,nchar(txt)),
                sep="")
+
+
+  
+  ## At least in my code, any remaining % symbols are in \usage sections
+  ## as function arguments. These promptly break Rd check because you end
+  ## up with unterminated strings. Just in case, the following regexp only
+  ## modifies those % symbols which follow something other than %.
+  ## (a more complicated version would attempt to do so only within strings.)
+  txt <- gsub("([^%])%","\\1\\\\%",txt,perl=TRUE)
+  
+  # PhG: now restore masked function name, if any (case of %....% operators)
+  if (!is.null(Nmask))
+    txt <- gsub(Nmask, N, txt, fixed = TRUE)
+
+  ## sometimes (s4 classes) title is has \code{} blocks inside, which
+  ## causes problems with our find-replace regex inside replace.one,
+  ## so lets just put a simple title that works.
+  i <- grep("^\\\\title",txt)
+  if(length(i)){
+    txt[i] <- gsub("\\\\code[{][^}]*[}]","",txt[i])
+  }
+  
+  ## Find and replace based on data in d
+  for(torep in names(d)){
+    if ( !grepl("^[.]",torep) ){## .flags should not be used for find-replace
+      txt <- replace.one(torep,d[[torep]],txt)
+    }
+  }
+
   ## delete empty sections to suppress warnings in R CMD check
   txt <- gsub("\\\\[a-z]+[{]\\W*[}]","",txt)
   if ( !is.null(d$.s3method) ){
