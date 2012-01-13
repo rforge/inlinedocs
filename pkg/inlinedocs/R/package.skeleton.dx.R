@@ -377,12 +377,21 @@ modify.Rd.file <- function
     dlines[fstart:fend] <- gsub("[{}]","",dlines[fstart:fend])
   }
 
+  ## sometimes (s4 classes) title is has \code{} blocks inside, which
+  ## causes problems with our find-replace regex inside replace.one,
+  ## so lets just put a simple title that works.
+  i <- grep("^\\\\title",dlines)
+  if(length(i)){
+    dlines[i] <- gsub("\\\\code[{][^}]*[}]","",dlines[i])
+  }
+  
   txt <- paste(dlines,collapse="\n")
   
   ## Fix usage
   m <- regexpr("usage[{][^}]*[}]",txt)
   Mend <- m+attr(m,"match.length")
   utxt <- substr(txt,m+6,Mend-2)
+
   ## multiple lines for the PDF!
   parsed <- parse(text=utxt)
   if(length(parsed)){
@@ -439,14 +448,6 @@ modify.Rd.file <- function
   if (!is.null(Nmask))
     txt <- gsub(Nmask, N, txt, fixed = TRUE)
 
-  ## sometimes (s4 classes) title is has \code{} blocks inside, which
-  ## causes problems with our find-replace regex inside replace.one,
-  ## so lets just put a simple title that works.
-  i <- grep("^\\\\title",txt)
-  if(length(i)){
-    txt[i] <- gsub("\\\\code[{][^}]*[}]","",txt[i])
-  }
-  
   ## Find and replace based on data in d
   for(torep in names(d)){
     if ( !grepl("^[.]",torep) ){## .flags should not be used for find-replace
