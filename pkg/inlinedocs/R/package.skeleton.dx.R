@@ -147,8 +147,8 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   code_files <- if(!"Collate"%in%colnames(desc))Sys.glob("*.R")
   else strsplit(gsub("\\s+"," ",desc[,"Collate"]),split=" ")[[1]]
   code_files =grep(excludePattern,code_files,invert=TRUE,value=TRUE)
-  print(excludePattern)
-  print(code_files)
+  ##print(excludePattern)
+  ##print(code_files)
   # PhG: one must consider a potential Encoding field in DESCRIPTION file!
   # which is used also for .R files according to Writing R Extensions
   if ("Encoding" %in% colnames(desc)) {
@@ -407,13 +407,15 @@ modify.Rd.file <- function
   ## Fix usage
   m <- regexpr("usage[{][^}]*[}]",txt)
   Mend <- m+attr(m,"match.length")
-  utxt <- substr(txt,m,Mend)
+  utxt <- substr(txt,m+6,Mend-2)
   ## multiple lines for the PDF!
-  utxt <- gsub(", ",",\n",utxt)
+  parsed <- parse(text=utxt)
+  if(length(parsed)){
+    utxt <- sprintf("usage{%s}\n",paste(format(parsed[[1]]),collapse="\n"))
+  }
   if(length(grep("usage[{]data",utxt))){
-     utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
-   }
-  
+    utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
+  }
   ## fix \method version if .s3method
   if ( !is.null(d$.s3method) ){
     pat <- paste(d$.s3method,collapse=".")

@@ -3,12 +3,8 @@
 \title{apply parsers}
 \description{Parse code to r objs, then run all the parsers and return the
 documentation list.}
-\usage{
-apply.parsers(code,
-parsers = default.parsers,
-verbose = FALSE,
-...)
-}
+\usage{apply.parsers(code, parsers = default.parsers, verbose = FALSE, 
+    ...)}
 \arguments{
   \item{code}{Character vector of code lines.}
   \item{parsers}{List of Parser Functions.}
@@ -18,7 +14,8 @@ verbose = FALSE,
 
 \value{A list of extracted documentation from code.}
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

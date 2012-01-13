@@ -3,11 +3,7 @@
 \title{Extract documentation from a function}
 \description{Given source code of a function, return a list describing inline
 documentation in that source code.}
-\usage{
-extract.xxx.chunks(src,
-name.fun = "(unnamed function)",
-...)
-}
+\usage{extract.xxx.chunks(src, name.fun = "(unnamed function)", ...)}
 \arguments{
   \item{src}{The source lines of the function to examine, as a character
 vector.}
@@ -70,7 +66,8 @@ all open describe blocks.}
 name N we will look for N\{...\} in the Rd file and replace it
 with the string in this list (implemented in modify.Rd.file).}
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 \note{\code{alias} extras are automatically split at new lines.
 
 \code{keyword} extras are automatically split at white space,

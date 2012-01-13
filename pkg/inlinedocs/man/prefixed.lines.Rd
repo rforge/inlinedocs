@@ -10,10 +10,7 @@ collected as follows into documentation sections:\describe{
 \item{value}{group ending at the penultimate line of the code}}
 These may be added to by use of the  constructs
 described below.}
-\usage{
-prefixed.lines(src,
-...)
-}
+\usage{prefixed.lines(src, ...)}
 \arguments{
   \item{src}{
 }
@@ -23,7 +20,8 @@ prefixed.lines(src,
 
 
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

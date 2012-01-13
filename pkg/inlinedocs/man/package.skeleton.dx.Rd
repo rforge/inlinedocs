@@ -8,13 +8,8 @@ inline documentation, it calls the standard package.skeleton
 function, which creates bare Rd files. The inline documentation is
 added to these Rd files and then these files are copied to
 pkgdir/man, possibly overwriting the previous files there.}
-\usage{
-package.skeleton.dx(pkgdir = "..",
-parsers = NULL,
-namespace = FALSE,
-excludePattern = FALSE,
-...)
-}
+\usage{package.skeleton.dx(pkgdir = "..", parsers = NULL, namespace = FALSE, 
+    excludePattern = FALSE, ...)}
 \arguments{
   \item{pkgdir}{Package directory where the DESCRIPTION file lives. Your code
 should be in pkgdir/R. We will setwd to pkgdir/R for the duration
@@ -29,14 +24,15 @@ default.parsers.}
   \item{namespace}{A logical indicating whether a NAMESPACE file should be generated
 for this package. If \code{TRUE}, all objects whose name starts
 with a letter, plus all S4 methods and classes are exported.}
-  \item{excludePattern}{
-}
+  \item{excludePattern}{A regular expression matching the files that are not to be processed e.g. because 
+inlinedocs can not handle them yet (like generic function definitions)}
   \item{\dots}{Parameters to pass to Parser Functions.}
 }
 
 
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

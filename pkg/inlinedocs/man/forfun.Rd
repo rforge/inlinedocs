@@ -2,9 +2,7 @@
 \alias{forfun}
 \title{forfun}
 \description{For each function in the package, do something.}
-\usage{
-forfun(FUN)
-}
+\usage{forfun(FUN)}
 \arguments{
   \item{FUN}{
 }
@@ -12,7 +10,8 @@ forfun(FUN)
 
 
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

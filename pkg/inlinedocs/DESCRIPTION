@@ -3,7 +3,8 @@ Title: Convert inline comments to documentation
 Type: Package
 Version: 1.8
 Date: 2011-10-21
-Author: Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>
+Author: Inlinedocs development team
+	<inlinedocs-support@lists.r-forge.r-project.org>
 Maintainer: Toby Dylan Hocking <toby.hocking@inria.fr>
 Description: Generates Rd files from R source code with comments,
  providing for quick, sustainable package development. The syntax keeps

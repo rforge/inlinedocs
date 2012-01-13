@@ -4,9 +4,7 @@
 \description{Using the same conventions as for functions, definitions of S4 classes
 in the form \code{setClass("classname",\dots)} are also located and
 scanned for inline comments.}
-\usage{
-extract.docs.setClass(doc.link)
-}
+\usage{extract.docs.setClass(doc.link)}
 \arguments{
   \item{doc.link}{DocLink object as created by \code{\link{extract.file.parse}}.
 Note that \code{source} statements are \emph{ignored} when scanning for
@@ -34,7 +32,8 @@ written. It is given a vanilla content if there are no specific
 \code{##details<<} documentation chunks.}
 
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

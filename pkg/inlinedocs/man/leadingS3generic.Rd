@@ -2,11 +2,7 @@
 \alias{leadingS3generic}
 \title{check whether function name is an S3 generic}
 \description{Determines whether a function name looks like an S3 generic function}
-\usage{
-leadingS3generic(name,
-env,
-...)
-}
+\usage{leadingS3generic(name, env, ...)}
 \arguments{
   \item{name}{name of function}
   \item{env}{environment to search for additional generics}
@@ -28,7 +24,8 @@ of class y.z}
 
 If no matching generic functions are found, returns an empty list.}
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

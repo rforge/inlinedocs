@@ -2,10 +2,7 @@
 \alias{combine.character}
 \title{combine character}
 \description{combine character strings by pasting them together}
-\usage{
-\method{combine}{character}(x,
-y)
-}
+\usage{\method{combine}{character}(x, y)}
 \arguments{
   \item{x}{
 }
@@ -15,7 +12,8 @@ y)
 
 
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

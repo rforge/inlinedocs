@@ -888,12 +888,13 @@ apply.parsers <- function
   docs <- list()
 
   ## apply parsers in sequence to code and objs
+  if(verbose)cat("Applying parsers:\n")
   for(i in seq_along(parsers)){
     N <- names(parsers[i])
     if(verbose){
       if(is.character(N) && N!=""){
-        cat(N," ",sep="")
-      }else cat('. ')
+        cat(N,"\n",sep="")
+      }else cat('.\n')
     }
     p <- parsers[[i]]
     ## This is the argument list that each parser receives:

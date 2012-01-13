@@ -7,11 +7,7 @@ looking at the "source" attribute. This is a Parser Function that
 can be used in the parser list of package.skeleton.dx(). TODO:
 Modularize this into separate Parsers Functions for S4 classes,
 prefixes, ##<<blocks, etc. Right now it is not very clean!}
-\usage{
-extra.code.docs(code,
-objs,
-...)
-}
+\usage{extra.code.docs(code, objs, ...)}
 \arguments{
   \item{code}{Code lines in a character vector containing multiple R objects to
 parse for documentation.}
@@ -21,7 +17,8 @@ parse for documentation.}
 
 \value{named list of lists, one for each object to document.}
 
-\author{Inlinedocs development team <inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team
+<inlinedocs-support@lists.r-forge.r-project.org>}
 
 
 

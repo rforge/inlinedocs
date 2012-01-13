@@ -8,6 +8,14 @@ doclist checks.
 
 Rd generation for attrSetter<- functions?
 
+== 1.9 13 Jan 2012
+
+Changes from Markus Muller, excludePattern argument to package.skeleton.dx
+
+Suggestion from Mark Thyer to not put a return after EVERY comma in
+the usage section. Instead, we parse the expression and use format to
+add line breaks.
+
 == 1.8, 21 Oct 2011
 
 Remove inlinedocExample<- since this was deprecated and now giving a
