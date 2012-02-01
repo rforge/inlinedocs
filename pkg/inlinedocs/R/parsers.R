@@ -847,6 +847,10 @@ extract.docs.setClass <- function # S4 class inline documentation
   invisible(docs)
 }
 
+pr=function(string,env)
+{
+    cat(string,"=",eval(as.symbol(string),envir=env),"\n")
+}
 apply.parsers <- function
 ### Parse code to r objs, then run all the parsers and return the
 ### documentation list.
@@ -874,14 +878,7 @@ apply.parsers <- function
   ## package when we try to process S4 classes defined in code
   e$.packageName <- "inlinedocs.processor"
   for (i in exprs){
-    ## TDH 2011-04-07 Disable this tryCatch since it makes it harder
-    ##to debug errors/warnings in the evaluated code
-
-    ##tryCatch({
       eval(i, e)
-    ##},error=function(e){
-      ##print(e)
-    ##})
   }
   objs <- sapply(ls(e),get,e,simplify=FALSE)
 
@@ -899,6 +896,7 @@ apply.parsers <- function
     p <- parsers[[i]]
     ## This is the argument list that each parser receives:
     L <- p(code=code,objs=objs,docs=docs,env=e,...)
+    #print(paste(L,"\n"))
     docs <- combine(docs,L)
   }
   ## post-process to collapse all character vectors
@@ -907,9 +905,9 @@ apply.parsers <- function
       if(names(docs[[i]])[j]!=".s3method")
       docs[[i]][[j]] <- paste(docs[[i]][[j]],collapse="\n")
     }
-  }
+ }
   if(verbose)cat("\n")
-  docs
+  return(docs)
 ### A list of extracted documentation from code.
 }
 
