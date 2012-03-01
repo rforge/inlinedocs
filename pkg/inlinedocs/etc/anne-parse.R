@@ -32,4 +32,9 @@ anne.setMethod <- function(code,...){
 
 custom.parsers <- list(anne.setMethod=anne.setMethod)
 
+## we assume anne.R is in the current directory, with some setMethod
+## definitions.
 extract.docs.file("anne.R",custom.parsers)
+
+# then run inlinedocs on your package like this
+package.skeleton.dx("annepkg",c(custom.parsers,default.parsers))
