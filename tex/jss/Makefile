@@ -1,9 +1,9 @@
-inlinedocs.pdf: inlinedocs.tex refs.bib
+inlinedocs.pdf: inlinedocs.tex refs.bib 
 	pdflatex inlinedocs.tex
 	bibtex inlinedocs
 	pdflatex inlinedocs.tex
 	pdflatex inlinedocs.tex
-inlinedocs.tex: inlinedocs.Rnw doclist.R
+inlinedocs.tex: inlinedocs.Rnw doclist.R apply.R
 	PATH=~/bin:$(PATH) R CMD Sweave inlinedocs.Rnw
 	sed -i 's/>>>//' inlinedocs.tex
 check: inlinedocs.Rnw check.R

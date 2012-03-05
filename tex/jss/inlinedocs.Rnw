@@ -36,6 +36,60 @@
   parsing these comments, which allows the syntax to be easily
   augmented.}
 
+%TODO: points to address from reviewers before resubmission:
+
+% Issue from reviewer 2: how to incorporate into R toolchain? Do .Rd
+% files become "object files?" Can plain .Rd and inlinedocs be mixed?
+% Response: currently inlinedocs will only generate .Rd for files for
+% which there are entries in the outer documentation list, so you can
+% mix plain .Rd files and inlinedocs in the same package. However
+% package authors with existing .Rd files will have to convert to
+% inlinedocs manually. For the future, it may be useful to create a
+% .Rd + .R -> inlinedocs conversion tool, by leveraging
+% parse_Rd(). Edit: add a Parser Functions generator to the inlinedocs
+% package, i.e. not.inline("file") that will delete the item named
+% "file" from the Documentation List so that file.Rd will not be
+% generated or overwritten. Then add this info to section
+% "package.skeleton.dx() for generating Rd files" and the future work
+% on a converter to the discussion/conclusions.
+
+% Issue: Can inlinedocs generate an Rd file that documents multiple
+% objects? Response: no, but you can write these .Rd files by hand if
+% you like. Edit: add to the section "package.skeleton.dx() for
+% generating Rd files."
+
+% Issue: debugging code with lots of inlinedocs and examples in an
+% attribute. Response: this is the design choice of inlinedocs, and
+% can be seen as a bug (too much documentation in the function
+% definition) or a feature (documentation inside to the function
+% definition for quick reference). In any case, if you want to
+% document elsewhere you can always write another Parser Function that
+% does what you wish. Edit: add a paragraph to the
+% discussion/conclusion.
+
+% Issue from reviewer 2: need to compare with tools from other
+% languages. Response: we know of other systems i.e. javadoc, but
+% emphasize that we introduce (1) no duplication and (2) proximity to
+% the code. Edit: add a paragraph to the introduction.
+
+% Issue from reviewer 1 comment 1: show documentation of a larger
+% function in the article, with its generated Rd? Response: OK, but I
+% can't seem to find a base function whose definition and
+% documentation would fit on 1 page. Instead perhaps we can just
+% include the source to apply.parsers() which would also serve to
+% further show how the Parser Functions work?? Edit: add a
+% subsection/page to section 2.
+
+% Issue from reviewer 2: why not sweave? Response: because we need a
+% parser and sweave is not the best tool for this. Edit: add 1
+% sentence in the introduction.
+
+% Issue: can no longer use "source" attribute in R-2.14. Response: we
+% use "srcref" instead in R-2.14. Edit: change the sentence that
+% discusses the "source" attribute.
+
+
+
 \Keywords{\proglang{R}, Rd, documentation, documentation generation,
   literate programming}
 
@@ -488,9 +542,12 @@ cat(paste(readLines("doclist.R"), collapse = "\n"))
   Documentation List\hrulefill
 \begin{scriptsize}
 <<echo=FALSE,result=TRUE>>=
-dl <- extract.docs.file("doclist.R")
-show <- lapply(dl, function (L) L[!names(L) %in% c("definition", "format")])
-str(show)
+show.docs <- function(filename){
+  dl <- extract.docs.file(filename)
+  show <- lapply(dl, function (L) L[!names(L) %in% c("definition", "format")])
+  str(show)
+}
+show.docs("doclist.R")
 @
 \end{scriptsize}
 \end{minipage}
@@ -621,6 +678,30 @@ Furthermore, this design choice allows the
 Function. Currently, there are no extensions that take advantage of
 this feature of \inlinedocs, but it serves to streamline development of
 the internal \inlinedocs\ Parser Functions.
+
+\newpage
+\section[A base R function converted to inlinedocs: apply]
+{A base R function converted to inlinedocs: \texttt{apply}}
+
+In this section, we show a concrete application of inlinedocs by
+converting the source and documentation of the base function
+\texttt{apply} to inlinedocs.
+
+\begin{small}
+<<echo=FALSE>>=
+cat(paste(readLines("apply.R"),collapse="\n"))
+@ 
+\end{small}
+
+The intermediate Documentation List representation is shown below.
+
+\begin{small}
+<<echo=FALSE,result=TRUE>>=
+show.docs("apply.R")
+@
+\end{small}
+
+Finally, we show the generated Rd below.
 
 \section{Conclusions and future work}
 \label{conclusions}
