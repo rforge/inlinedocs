@@ -554,7 +554,7 @@ show.docs <- function(filename){
   str(show)
   show
 }
-show.docs("doclist.R")
+dontprint <- show.docs("doclist.R")
 @
 \end{scriptsize}
 \end{minipage}
@@ -699,7 +699,6 @@ converting the source and documentation of the base function
 \begin{small}
 <<echo=FALSE>>=
 cat(paste(readLines("R/apply.R"),collapse="\n"))
-package.skeleton.dx(".")
 @ 
 \end{small}
 
@@ -708,7 +707,7 @@ package.skeleton.dx(".")
 
 \begin{small}
 <<echo=FALSE,result=TRUE>>=
-show.docs("R/apply.R")
+dontprint <- show.docs("R/apply.R")
 @
 \end{small}
 

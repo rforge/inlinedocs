@@ -1,0 +1,8 @@
+Package: apply
+Maintainer: Toby Dylan Hocking <toby.hocking@inria.fr>
+Author: Toby Dylan Hocking
+Version: 1.0
+License: GPL-3
+Title: inlinedocs apply function
+Description: To demonstrate a concrete application of inlinedocs,
+ we converted the base R source and Rd documentation of the apply function.

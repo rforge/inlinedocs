@@ -2,7 +2,7 @@ apply <- structure(function # Apply Functions Over Array Margins
 ### Returns a vector or array or list of values obtained by applying a
 ### function to margins of an array or matrix.
 (X, ##<< an array, including a matrix.
- MARGIN, 
+ MARGIN,
 ### a vector giving the subscripts which the function will be applied
 ### over. E.g., for a matrix \code{1} indicates rows, \code{2}
 ### indicates columns, \code{c(1, 2)} indicates rows and
