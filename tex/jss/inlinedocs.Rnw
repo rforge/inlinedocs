@@ -36,17 +36,18 @@
   parsing these comments, which allows the syntax to be easily
   augmented.}
 
-%TODO: points to address from reviewers before resubmission:
+% TODO: points to address from reviewers before resubmission. [who]
+% IssueN, from reviewer i, comment j: ... Reponse: ... Edit: ...
 
-% Issue from reviewer 2: how to incorporate into R toolchain? Do .Rd
-% files become "object files?" Response: package.skeleton.dx() should
-% be run before a package is built, and the generated .Rd files should
-% not be edited. Edit: emphasize that package.skeleton.dx()
+% [??] Issue1, from reviewer 2: how to incorporate into R toolchain?
+% Do .Rd files become "object files?" Response: package.skeleton.dx()
+% should be run before a package is built, and the generated .Rd files
+% should not be edited. Edit: emphasize that package.skeleton.dx()
 % creates/overwrites .Rd files that should not be edited in section
 % "package.skeleton.dx() for generating Rd files."
 
-% Issue from reviewer 1 comment 3: can plain .Rd and inlinedocs be
-% mixed?  Response: currently inlinedocs will only generate .Rd for
+% [TDH] Issue2 from reviewer 1 comment 3: can plain .Rd and inlinedocs
+% be mixed?  Response: currently inlinedocs will only generate .Rd for
 % files for which there are entries in the outer documentation list,
 % so you can mix plain .Rd files and inlinedocs in the same
 % package. However package authors with existing .Rd files will have
@@ -59,36 +60,36 @@
 % "package.skeleton.dx() for generating Rd files" and the future work
 % on a converter to the discussion/conclusions.
 
-% Issue: Can inlinedocs generate an Rd file that documents multiple
+% [??] Issue3 Can inlinedocs generate an Rd file that documents multiple
 % objects? Response: no, but you can write these .Rd files by hand if
 % you like. Edit: add to the section "package.skeleton.dx() for
 % generating Rd files."
 
-% Issue from reviewer 1 comments 4 and 6: debugging code with lots of
-% inlinedocs and examples in an attribute. Response: this is the
-% design choice of inlinedocs, and can be seen as a bug (too much
+% [??] Issue4 from reviewer 1 comments 4 and 6: debugging code with
+% lots of inlinedocs and examples in an attribute. Response: this is
+% the design choice of inlinedocs, and can be seen as a bug (too much
 % documentation in the function definition) or a feature
 % (documentation inside to the function definition for quick
 % reference). In any case, if you want to document elsewhere you can
 % always write another Parser Function that does what you wish. Edit:
 % add a paragraph to the discussion/conclusion.
 
-% Issue from reviewer 2: need to compare with tools from other
+% [TW?] Issue5 from reviewer 2: need to compare with tools from other
 % languages. Response: we know of other systems i.e. javadoc, but
 % emphasize that we introduce (1) no duplication and (2) proximity to
 % the code. Edit: add a paragraph to the introduction.
 
-% Issue from reviewer 1 comments 1-2: show documentation of a larger
+% [TDH] Issue6 from reviewer 1 comments 1-2: show documentation of a larger
 % function in the article, with its generated Rd? Response: OK, we did
 % this for the base apply function. Edit: added a 5-page section "A
 % base function converted to inlinedocs: apply." Should this be an
 % appendix?
 
-% Issue from reviewer 2: why not sweave? Response: because we need a
+% [??] Issue7 from reviewer 2: why not sweave? Response: because we need a
 % parser and sweave is not the best tool for this. Edit: add 1
 % sentence in the introduction.
 
-% Issue from reviewer 1 comment 5: can no longer use "source"
+% [??] Issue8 from reviewer 1 comment 5: can no longer use "source"
 % attribute in R-2.14. Response: we use "srcref" instead in
 % R-2.14. Edit: change the sentence that discusses the "source"
 % attribute.
