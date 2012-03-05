@@ -39,13 +39,19 @@
 %TODO: points to address from reviewers before resubmission:
 
 % Issue from reviewer 2: how to incorporate into R toolchain? Do .Rd
-% files become "object files?" Can plain .Rd and inlinedocs be mixed?
-% Response: currently inlinedocs will only generate .Rd for files for
-% which there are entries in the outer documentation list, so you can
-% mix plain .Rd files and inlinedocs in the same package. However
-% package authors with existing .Rd files will have to convert to
-% inlinedocs manually. For the future, it may be useful to create a
-% .Rd + .R -> inlinedocs conversion tool, by leveraging
+% files become "object files?" Response: package.skeleton.dx() should
+% be run before a package is built, and the generated .Rd files should
+% not be edited. Edit: emphasize that package.skeleton.dx()
+% creates/overwrites .Rd files that should not be edited in section
+% "package.skeleton.dx() for generating Rd files."
+
+% Issue from reviewer 1 comment 3: can plain .Rd and inlinedocs be
+% mixed?  Response: currently inlinedocs will only generate .Rd for
+% files for which there are entries in the outer documentation list,
+% so you can mix plain .Rd files and inlinedocs in the same
+% package. However package authors with existing .Rd files will have
+% to convert to inlinedocs manually. For the future, it may be useful
+% to create a .Rd + .R -> inlinedocs conversion tool, by leveraging
 % parse_Rd(). Edit: add a Parser Functions generator to the inlinedocs
 % package, i.e. not.inline("file") that will delete the item named
 % "file" from the Documentation List so that file.Rd will not be
@@ -58,35 +64,34 @@
 % you like. Edit: add to the section "package.skeleton.dx() for
 % generating Rd files."
 
-% Issue: debugging code with lots of inlinedocs and examples in an
-% attribute. Response: this is the design choice of inlinedocs, and
-% can be seen as a bug (too much documentation in the function
-% definition) or a feature (documentation inside to the function
-% definition for quick reference). In any case, if you want to
-% document elsewhere you can always write another Parser Function that
-% does what you wish. Edit: add a paragraph to the
-% discussion/conclusion.
+% Issue from reviewer 1 comments 4 and 6: debugging code with lots of
+% inlinedocs and examples in an attribute. Response: this is the
+% design choice of inlinedocs, and can be seen as a bug (too much
+% documentation in the function definition) or a feature
+% (documentation inside to the function definition for quick
+% reference). In any case, if you want to document elsewhere you can
+% always write another Parser Function that does what you wish. Edit:
+% add a paragraph to the discussion/conclusion.
 
 % Issue from reviewer 2: need to compare with tools from other
 % languages. Response: we know of other systems i.e. javadoc, but
 % emphasize that we introduce (1) no duplication and (2) proximity to
 % the code. Edit: add a paragraph to the introduction.
 
-% Issue from reviewer 1 comment 1: show documentation of a larger
-% function in the article, with its generated Rd? Response: OK, but I
-% can't seem to find a base function whose definition and
-% documentation would fit on 1 page. Instead perhaps we can just
-% include the source to apply.parsers() which would also serve to
-% further show how the Parser Functions work?? Edit: add a
-% subsection/page to section 2.
+% Issue from reviewer 1 comments 1-2: show documentation of a larger
+% function in the article, with its generated Rd? Response: OK, we did
+% this for the base apply function. Edit: added a 5-page section "A
+% base function converted to inlinedocs: apply." Should this be an
+% appendix?
 
 % Issue from reviewer 2: why not sweave? Response: because we need a
 % parser and sweave is not the best tool for this. Edit: add 1
 % sentence in the introduction.
 
-% Issue: can no longer use "source" attribute in R-2.14. Response: we
-% use "srcref" instead in R-2.14. Edit: change the sentence that
-% discusses the "source" attribute.
+% Issue from reviewer 1 comment 5: can no longer use "source"
+% attribute in R-2.14. Response: we use "srcref" instead in
+% R-2.14. Edit: change the sentence that discusses the "source"
+% attribute.
 
 
 
@@ -546,6 +551,7 @@ show.docs <- function(filename){
   dl <- extract.docs.file(filename)
   show <- lapply(dl, function (L) L[!names(L) %in% c("definition", "format")])
   str(show)
+  show
 }
 show.docs("doclist.R")
 @
@@ -687,22 +693,35 @@ In this section, we show a concrete application of inlinedocs by
 converting the source and documentation of the base function
 \texttt{apply} to inlinedocs.
 
+\subsection{Source and inline documentation}
+
 \begin{small}
 <<echo=FALSE>>=
-cat(paste(readLines("apply.R"),collapse="\n"))
+cat(paste(readLines("R/apply.R"),collapse="\n"))
+package.skeleton.dx(".")
 @ 
 \end{small}
 
-The intermediate Documentation List representation is shown below.
+\newpage
+\subsection{Documentation list}
 
 \begin{small}
 <<echo=FALSE,result=TRUE>>=
-show.docs("apply.R")
+show.docs("R/apply.R")
 @
 \end{small}
 
-Finally, we show the generated Rd below.
+\newpage
+\subsection{Generated Rd}
+TODO: ``in the case of functions like , , etc.'' should be functions
+\verb-+-, \verb+%*%+
+\begin{small}
+<<echo=FALSE,result=TRUE>>=
+cat(paste(readLines("man/apply.Rd"),collapse="\n"))
+@
+\end{small}
 
+\newpage
 \section{Conclusions and future work}
 \label{conclusions}
 

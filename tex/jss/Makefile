@@ -3,7 +3,7 @@ inlinedocs.pdf: inlinedocs.tex refs.bib
 	bibtex inlinedocs
 	pdflatex inlinedocs.tex
 	pdflatex inlinedocs.tex
-inlinedocs.tex: inlinedocs.Rnw doclist.R apply.R
+inlinedocs.tex: inlinedocs.Rnw doclist.R R/apply.R
 	PATH=~/bin:$(PATH) R CMD Sweave inlinedocs.Rnw
 	sed -i 's/>>>//' inlinedocs.tex
 check: inlinedocs.Rnw check.R

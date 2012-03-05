@@ -17,16 +17,16 @@ apply <- structure(function # Apply Functions Over Array Margins
   ##keyword<< iteration array
   
   ##details<< \code{FUN} is found by a call to \code{\link{match.fun}}
-  ##and typically is either a function or a symbol (e.g. a backquoted
-  ##name) or a character string specifying a function to be searched
-  ##for from the environment of the call to \code{apply}.
+  ## and typically is either a function or a symbol (e.g. a backquoted
+  ## name) or a character string specifying a function to be searched
+  ## for from the environment of the call to \code{apply}.
   FUN <- match.fun(FUN)
 
-  ##details<< Ensure that X is an array object. If \code{X} is not
-  ## an array but an object of a class with a non-null
-  ## \code{\link{dim}} value (such as a data frame), \code{apply}
-  ## attempts to coerce it to an array via \code{as.matrix} if it is
-  ## two-dimensional (e.g., a data frame) or via \code{as.array}.
+  ##details<< If \code{X} is not an array but an object of a class
+  ## with a non-null \code{\link{dim}} value (such as a data frame),
+  ## \code{apply} attempts to coerce it to an array via
+  ## \code{as.matrix} if it is two-dimensional (e.g., a data frame) or
+  ## via \code{as.array}.
   dl <- length(dim(X))
   if(!dl) stop("dim(X) must have a positive length")
   if(is.object(X))
