@@ -847,10 +847,6 @@ extract.docs.setClass <- function # S4 class inline documentation
   invisible(docs)
 }
 
-pr=function(string,env)
-{
-    cat(string,"=",eval(as.symbol(string),envir=env),"\n")
-}
 apply.parsers <- function
 ### Parse code to r objs, then run all the parsers and return the
 ### documentation list.
