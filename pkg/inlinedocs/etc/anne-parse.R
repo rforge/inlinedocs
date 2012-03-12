@@ -37,4 +37,4 @@ custom.parsers <- list(anne.setMethod=anne.setMethod)
 extract.docs.file("anne.R",custom.parsers)
 
 # then run inlinedocs on your package like this
-package.skeleton.dx("annepkg",c(custom.parsers,default.parsers))
+package.skeleton.dx("annepkg",c(custom.parsers))

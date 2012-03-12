@@ -1,10 +1,19 @@
-### Necessary fields in DESCRIPTION, otherwise error.
-fields <- c("Package","Maintainer","Author","Version",
-            "License","Title","Description")
+### Default values and required fields in DESCRIPTION file.
+description.defaults <-
+  c("Package"="",
+    "Maintainer"=Sys.getenv("USER"),
+    "Author"=Sys.getenv("USER"),
+    "Version"="1.0",
+    "License"="GPL-3",
+    "Title"="a package",
+    "Description"="a package that does\n many things.")
 
-### Default DESCRIPTION, written if it doesn't exist.  TODO, PhG:
-### start with reasonable values here!
-empty.description <- matrix("",ncol=length(fields),dimnames=list(NULL,fields))
+### Necessary fields in DESCRIPTION, otherwise error.
+fields <- names(description.defaults)
+
+### Default DESCRIPTION, written if it doesn't exist.
+empty.description <-
+  matrix(description.defaults,ncol=length(fields),dimnames=list(NULL,fields))
 
 package.skeleton.dx <- structure(function # Package skeleton deluxe
 ### Generates Rd files for a package based on R code and DESCRIPTION

@@ -8,7 +8,9 @@ doclist checks.
 
 Rd generation for attrSetter<- functions?
 
-== 1.9 13 Jan 2012
+== 1.9 13 Jan 2012 ->
+
+defaults for DESCRIPTION entries.
 
 Changes from Markus Muller, excludePattern argument to package.skeleton.dx
 
