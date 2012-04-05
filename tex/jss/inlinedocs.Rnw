@@ -659,6 +659,13 @@ Thus, when using a Parser Function such as
 \code{title.from.firstline}, in addition to the arguments in
 \autoref{args} that are passed to every Parser Function.
 
+This design choice of \inlinedocs\ allows the development of modular
+Parser Functions. For example, there is one Parser Function for
+\verb+###+ comments, another for \verb+##<<+ comments, another for
+adding the \code{author} tag using the Author line of the
+DESCRIPTION file, etc. Each of these Parser Functions is relatively
+small and thus easy to maintain.
+
 \begin{table}
 \begin{center}
 \begin{tabular}{ll}
@@ -675,24 +682,42 @@ Thus, when using a Parser Function such as
   when used with \code{forall} or \code{forfun}.}
 \end{table}
 
-The \code{parsers} argument to \code{package.skeleton.dx()} allows
-control of the list of Parser Functions used to create the
-Documentation List for the package. The Parser Functions will be
-called in sequence, and their results will be combined to form the
-final Documentation List that will be used to write Rd files.
+\newpage
+\subsection{Extending the syntax with custom Parser Functions}
 
-This design choice of \inlinedocs\ allows the development of modular
-Parser Functions. For example, there is one Parser Function for
-\verb+###+ comments, another for \verb+##<<+ comments, another for
-adding the \code{author} tag using the Maintainer line of the
-DESCRIPTION file, etc. Each of these Parser Functions is relatively
-small and thus easy to maintain.
+The \code{parsers} argument to \code{package.skeleton.dx()} specifies
+the list of Parser Functions used to create the Documentation
+List. The Parser Functions will be called in sequence, and their
+results will be combined to form the final Documentation List that
+will be used to write Rd files.  Thus, the \inlinedocs\ syntax can be
+extended by simply writing new Parser Functions. To illustrate how
+\inlinedocs\ may be extended using this mechanism, consider this
+Parser Function, which extracts documentation from single-\code{\#}
+comments:
 
-Furthermore, this design choice allows the
-\inlinedocs\ syntax the be extended by simply writing a new Parser
-Function. Currently, there are no extensions that take advantage of
-this feature of \inlinedocs, but it serves to streamline development of
-the internal \inlinedocs\ Parser Functions.
+<<echo=FALSE>>=
+cat(paste(readLines("alternate.R"), collapse = "\n"))
+source("alternate.R")
+@
+
+We can then define a list of custom Parser Functions as follows:
+
+<<>>=
+my.parsers <- list(forfun(title.from.firstline),forfun(simple))
+@ 
+
+These custom Parser Functions can be used to extract the following
+Documentation List from the definition above of \code{simple}:
+
+<<echo=FALSE>>=
+docs <- extract.docs.file("alternate.R",my.parsers)
+str(docs)
+@
+
+In conclusion, a new syntax for inline documentation can be quickly
+specified using Parser Functions, and then \inlinedocs\ takes care of
+the details of converting the Documentation List to Rd
+files.
 
 \newpage
 \section[A base R function converted to inlinedocs: apply]
