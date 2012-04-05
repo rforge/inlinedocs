@@ -42,9 +42,10 @@
 % [TDH] Issue1, from reviewer 2: how to incorporate into R toolchain?
 % Do .Rd files become "object files?" Response: package.skeleton.dx()
 % should be run before a package is built, and the generated .Rd files
-% should not be edited. Edit: emphasize that package.skeleton.dx()
-% creates/overwrites .Rd files that should not be edited in section
-% "package.skeleton.dx() for generating Rd files."
+% should not be edited. We added a sentence that emphasize that
+% package.skeleton.dx() creates/overwrites .Rd files that should not
+% be edited in section 2.5 "package.skeleton.dx() for generating Rd
+% files."
 
 % [TDH] Issue2 from reviewer 1 comment 3: can plain .Rd and inlinedocs
 % be mixed?  Response: Yes, we have added a paragraph to section 2.5
@@ -80,11 +81,9 @@
 % parser and sweave is not the best tool for this. Edit: add 1
 % sentence in the introduction.
 
-% [??] Issue8 from reviewer 1 comment 5: can no longer use "source"
-% attribute in R-2.14. Response: we use "srcref" instead in
-% R-2.14. Edit: change the sentence that discusses the "source"
-% attribute.
-
+% [TDH] Issue8 from reviewer 1 comment 5: can no longer use "source"
+% attribute in R-2.14. Response: we corrected this in the package, and
+% deleted the reference to the "source" attribute in Table 2.
 
 
 \Keywords{\proglang{R}, Rd, documentation, documentation generation,
@@ -671,9 +670,9 @@ small and thus easy to maintain.
 \begin{tabular}{ll}
   Argument & Description \\
   \hline
-  \code{o} & The \R\  object.\\
+  \code{o} & The \R\ object.\\
   \code{name} & The name of the object.\\
-  \code{src} & The \code{"source"} attribute of the object.\\
+  \code{src} & The source code lines that define the object.\\
   \code{doc} & The inner Documentation List
   already constructed for this object.
 \end{tabular}
