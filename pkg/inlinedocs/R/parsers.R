@@ -1,3 +1,21 @@
+do.not.generate <- function
+### Make a Parser Function used to indicate that certain Rd files
+### should not be generated.
+(...
+### Character strings indicating Rd files without the .Rd suffix.
+ ){
+  filenames <- c(...)
+  function(docs,...){
+    for(fn in filenames){
+      docs[[fn]] <- list()
+    }
+    docs$.overwrite <- TRUE
+    docs
+  }
+### A Parser Function that will delete items from the outer
+### Documentation List.
+}
+
 ### combine lists or character strings
 combine <- function(x,y)UseMethod("combine")
 
@@ -893,6 +911,7 @@ apply.parsers <- function
     ## This is the argument list that each parser receives:
     L <- p(code=code,objs=objs,docs=docs,env=e,...)
     #print(paste(L,"\n"))
+    #if(N=="exclude")browser()
     docs <- combine(docs,L)
   }
   ## post-process to collapse all character vectors

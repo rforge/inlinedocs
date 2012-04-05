@@ -8,7 +8,11 @@ doclist checks.
 
 Rd generation for attrSetter<- functions?
 
-== 1.9 13 Jan 2012 ->
+== 1.9 13 Jan 2012 -> 5 April 2012
+
+do.not.generate("rd1","rd2") returns a Parser Function which will
+cause rd1.Rd and rd2.Rd to not be generated, so you can write these Rd
+files by hand.
 
 defaults for DESCRIPTION entries.
 
