@@ -64,7 +64,7 @@
 % (documentation inside to the function definition for quick
 % reference). We added a paragraph in the discussion section.
 
-% [TW?] Issue5 from reviewer 2: need to compare with tools from other
+% [TDH] Issue5 from reviewer 2: need to compare with tools from other
 % languages. Response: we know of other systems i.e. javadoc, but
 % emphasize that we introduce (1) no duplication and (2) proximity to
 % the code. Edit: add a paragraph to the introduction.
@@ -224,6 +224,14 @@ documentation, but they have three major drawbacks:
   separation of code and documentation that these tools are supposed
   to eliminate.
 \end{enumerate}
+
+There are many tools that accomplish documentation alongside code in
+other programming languages. Notable examples include docstrings in
+Lisp and Python, Javadoc for Java, and Doxygen, which supports several
+languages (TODO: REFERENCES). These systems use large comments in
+headers, whereas \inlinedocs\ uses smaller comments alongside the
+code, and exploits the code structure to reduce the need to repeat
+information in the documentation.
 
 \subsection{Documentation using inline comments}
 
