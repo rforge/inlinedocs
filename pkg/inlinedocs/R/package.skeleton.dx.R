@@ -161,7 +161,7 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   ## Make package skeleton and edit Rd files (eventually just don't
   ## use package.skeleton at all?)
   name <- desc[,"Package"]
-  unlink(name,rec=TRUE)
+  unlink(name,recursive=TRUE)
   package.skeleton(name,code_files=code_files)
 
 #  # PhG: one must consider a potential Encoding field in DESCRIPTION file!
@@ -181,7 +181,7 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
     warning("duplicated file names in docs: ",paste(names(docs)[dup.names]))
   }
   for(N in unique(names(docs))) modify.Rd.file(N,name,docs)
-  file.copy(file.path(name,'man'),"..",rec=TRUE)
+  file.copy(file.path(name,'man'),"..",recursive=TRUE)
   # PhG: copy NAMESPACE file back
   if (isTRUE(namespace)) {
     # PhG: package.skeleton() does not add import() statement, but here the
@@ -205,7 +205,7 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
     }
   }
   
-  unlink(name,rec=TRUE)
+  unlink(name,recursive=TRUE)
 },ex=function(){
   library(inlinedocs)
 
