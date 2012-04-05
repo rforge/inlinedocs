@@ -47,23 +47,14 @@
 % "package.skeleton.dx() for generating Rd files."
 
 % [TDH] Issue2 from reviewer 1 comment 3: can plain .Rd and inlinedocs
-% be mixed?  Response: currently inlinedocs will only generate .Rd for
-% files for which there are entries in the outer documentation list,
-% so you can mix plain .Rd files and inlinedocs in the same
-% package. However package authors with existing .Rd files will have
-% to convert to inlinedocs manually. For the future, it may be useful
-% to create a .Rd + .R -> inlinedocs conversion tool, by leveraging
-% parse_Rd(). Edit: add a Parser Functions generator to the inlinedocs
-% package, i.e. not.inline("file") that will delete the item named
-% "file" from the Documentation List so that file.Rd will not be
-% generated or overwritten. Then add this info to section
-% "package.skeleton.dx() for generating Rd files" and the future work
-% on a converter to the discussion/conclusions.
+% be mixed?  Response: Yes, we have added a paragraph to section 2.5
+% that explains how, and we have added discussion of a possible future
+% conversion tool in the conclusion. 
 
-% [??] Issue3 Can inlinedocs generate an Rd file that documents multiple
-% objects? Response: no, but you can write these .Rd files by hand if
-% you like. Edit: add to the section "package.skeleton.dx() for
-% generating Rd files."
+% [TDH] Issue3 Can inlinedocs generate an Rd file that documents
+% multiple objects? Response: no, but you can write these .Rd files by
+% hand if you like. We have added a sentence that explains this in
+% section 2.5 "package.skeleton.dx() for generating Rd files."
 
 % [??] Issue4 from reviewer 1 comments 4 and 6: debugging code with
 % lots of inlinedocs and examples in an attribute. Response: this is
@@ -511,6 +502,23 @@ in the \R\ code. After running \code{package.skeleton.dx()}, the
 package documentation will be up to date with the code, and the
 package should pass \code{R CMD check} without errors or warnings.
 
+Package authors with existing .Rd files will have to convert them to
+inlinedocs comments manually. However, for new adopters of inlinedocs,
+it is possible to mix plain .Rd files and inlinedocs in the same
+package. By default inlinedocs will overwrite .Rd files for all
+objects in the package, but you can specify the static Rd files that
+will not be generated:
+\begin{Schunk}
+\begin{Sinput}
+  my.parsers <- c(default.parsers,list(do.not.generate("file1","file2")))
+  package.skeleton.dx(parsers=my.parsers)
+\end{Sinput}
+\end{Schunk}
+
+It is currently impossible to generate Rd files that document multiple
+objects using inlinedocs, but package authors may write these Rd files
+manually using this mechanism.
+
 \newpage
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
@@ -763,8 +771,13 @@ for S4 methods and reference classes.
 % otherwise into \verb+myFun-methods.Rd+.
 
 For the future, we would like to make use of Rd manipulation tools
-such as \code{parse_Rd()}, as described by \cite{parseRd}. In
-particular, it would be advantageous to have functions for converting
+such as \code{parse\_Rd()}, as described by \cite{parseRd}. For
+package authors who want to convert Rd files to inlinedocs comments,
+we may be able to use \code{parse\_Rd()} to develop a converter that
+takes .R source code and .Rd documentation, then outputs .R code with
+inlinedocs.
+
+Also, it would be advantageous to have functions for converting
 Documentation Lists to and from \code{"Rd"} objects. For example,
 after converting an inner Documentation List to an \code{"Rd"} object,
 we could use the \code{print.Rd()} function to write the Rd file. This
