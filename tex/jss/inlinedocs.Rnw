@@ -57,14 +57,12 @@
 % hand if you like. We have added a sentence that explains this in
 % section 2.5 "package.skeleton.dx() for generating Rd files."
 
-% [??] Issue4 from reviewer 1 comments 4 and 6: debugging code with
+% [TDH] Issue4 from reviewer 1 comments 4 and 6: debugging code with
 % lots of inlinedocs and examples in an attribute. Response: this is
 % the design choice of inlinedocs, and can be seen as a bug (too much
 % documentation in the function definition) or a feature
 % (documentation inside to the function definition for quick
-% reference). In any case, if you want to document elsewhere you can
-% always write another Parser Function that does what you wish. Edit:
-% add a paragraph to the discussion/conclusion.
+% reference). We added a paragraph in the discussion section.
 
 % [TW?] Issue5 from reviewer 2: need to compare with tools from other
 % languages. Response: we know of other systems i.e. javadoc, but
@@ -77,13 +75,14 @@
 % base function converted to inlinedocs: apply." Should this be an
 % appendix?
 
-% [??] Issue7 from reviewer 2: why not sweave? Response: because we need a
+% [TDH] Issue7 from reviewer 2: why not sweave? Response: because we need a
 % parser and sweave is not the best tool for this. Edit: add 1
 % sentence in the introduction.
 
 % [TDH] Issue8 from reviewer 1 comment 5: can no longer use "source"
 % attribute in R-2.14. Response: we corrected this in the package, and
-% deleted the reference to the "source" attribute in Table 2.
+% deleted the references to the "source" attribute in Table 2 and the
+% discussion.
 
 
 \Keywords{\proglang{R}, Rd, documentation, documentation generation,
@@ -185,11 +184,12 @@ the introduction of a new package like \inlinedocs.
 For report generation and literate programming, the mature Sweave
 \citep{sweave} format
 % , also included in the default installation of \R,
-allows
-integration of \R\ code and results within \pkg{\LaTeX}\ documents
-\citep{latex}. However, the goal of \inlinedocs\ is different. It aims
-for integration of Rd documentation inside of \R\ code files, for
-documentation generation using \R\ code and markup in \R\ comments.
+allows integration of \R\ code and results within \pkg{\LaTeX}\
+documents \citep{latex}. However, the goal of \inlinedocs\ is
+different. It aims for integration of Rd documentation inside of \R\
+code files, for documentation generation using \R\ code and markup in
+\R\ comments. The Sweave format and function can not be easily applied
+to this parsing task.
 
 The \code{package.skeleton()} function that ships with base \R\ is
 intended to ease the generation of Rd files from \R\ code
@@ -240,7 +240,8 @@ syntax for writing documentation in \R\ comments. In
 Section~\ref{extensible}, we discuss the design and implementation of
 \inlinedocs, and explain how the syntax can be extended. In
 Section~\ref{conclusions}, we conclude and offer some ideas for future
-improvements.
+improvements.  Finally, in Appendix~\ref{apply}, we show a concrete
+application by porting the base \code{apply} function to \inlinedocs.
 
 \newpage
 \section[The inlinedocs syntax for inline documentation of R packages]{The
@@ -518,6 +519,11 @@ Currently, \inlinedocs\ is incapable of generating Rd files that
 document multiple objects, but package authors may write these Rd
 files manually using this mechanism.
 
+More generally, the \code{parsers} argument to
+\code{package.skeleton.dx} should be a list of Parser Functions. In
+Section~\ref{parser-functions}, we explain how to write
+Parser Functions.
+
 \newpage
 \section[The inlinedocs system of extensible documentation
 generators]{The \inlinedocs\ system of extensible documentation
@@ -593,7 +599,7 @@ write, and modify.
 
 \subsection[Structure of a Parser Function and forall/forfun]{Structure of a
   Parser Function and \code{forall()}/\code{forfun()}}
-
+\label{parser-functions}
 The job of a Parser Function is to return a Documentation List for a
 package. To do this, a Parser Function requires knowledge of what is
 defined in the package, so the arguments in \autoref{args} are
@@ -742,16 +748,22 @@ Documentation Lists, which assure that Parser Functions work as
 described. We also have unit tests which ensure that the generated Rd
 passes \code{R CMD check} without errors or warnings.
 
-Currently, the \inlinedocs\ package relies on the \code{source}
-attribute of a function to access its documentation, but that
-mechanism does not work for S4 methods. Instead, we currently
-use \code{parse()} on the source files to access S4 class definitions,
-and we
+A potential criticism of \inlinedocs\ is that excessive inline
+comments may obscure the meaning of code. Indeed, this is a design
+choice, and can be seen as a bug, but we prefer to see it as a
+feature: the documentation is always near the object definition, for
+quick reference. 
+
+Currently, the \inlinedocs\ package relies on the \code{srcref}
+attribute of a function to access its definition, but that mechanism
+does not work for S4 methods. Instead, we use \code{parse()}
+on the source files to access S4 class definitions. 
 % (via \verb+setClass+) and S3 class and method definitions using the
 % \verb+R.oo+ \verb+setConstructorS3+ and \verb+setMethodS3+
 % approach);
-intend to extend that in order to be able to generate documentation
-for S4 methods and reference classes.
+In the future, we would like to develop Parser Functions that use
+this approach to extract documentation for S4 methods and reference
+classes, which are currently unsupported in \inlinedocs.
 %(as well as the new \verb+setRefClass+ and \verb+$methods+ route
 %for attaching methods to such classes)
 % There is a further uncertainty whether to document the \verb+myFun+
@@ -771,20 +783,20 @@ takes .R source code and .Rd documentation, then outputs .R code with
 inlinedocs.
 
 Also, it would be advantageous to have functions for converting
-Documentation Lists to and from \code{"Rd"} objects. For example,
-after converting an inner Documentation List to an \code{"Rd"} object,
+Documentation Lists to and from \code{Rd} objects. For example,
+after converting an inner Documentation List to an \code{Rd} object,
 we could use the \code{print.Rd()} function to write the Rd file. This
 could be simpler than the current system of starting from the Rd files
 from \code{package.skeleton()} and then doing find and
-replace. Furthermore, a converter from \code{"Rd"} objects to
+replace. Furthermore, a converter from \code{Rd} objects to
 Documentation Lists would permit unit tests for the content of the Rd
 generated by \inlinedocs.
 
 \newpage
 \appendix
-
 \section[The base function apply converted to inlinedocs]
 {The base function \code{apply} converted to \inlinedocs}
+\label{apply}
 
 In this section, we show a concrete application by converting the
 source and documentation of the base function \code{apply} to
