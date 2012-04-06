@@ -10,6 +10,15 @@ Rd generation for attrSetter<- functions?
 
 == 1.9 13 Jan 2012 -> 5 April 2012
 
+Added inst/silly/NAMESPACE to avoid warnings on package check, and
+copy this over to all the mini test packages that are created for each
+of the inst/testfiles.
+
+Use \s space instead of \W in regexp for "delete empty sections to
+suppress warnings in R CMD check." This was causing a bug for
+i.e. \code{+} and \code{%*%} in the doc for the FUN argument of the
+apply function.
+
 do.not.generate("rd1","rd2") returns a Parser Function which will
 cause rd1.Rd and rd2.Rd to not be generated, so you can write these Rd
 files by hand.
