@@ -230,10 +230,11 @@ There are many tools that accomplish documentation alongside code in
 other programming languages. Notable examples include docstrings in
 \proglang{Lisp} and \proglang{Python}, \pkg{Javadoc} for
 \proglang{Java}, and \pkg{Doxygen}, which supports several languages
-\citep{wikipedia}. These systems use large comments in headers,
-whereas \inlinedocs\ uses smaller comments alongside the code, and
-exploits the code structure to reduce the need to repeat information
-in the documentation.
+\citep{wikipedia}. These systems use large comments in headers, and
+do not support \R.  In contrast, \inlinedocs\ is
+designed for \R\ packages, uses smaller comments alongside the code,
+and exploits the code structure to reduce the need to repeat
+information in the documentation.
 
 \subsection{Documentation using inline comments}
 
