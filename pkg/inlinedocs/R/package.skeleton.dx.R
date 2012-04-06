@@ -461,7 +461,7 @@ modify.Rd.file <- function
   }
 
   ## delete empty sections to suppress warnings in R CMD check
-  txt <- gsub("\\\\[a-z]+[{]\\W*[}]","",txt)
+  txt <- gsub("\\\\[a-z]+[{]\\s*[}]","",txt)
   if ( !is.null(d$.s3method) ){
     ## and now remove the xx inserted above to prevent \method{[[}{...} falling
     ## foul of the above replacement!
