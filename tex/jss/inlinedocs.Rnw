@@ -186,16 +186,17 @@ For report generation and literate programming, the mature Sweave
 % , also included in the default installation of \R,
 allows integration of \R\ code and results within \pkg{\LaTeX}\
 documents \citep{latex}. However, the goal of \inlinedocs\ is
-different. It aims for integration of Rd documentation inside of \R\
-code files, for documentation generation using \R\ code and markup in
-\R\ comments. The Sweave format and function can not be easily applied
-to this parsing task.
+different. It aims for integration of documentation inside of \R\ code
+files, to generate Rd documentation files using \R\ code and markup in
+\R\ comments. Thus for \inlinedocs\ we need to extract the
+documentation specified in \R\ code, and the Sweave format and function
+can not be easily applied to this parsing task.
 
 The \code{package.skeleton()} function that ships with base \R\ is
 intended to ease the generation of Rd files from \R\ code
 \citep{R}. After specifying some input \R\ code files or objects to
 use for the package, it produces some minimal documentation that must
-be filled in using a text editor. Although \code{package.skeleton()}
+be completed using a text editor. Although \code{package.skeleton()}
 is sufficient for creating small packages that are published once and
 forgotten, it offers little help for continued maintenance of packages
 for which Rd files are frequently updated.
@@ -227,11 +228,12 @@ documentation, but they have three major drawbacks:
 
 There are many tools that accomplish documentation alongside code in
 other programming languages. Notable examples include docstrings in
-Lisp and Python, Javadoc for Java, and Doxygen, which supports several
-languages (TODO: REFERENCES). These systems use large comments in
-headers, whereas \inlinedocs\ uses smaller comments alongside the
-code, and exploits the code structure to reduce the need to repeat
-information in the documentation.
+\proglang{Lisp} and \proglang{Python}, \pkg{Javadoc} for
+\proglang{Java}, and \pkg{Doxygen}, which supports several languages
+\citep{wikipedia}. These systems use large comments in headers,
+whereas \inlinedocs\ uses smaller comments alongside the code, and
+exploits the code structure to reduce the need to repeat information
+in the documentation.
 
 \subsection{Documentation using inline comments}
 
@@ -720,14 +722,14 @@ source("alternate.R")
 We can then define a list of custom Parser Functions as follows:
 
 <<>>=
-my.parsers <- list(forfun(title.from.firstline),forfun(simple))
+simple.parsers <- list(forfun(title.from.firstline),forfun(simple))
 @ 
 
 These custom Parser Functions can be used to extract the following
 Documentation List from the definition above of \code{simple}:
 
 <<echo=FALSE>>=
-docs <- extract.docs.file("alternate.R",my.parsers)
+docs <- extract.docs.file("alternate.R",simple.parsers)
 str(docs)
 @
 
@@ -788,7 +790,7 @@ such as \code{parse\_Rd()}, as described by \cite{parseRd}. For
 package authors who want to convert Rd files to inlinedocs comments,
 we may be able to use \code{parse\_Rd()} to develop a converter that
 takes .R source code and .Rd documentation, then outputs .R code with
-inlinedocs.
+documentation in comments.
 
 Also, it would be advantageous to have functions for converting
 Documentation Lists to and from \code{Rd} objects. For example,
@@ -810,11 +812,14 @@ In this section, we show a concrete application by converting the
 source and documentation of the base function \code{apply} to
 \inlinedocs.
 
-Note that special characters do not need to be escaped, such as
-\verb+%+ in the \code{FUN} argument.
-
 
 \subsection{Source and inline documentation}
+
+We use the following source code and comments to define the
+\code{apply} function and its documentation.
+
+Note that special characters do not need to be escaped, such as
+\verb+%+ in the \code{FUN} argument.
 
 \begin{small}
 <<echo=FALSE>>=
