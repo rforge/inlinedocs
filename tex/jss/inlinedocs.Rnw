@@ -810,6 +810,10 @@ In this section, we show a concrete application by converting the
 source and documentation of the base function \code{apply} to
 \inlinedocs.
 
+Note that special characters do not need to be escaped, such as
+\verb+%+ in the \code{FUN} argument.
+
+
 \subsection{Source and inline documentation}
 
 \begin{small}
@@ -821,6 +825,15 @@ cat(paste(readLines("R/apply.R"),collapse="\n"))
 \newpage
 \subsection{Documentation list}
 
+Running the \inlinedocs\ default Parser Functions on the source code
+results in the following Documentation List, which summarizes the
+extracted documentation.
+
+Again, note in \verb+item{FUN}+ that \verb+%+ is not escaped in the
+Documentation List. It is the job of \inlinedocs\ to convert this
+Documentation List to valid Rd, so the Parser Function programmer does
+need to worry about escaping special characters.
+
 \begin{small}
 <<echo=FALSE,result=TRUE>>=
 to.print <- get.docs("R/apply.R")
@@ -830,8 +843,10 @@ print(to.print)
 
 \newpage
 \subsection{Generated Rd}
-TODO: ``in the case of functions like , , etc.'' should be functions
-\verb-+-, \verb+%*%+
+
+The Rd produced by \inlinedocs\ is shown below. In particular, note
+that the \verb+%+ characters have been correctly escaped.
+
 \begin{small}
 <<echo=FALSE,result=TRUE>>=
 cat(paste(readLines("man/apply.Rd"),collapse="\n"))

@@ -10,7 +10,7 @@ apply <- structure(function # Apply Functions Over Array Margins
 ### vector selecting dimension names.
  FUN, 
 ### the function to be applied: see \sQuote{Details}. In the case of
-### functions like \code{+}, \code{\%*\%}, etc., the function name
+### functions like \code{+}, \code{%*%}, etc., the function name
 ### must be backquoted or quoted.
  ... ##<< optional arguments to \code{FUN}.
  ){
