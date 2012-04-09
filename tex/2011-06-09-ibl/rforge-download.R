@@ -23,7 +23,9 @@ download.project.html <- function(project){
 }
 ## extract the project registration datetime
 get.registration <- function(html){
-  parsed <- get.first(html,"Registered:&nbsp;","[^<]+")
+  parsed <- get.first(html,
+    'Registered: <span property=\"doap:created\" content=\"[-0-9]+\">',
+                      "[^<]+")
   as.POSIXct(strptime(parsed,"%Y-%m-%d %H:%M"))
 }
 ### lookup a project name from id by looking at the scm page
@@ -36,7 +38,7 @@ get.project.from.id <- function(project.id){
     close(conn)
     html
   },error=function(e)"")
-  get.first(scm.html,"svnroot/","[^<]+")
+  get.first(scm.html,"svnroot/","[^</]+")
 ### project name or "" if we couldn't do the lookup.
 }
 
