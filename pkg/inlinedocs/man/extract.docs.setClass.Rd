@@ -13,14 +13,14 @@ class definitions.}
 \details{Extraction of S4 class documentation is currently limited to expressions
 within the source code which have first line starting with
 \code{setClass("classname"}. These are located from the source file
-(allowing also for white space around the \code{setClass} and ).
+(allowing also for white space around the \code{setClass} and \code{(}).
 Note that \code{"classname"} must be a quoted character string;
 expressions returning such a string are not matched.
 
 For class definitions, the slots (elements of the
 \code{representation} list) fill the role of function
-arguments, so may be documented by  comments on
-the same line or  comments at the beginning of the
+arguments, so may be documented by \code{##<<} comments on
+the same line or \code{### } comments at the beginning of the
 following line.
 
 If there is no explicit title on the first line of setClass, then
