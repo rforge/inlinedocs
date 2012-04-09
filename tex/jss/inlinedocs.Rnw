@@ -536,9 +536,8 @@ document multiple objects, but package authors may write these Rd
 files manually using this mechanism.
 
 More generally, the \code{parsers} argument to
-\code{package.skeleton.dx} should be a list of Parser Functions. In
-Section~\ref{parser-functions}, we explain how to write
-Parser Functions.
+\code{package.skeleton.dx} should be a list of Parser Functions. Next,
+in Section~\ref{extensible}, we explain how to write Parser Functions.
 
 \newpage
 \section[The inlinedocs system of extensible documentation
