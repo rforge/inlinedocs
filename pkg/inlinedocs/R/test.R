@@ -80,7 +80,9 @@ make.package.and.check <- function
   file.copy(tocopy,pkgdir)
   file.copy(f,rdir)
   package.skeleton.dx(pkgdir,parsers)
-  cmd <- sprintf("%s CMD check %s",file.path(R.home("bin"), "R"),pkgdir)
+  cmd <- sprintf("%s CMD check --as-cran %s",
+                 file.path(R.home("bin"), "R"),
+                 pkgdir)
   if(verbose)cat(cmd,"\n")
   checkLines <- system(cmd,intern=TRUE)
   warnLines <- grep("(WARNING|ERROR)",checkLines,value=TRUE)

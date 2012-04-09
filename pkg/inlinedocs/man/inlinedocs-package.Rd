@@ -11,7 +11,7 @@ Repeat Yourself principle.}
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
 Version: \tab 1.9.1\cr
-Date: \tab 2012-01-26\cr
+Date: \tab 2012-04-11\cr
 Author: \tab Inlinedocs development team
 <inlinedocs-support@lists.r-forge.r-project.org>\cr
 Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>\cr

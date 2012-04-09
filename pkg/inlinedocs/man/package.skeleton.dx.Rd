@@ -41,6 +41,7 @@ inlinedocs can not handle them yet (like generic function definitions)}
 library(inlinedocs)
 
 owd <- setwd(tempdir())
+##owd <- setwd("~")
 
 ## get the path to the silly example package that is provided with
 ## package inlinedocs
@@ -59,7 +60,7 @@ file.show( c(file.path("silly","R","silly.R"),
 
 ## check the package to see if generated documentation passes
 ## without WARNINGs
-cmd <- sprintf("\%s CMD check silly",file.path(R.home("bin"), "R"))
+cmd <- sprintf("\%s CMD check --as-cran silly",file.path(R.home("bin"), "R"))
 print(cmd)
 checkLines <- system(cmd,intern=TRUE)
 warnLines <- grep("WARNING",checkLines,value=TRUE)

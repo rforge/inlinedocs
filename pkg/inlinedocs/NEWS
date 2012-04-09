@@ -10,6 +10,8 @@ Rd generation for attrSetter<- functions?
 
 == 1.9.1 --- 9 April 2012
 
+use --as-cran for tests!
+
 R CMD check --as-cran inlinedocs_1.9.tar.gz had 
 * checking Rd cross-references ... WARNING
 ... this seems to be related to \link{} tags in Rd?
