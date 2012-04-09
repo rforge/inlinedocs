@@ -1,20 +1,3 @@
-### Default values and required fields in DESCRIPTION file.
-description.defaults <-
-  c("Package"="",
-    "Maintainer"=Sys.getenv("USER"),
-    "Author"=Sys.getenv("USER"),
-    "Version"="1.0",
-    "License"="GPL-3",
-    "Title"="a package",
-    "Description"="a package that does\n many things.")
-
-### Necessary fields in DESCRIPTION, otherwise error.
-fields <- names(description.defaults)
-
-### Default DESCRIPTION, written if it doesn't exist.
-empty.description <-
-  matrix(description.defaults,ncol=length(fields),dimnames=list(NULL,fields))
-
 package.skeleton.dx <- structure(function # Package skeleton deluxe
 ### Generates Rd files for a package based on R code and DESCRIPTION
 ### metadata. After inspecting the specified R code files to find
@@ -58,6 +41,26 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   # package 'utils", where it lives. So, I prefer using file.info()
   if (isTRUE(file.info("unix")$isdir) || isTRUE(file.info("windows")$isdir))
     stop("Platform-specific code in ./R/unix, or ./R/windows is not supported")
+
+  ## Default values and required fields in DESCRIPTION file.
+  description.defaults <-
+    c("Package"="",
+      "Maintainer"=Sys.getenv("USER"),
+      "Author"=Sys.getenv("USER"),
+      "Version"="1.0",
+      "License"="GPL-3",
+      "Title"="a package",
+      "Description"="a package that does\n many things.")
+
+  ## Necessary fields in DESCRIPTION, otherwise error.
+  fields <- names(description.defaults)
+
+  ## Default DESCRIPTION, written if it doesn't exist.
+  empty.description <-
+    matrix(description.defaults,ncol=length(fields),dimnames=list(NULL,fields))
+
+
+  
   
   ## if no DESCRIPTION, make one and exit.
   descfile <- file.path("..","DESCRIPTION")
