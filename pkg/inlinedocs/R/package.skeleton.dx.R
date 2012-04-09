@@ -236,6 +236,8 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   checkLines <- system(cmd,intern=TRUE)
   warnLines <- grep("WARNING",checkLines,value=TRUE)
   if(length(warnLines)>0){
+    writeLines(checkLines)
+    cat("\n\nLines with WARNING:\n")
     print(warnLines)
     stop("WARNING encountered in package check!")
   }

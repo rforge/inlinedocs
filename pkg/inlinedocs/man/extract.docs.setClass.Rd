@@ -6,7 +6,7 @@ in the form \code{setClass("classname",\dots)} are also located and
 scanned for inline comments.}
 \usage{extract.docs.setClass(doc.link)}
 \arguments{
-  \item{doc.link}{DocLink object as created by \code{\link{extract.file.parse}}.
+  \item{doc.link}{DocLink object as created by \code{extract.file.parse}.
 Note that \code{source} statements are \emph{ignored} when scanning for
 class definitions.}
 }

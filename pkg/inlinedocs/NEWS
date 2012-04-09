@@ -8,7 +8,23 @@ doclist checks.
 
 Rd generation for attrSetter<- functions?
 
-== 1.9 13 Jan 2012 -> 5 April 2012
+== 1.9.1 --- 9 April 2012
+
+R CMD check --as-cran inlinedocs_1.9.tar.gz had 
+* checking Rd cross-references ... WARNING
+... this seems to be related to \link{} tags in Rd?
+
+pause for 4 seconds in example for do.not.generate. On windows the
+filesystem records mtimes with a resolution of 2 seconds, so if we
+want to see that a file has changed we need to wait at least this
+long.
+
+== 1.9 --- 13 Jan 2012 -> 5 April 2012
+
+move code for generating a DESCRIPTION file into package.skeleton.dx.
+
+doc bugfix for some \code{} chunks in inlinedocs that were
+disappearing.
 
 Added inst/silly/NAMESPACE to avoid warnings on package check, and
 copy this over to all the mini test packages that are created for each

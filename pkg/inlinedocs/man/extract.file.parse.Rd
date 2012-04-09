@@ -1,7 +1,7 @@
 \name{extract.file.parse}
 \alias{extract.file.parse}
 \title{File content analysis}
-\description{Using the base \code{\link{parse}} function, analyse the file to link
+\description{Using the base \code{parse} function, analyse the file to link
 preceding "prefix" comments to each active chunk. Those comments form
 the default description for that chunk. The analysis also looks for
 S4 class "setClass" calls and R.oo setConstructorS3 and setMethodS3
