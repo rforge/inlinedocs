@@ -37,6 +37,7 @@ do.not.generate <- structure(function
   
   ## Save the modification times of the Rd files
   old <- file.info(Rd.paths)$mtime
+  Sys.sleep(1/60) ## to make sure there is at least 1 second elapsed
   
   ## However, it will NOT generate Rd for files specified in
   ## do.not.generate, if they DO exist already.
