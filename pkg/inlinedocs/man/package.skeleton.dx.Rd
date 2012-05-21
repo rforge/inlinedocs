@@ -68,7 +68,9 @@ if(length(warnLines)>0){
   writeLines(checkLines)
   cat("\n\nLines with WARNING:\n")
   print(warnLines)
-  stop("WARNING encountered in package check!")
+  ## disable due to bug in R CMD check:
+  ## https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14875
+  ##stop("WARNING encountered in package check!")
 }
 
 ## cleanup: remove the test package from current workspace again

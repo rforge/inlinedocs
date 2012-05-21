@@ -8,13 +8,15 @@ doclist checks.
 
 Rd generation for attrSetter<- functions?
 
-== 1.9.1 --- 9 April 2012
+== 1.9.1 --- 21 May 2012
 
 use --as-cran for tests!
 
 R CMD check --as-cran inlinedocs_1.9.tar.gz had 
 * checking Rd cross-references ... WARNING
 ... this seems to be related to \link{} tags in Rd?
+... or some strange bug in R CMD check?
+https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14875
 
 pause for 4 seconds in example for do.not.generate. On windows the
 filesystem records mtimes with a resolution of 2 seconds, so if we
