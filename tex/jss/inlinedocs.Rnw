@@ -842,7 +842,7 @@ extracted documentation.
 
 Again, note in \verb+item{FUN}+ that \verb+%+ is not escaped in the
 Documentation List. It is the job of \inlinedocs\ to convert this
-Documentation List to valid Rd, so the Parser Function programmer does
+Documentation List to valid Rd, so the Parser Function programmer does not
 need to worry about escaping special characters.
 
 \begin{small}
