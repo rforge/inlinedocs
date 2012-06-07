@@ -1,5 +1,7 @@
 == TODO
 
+Rd generation for "[.class" as in quadmod.
+
 Attempt doc list to Rd list conversion, so we can generate Rd using
 tools:::print.Rd. See code in etc/parseRd.R
 
