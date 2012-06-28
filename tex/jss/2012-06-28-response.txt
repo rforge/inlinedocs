@@ -1,0 +1,36 @@
+Dear editor, thank you for the reviews of our article on
+inlinedocs. We have taken them into consideration and resubmit a new
+version of the article.
+
+We address the specific concerns of the reviewers below:
+
+Reviewer 1 wanted to see a PDF version of the generated documentation,
+and so we added a 2-page section to the appendix that shows the PDF
+generated for the apply function.
+
+Reviewer 2 asked about a specific plan to incorporate documentation
+generation into the R CMD build process. We changed section 2.5 to
+emphasize that package.skeleton.dx() must be run before R CMD
+build. However, we feel that any further commentary about integration
+into the R toolchain is too speculative for inclusion in the article.
+
+Reviewer 2 suggested a ##file<< tag to have inlinedocs support
+documentation of multiple objects per Rd file. By design, this is not
+supported, and so we changed section 2.5 to clarify this.
+
+Reviewer 2 is "not sure about registering exclusions: ideally,
+inlinedocs would simply leave the Rd files alone that it will not
+overwrite." By design, inlinedocs writes an Rd file for every object
+in the package, so no files are left alone unless you specifically
+indicate that. We clarified this by adding to section 2.5.
+
+We added a sentence to clarify what the ##end<< tag in section 2.3
+does.
+
+We clarified section 2.4 by stating that we detect S3 methods using
+functions from the utils package.
+
+Reviewer 2's helpful minor comments about the old R reference, "S4
+generic methods," the "Sweave format," the inconsistent use of .Rd and
+Rd in section 4, and the strange appearance of $apply$keyword in
+section A.2 have been addressed in the text.
