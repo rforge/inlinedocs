@@ -405,16 +405,32 @@ modify.Rd.file <- function
   Mend <- m+attr(m,"match.length")
   utxt <- substr(txt,m+6,Mend-2)
 
+  ## fix \method version if .s3method
+  if ( is.null(d$.s3method) ) {
+	  # PhG: in case we have fun<-(x, ..., value), we must rewrite it
+	  # as fun(x, ...) <- value
+	  if (grepl("<-$", N)) {
+		  utxt <- sub("<-[(](.+), ([^,)]+)[)]",
+				  "(\\1) <- \\2", utxt)
+	  }
+	  # PhG: this is for special functions %...% which should write x %...% y
+	  if (grepl("^%.*%$", N)) {
+		  utxt <- sub("(%.*%)[(]([^,]+), ([^)]+)[)]",
+				  "\\2 \\1 \\3", utxt) 
+	  }
+  }
+  
   ## multiple lines for the PDF!
   # tw: parse fails on accessor functions such as "myF<-" <- function(data,x) 
   # see testfile accessorFunctions.R
   # workaround with tryCatch
+  parsed <- utxt
   tryCatch({
 	  parsed <- parse(text=utxt)
-	  if(length(parsed)){
-	    utxt <- sprintf("usage{%s}\n",paste(format(parsed[[1]]),collapse="\n"))
-	  }
   }, error = function(e) warning(e) )
+  if(length(parsed)){
+	  utxt <- sprintf("usage{%s}\n",paste(format(parsed[[1]]),collapse="\n"))
+  }
   if(length(grep("usage[{]data",utxt))){
     utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
   }
@@ -433,17 +449,7 @@ modify.Rd.file <- function
         utxt <- sub(", *([^),]+)[)]", ") <- \\1", utxt)
     }
   } else {
-    # PhG: in case we have fun<-(x, ..., value), we must rewrite it
-    # as fun(x, ...) <- value
-    if (grepl("<-$", N)) {
-        utxt <- sub("<-[(](.+), ([^,)]+)[)]",
-            "(\\1) <- \\2", utxt)
-    }
-    # PhG: this is for special functions %...% which should write x %...% y
-    if (grepl("^%.*%$", N)) {
-        utxt <- sub("(%.*%)[(]([^,]+), ([^)]+)[)]",
-            "\\2 \\1 \\3", utxt) 
-    }
+	#tw: moved before parse
   }
   ## add another backslash due to bug in package.skeleton
   ## but only if not before % character due to another bug if % in usage
