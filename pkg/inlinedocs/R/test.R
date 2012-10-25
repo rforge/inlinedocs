@@ -11,6 +11,7 @@ test.file <- function
  verbose=TRUE
 ### Show output?
  ){
+  ##seealso<< \code{\link{save.test.result}}
   e <- new.env()
   suppressWarnings(sys.source(f,e))
   ## these are the items to check for, in no particular order

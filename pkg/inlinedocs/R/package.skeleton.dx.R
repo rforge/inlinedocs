@@ -406,10 +406,15 @@ modify.Rd.file <- function
   utxt <- substr(txt,m+6,Mend-2)
 
   ## multiple lines for the PDF!
-  parsed <- parse(text=utxt)
-  if(length(parsed)){
-    utxt <- sprintf("usage{%s}\n",paste(format(parsed[[1]]),collapse="\n"))
-  }
+  # tw: parse fails on accessor functions such as "myF<-" <- function(data,x) 
+  # see testfile accessorFunctions.R
+  # workaround with tryCatch
+  tryCatch({
+	  parsed <- parse(text=utxt)
+	  if(length(parsed)){
+	    utxt <- sprintf("usage{%s}\n",paste(format(parsed[[1]]),collapse="\n"))
+	  }
+  }, error = function(e) warning(e) )
   if(length(grep("usage[{]data",utxt))){
     utxt <- gsub("data[(]([^)]*)[)]","\\1",utxt)
   }
