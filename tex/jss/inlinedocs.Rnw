@@ -24,17 +24,18 @@
 %\Shorttitle{A Capitalized Title} %% a short title (if necessary)
 \newcommand{\R}{\proglang{R}}
 %% an abstract and keywords
-\Abstract{The concept of structured, interwoven code and documentation
-  has existed for many years, but existing systems that implement this
-  for the \R\ programming language do not tightly integrate with \R\
-  code, leading to several drawbacks. This article attempts to address
-  these issues and presents 2 contributions for documentation
-  generation for the \R\ community. First, we propose a new syntax for
-  inline documentation of \R\ code within comments adjacent to the
-  relevant code, which allows for highly readable and maintainable
-  code and documentation. Second, we propose an extensible system for
-  parsing these comments, which allows the syntax to be easily
-  augmented.}
+\Abstract{This article presents \inlinedocs, an \R\ package for
+  generating documentation from comments. The concept of structured,
+  interwoven code and documentation has existed for many years, but
+  existing systems that implement this for the \R\ programming
+  language do not tightly integrate with \R\ code, leading to several
+  drawbacks. This article attempts to address these issues and
+  presents 2 contributions for documentation generation for the \R\
+  community. First, we propose a new syntax for inline documentation
+  of \R\ code within comments adjacent to the relevant code, which
+  allows for highly readable and maintainable code and
+  documentation. Second, we propose an extensible system for parsing
+  these comments, which allows the syntax to be easily augmented.}
 
 % TODO: points to address from reviewers before resubmission. [who]
 % IssueN, from reviewer i, comment j: ... Reponse: ... Edit: ...
@@ -160,9 +161,11 @@ old <- options(prompt = ">>>", continue = ">>>")
 
 \section{Introduction}
 
-The standard way to distribute \R\ code is in a package along with Rd
-files that document the code. There are several existing methods for
-documenting a package by writing \R\ comments, which are later processed and
+In this article, we present \inlinedocs, an \R\ package which allows
+\R\ documentation to be written in comments. The standard way to
+distribute \R\ code is in a package along with Rd files that document
+the code \citep{R}. There are several existing methods for documenting
+a package by writing \R\ comments, which are later processed and
 converted into standard Rd files.
 %The new idea in
 %\inlinedocs\ is to write examples using actual \R\ code and
@@ -182,31 +185,29 @@ the introduction of a new package like \inlinedocs.
 % TDH 2011-03-14 This next paragraph is offtopic, perhaps delete if
 % space is required?
 For report generation and literate programming, the mature Sweave
-\citep{sweave} format
-% , also included in the default installation of \R,
-allows integration of \R\ code and results within \pkg{\LaTeX}\
-documents \citep{latex}. However, the goal of \inlinedocs\ is
-different. It aims for integration of documentation inside of \R\ code
-files, to generate Rd documentation files using \R\ code and markup in
-\R\ comments. Thus for \inlinedocs\ we need to extract the
-documentation specified in \R\ code, and the Sweave system
-can not be easily applied to this parsing task.
+\citep{sweave} format allows integration of \R\ code and results
+within \pkg{\LaTeX}\ documents \citep{latex}. However, the goal of
+\inlinedocs\ is different. It aims for integration of documentation
+inside of \R\ code files, to generate Rd files using \R\ code and
+markup in \R\ comments. Thus for \inlinedocs\ we need to extract the
+documentation specified in \R\ code, and the Sweave system can not be
+easily applied to this parsing task.
 
 The \code{package.skeleton} function that ships with base \R\ is
-intended to ease the generation of Rd files from \R\ code
-\citep{R}. After specifying some input \R\ code files or objects to
-use for the package, it produces some minimal documentation that must
-be completed using a text editor. Although \code{package.skeleton}
-is sufficient for creating small packages that are published once and
-forgotten, it offers little help for continued maintenance of packages
-for which Rd files are frequently updated.
+intended to ease the generation of Rd files from \R\ code. After
+specifying some input \R\ code files or objects to use for the
+package, it produces some minimal documentation that must be completed
+using a text editor. Although \code{package.skeleton} is sufficient
+for creating small packages that are published once and forgotten, it
+offers little help for continued maintenance of packages for which Rd
+files are frequently updated.
 
-The other existing approaches, \Rdoc\ and \Roxygen, attempt to address
-this sustainability problem using Rd generation from comments
-in \R\  code \citep{rdoc,roxygen}. The documentation is thus written
-closer to the code it documents, which is easier to maintain. These
-packages are a step toward seamless integration of code and
-documentation, but they have three major drawbacks:
+The other existing approaches, \Rdoc\ \citep{rdoc} and \Roxygen\
+\citep{roxygen}, attempt to address this sustainability problem using
+Rd generation from comments in \R\ code. The documentation is thus
+written closer to the code it documents, which is easier to
+maintain. These packages are a step toward seamless integration of
+code and documentation, but they have three major drawbacks:
 
 \begin{enumerate}
 \item They only use comments to generate documentation, ignoring the
@@ -255,7 +256,6 @@ Section~\ref{conclusions}, we conclude and offer some ideas for future
 improvements.  Finally, in Appendix~\ref{apply}, we show a concrete
 application by porting the base \code{apply} function to \inlinedocs.
 
-\newpage
 \section[The inlinedocs syntax for inline documentation of R packages]{The
   \inlinedocs\ syntax for inline
   documentation of \R\ packages}
@@ -263,8 +263,8 @@ application by porting the base \code{apply} function to \inlinedocs.
 
 The main idea of \inlinedocs\ is to document an \R\ object using
 \verb+###+ and \verb+##<<+ comments directly adjacent to its source
-code. Furthermore, \inlinedocs\ allows documentation
-wherever it is most relevant in the code using \verb+##section<<+
+code. Furthermore, \inlinedocs\ allows documentation wherever it is
+most relevant in the code using \verb+##+\emph{\texttt{section}}\verb+<<+
 comments.
 %% KMP 2011-04-19 - strictly ESS is not an editor. Following attempts to
 %% rephrase but maybe needs a reference for Emacs.
@@ -329,7 +329,6 @@ set to the function name, so this minimal level of documentation
 is enough to make a working package that passes \code{R CMD
   check} with no errors or warnings.
 
-\newpage
 \subsection{Inline titles, arguments, and other sections}
 
 The following example shows some optional \inlinedocs\ comments that
@@ -449,7 +448,7 @@ examples are written close to the object definition, it is easy to
 keep examples up to date and informative.
 
 An alternative is to use \code{attr(try.several.times,"ex") <-
-  function()\{code\}} later in the code. However, we prefer using
+  function()\{\emph{code}\}} later in the code. However, we prefer using
 \code{structure} since it keeps the examples near the object
 definition, and avoids repetition of the object name.
 
@@ -474,7 +473,7 @@ S3 methods may be defined using plain \R, or using
 \verb+setConstructorS3+ and \verb+setMethodS3+ from the \pkg{R.oo}
 package \citep{Roo}. The \inlinedocs\ package detects S3 methods using
 \code{utils::getKnownS3generics} and \code{utils::findGeneric},
-and and updates the generated documentation automatically. S4 class
+and updates the generated documentation automatically. S4 class
 declarations using the \verb+setClass+ function are also
 supported. The following example is from the source of \inlinedocs:
 <<term=FALSE>>=
@@ -516,7 +515,8 @@ The main function that the \inlinedocs\ package provides is
 and should be run before \texttt{R CMD build}. For example,
 \code{package.skeleton.dx("fermat")} processes \R\ code found in
 \code{fermat/R}, and generates Rd files in \code{fermat/man} for each
-object in the package.  The generated Rd files should be treated as
+object in the package. Documentation is generated even for objects
+that are not exported. The generated Rd files should be treated as
 object files, since any edits will be overwritten the next time the Rd
 files are generated.
 
@@ -773,9 +773,8 @@ feature: the documentation is always near the object definition, for
 quick reference. 
 
 Currently, the \inlinedocs\ package relies on the \code{srcref}
-attribute of a function to access its definition, but that mechanism
-does not work for S4 methods. Instead, we use \code{parse}
-on the source files to access S4 class definitions. 
+attribute of a function to access its definition.  For S4 classes, we
+use \code{parse} on the source files.
 % (via \verb+setClass+) and S3 class and method definitions using the
 % \verb+R.oo+ \verb+setConstructorS3+ and \verb+setMethodS3+
 % approach);
@@ -794,21 +793,30 @@ classes, which are currently unsupported in \inlinedocs.
 % otherwise into \verb+myFun-methods.Rd+.
 
 For the future, we would like to make use of Rd manipulation tools
-such as \code{parse\_Rd}, as described by \cite{parseRd}. For
-package authors who want to convert Rd files to inlinedocs comments,
-we may be able to use \code{parse\_Rd} to develop a converter that
-takes \R\ source code and Rd documentation, then outputs \R\ code with
-documentation in comments.
+such as \code{parse\_Rd}, as described by \citet{parseRd}. For package
+authors who want to convert Rd files to inlinedocs comments, we may be
+able to use \code{parse\_Rd} to develop a converter that takes \R\
+source code and Rd, then outputs \R\ code with documentation in
+comments.
 
 Also, it would be advantageous to have functions for converting
-Documentation Lists to and from \code{Rd} objects. For example,
-after converting an inner Documentation List to an \code{Rd} object,
-we could use the \code{print.Rd} function to write the Rd file. This
-could be simpler than the current system of starting from the Rd files
-from \code{package.skeleton} and then doing find and
-replace. Furthermore, a converter from \code{Rd} objects to
-Documentation Lists would permit unit tests for the content of the Rd
-generated by \inlinedocs.
+Documentation Lists to and from \code{Rd} objects. For example, after
+converting an inner Documentation List to an \code{Rd} object, we
+could use its \code{print} method to write the Rd file. This could be
+simpler than the current system of starting from the Rd files from
+\code{package.skeleton} and then doing find and replace. Furthermore,
+a converter from \code{Rd} objects to Documentation Lists would permit
+unit tests for the content of the Rd generated by \inlinedocs.
+
+Finally, we thank a reviewer for an idea for integrating \inlinedocs\
+into the \code{R CMD build} process. Currently, the
+\code{package.skeleton.dx} function must be run by the package author
+before each \code{R CMD build}. Documentation generation could be
+integrated into the package building process if package authors could
+write a \code{.onBuild} function that would be run prior to each
+package build. Packages that use \inlinedocs\ could include a call to
+\code{package.skeleton.dx} in the \code{.onBuild} function for
+automatic documentation generation prior to each package build.
 
 \newpage
 \appendix
@@ -826,7 +834,7 @@ source and documentation of the base function \code{apply} to
 We use the following source code and comments to define the
 \code{apply} function and its documentation.
 
-Note characters that are special in Rd do not need to be escaped in
+Characters that are special in Rd do not need to be escaped in
 \inlinedocs, such as \verb+%+ in the documentation of the \code{FUN}
 argument.
 
