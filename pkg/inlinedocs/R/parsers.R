@@ -58,7 +58,22 @@ do.not.generate <- structure(function
 })
 
 ### combine lists or character strings
-combine <- function(x,y)UseMethod("combine")
+combine.NULL<-function(x,y){
+    if (class(x) == "NULL"){
+        # print(paste("mm x=",x))
+        # print(paste("mm class(x)=",class(x)))
+        x=list("")
+    }
+    if (class(y) == "NULL"){
+        # print(paste("mm y=",y))
+        # print(paste("mm class(y)=",class(y)))
+        y=list("")
+    }
+    return(combine(x,y))
+}
+combine <- function(x,y){
+    UseMethod("combine")
+}
 
 ### combine character strings by pasting them together
 combine.character <- function(x,y)
@@ -951,17 +966,19 @@ apply.parsers <- function
   if(verbose)cat("Applying parsers:\n")
   for(i in seq_along(parsers)){
     N <- names(parsers[i])
-    if(verbose){
+    #mm if(verbose){
       if(is.character(N) && N!=""){
-        cat(N,"\n",sep="")
+        cat(" this is parser:",N,"\n",sep="")
       }else cat('.\n')
-    }
+    #mm }
     p <- parsers[[i]]
     ## This is the argument list that each parser receives:
     L <- p(code=code,objs=objs,docs=docs,env=e,...)
+    # print("mm point1")
+    #save(docs,L,file="/home/mm/SoilR/scripts/docs_L.RData")
     #print(paste(L,"\n"))
     #if(N=="exclude")browser()
-    docs <- combine(docs,L)
+    docs <- combine(docs,L) #mm
   }
   ## post-process to collapse all character vectors
   for(i in seq_along(docs)){
