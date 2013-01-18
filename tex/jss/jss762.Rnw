@@ -888,7 +888,7 @@ PDF via \texttt{R CMD Rd2pdf}.
 
 
 \newpage
-\bibliography{refs}
+\bibliography{jss762}
 \newpage
 
 <<echo=FALSE>>=
