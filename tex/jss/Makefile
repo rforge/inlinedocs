@@ -1,14 +1,15 @@
-inlinedocs.pdf: inlinedocs.tex refs.bib apply.pdf
-	pdflatex inlinedocs.tex
+jss762.pdf: jss762.tex jss762.bib apply.pdf
+	pdflatex jss762.tex
 	bibtex inlinedocs
-	pdflatex inlinedocs.tex
-	pdflatex inlinedocs.tex
+	pdflatex jss762.tex
+	pdflatex jss762.tex
 apply.pdf: man/apply.Rd
 	R CMD Rd2pdf man/apply.Rd
-inlinedocs.tex: inlinedocs.Rnw doclist.R R/apply.R man/apply.Rd alternate.R
+jss762.tex: jss762.Rnw doclist.R R/apply.R man/apply.Rd alternate.R
 	PATH=~/bin:$(PATH) R CMD Sweave inlinedocs.Rnw
-	sed -i 's/>>>//' inlinedocs.tex
+	sed -i 's/>>>//' jss762.tex
 man/apply.Rd: R/apply.R DESCRIPTION
+	R CMD INSTALL inlinedocs_1.9.1.tar.gz
 	echo 'library(inlinedocs);package.skeleton.dx(".")'|R --vanilla
-check: inlinedocs.Rnw check.R
+check: jss762.Rnw check.R
 	R --no-save < check.R |tee check

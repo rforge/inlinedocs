@@ -282,7 +282,7 @@ with the \pkg{Emacs Speaks Statistics} \citep{ESS} add-on package:
 The following Sections illustrate common usage of \inlinedocs\
 comments through \pkg{fermat}, an example package inspired by the
 \Roxygen\ vignette \citep{roxygen}. The examples were processed and
-checked for validity using \inlinedocs\ version 1.9. For brevity, only
+checked for validity using \inlinedocs\ version 1.9.1. For brevity, only
 the most frequently used \inlinedocs\ features will be discussed, and
 the reader is directed to the \inlinedocs\ web site for complete
 documentation:
@@ -486,7 +486,7 @@ setClass("DocLink", # Link documentation among related functions
                    created = "character", ##<< how created
                    parent = "character", ##<< parent class or NA
                    code = "character", ##<< actual source lines
-                   description = "character") ##<< preceding description block
+                   description = "character") ##<< preceding description
          )
 @
 <<echo=FALSE>>=
