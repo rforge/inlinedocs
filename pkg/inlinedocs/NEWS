@@ -10,6 +10,9 @@ doclist checks.
 
 Rd generation for attrSetter<- functions?
 
+Functions with {} as default arguments => error. See
+etc/default-function.R
+
 == 1.9.1 --- 21 May 2012
 
 use --as-cran for tests!
