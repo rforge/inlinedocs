@@ -12,7 +12,7 @@
 
 ## For example:
 
-dummyfunction = function(filters = function(x) {b = 0; x > b} ))
+dummyfunction = function(filters = function(x) {b = 0; x > b} )
 {
    # rest of code here
    return(filters)
