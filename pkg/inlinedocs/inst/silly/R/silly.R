@@ -53,3 +53,4 @@ setClass("Silly", # S4 classes can be documented as well
 
 ## creates "show" generic function. Documentation of this not yet supported.
 ##setMethod("show","Silly",function(object){cat("crashed ",object@crashes," times\n")})
+

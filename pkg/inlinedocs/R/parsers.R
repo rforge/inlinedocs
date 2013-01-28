@@ -57,7 +57,7 @@ do.not.generate <- structure(function
   setwd(owd)
 })
 
-### combine lists or character strings
+### combine NULL objects.
 combine.NULL<-function(x,y){
     if (class(x) == "NULL"){
         # print(paste("mm x=",x))
@@ -71,6 +71,8 @@ combine.NULL<-function(x,y){
     }
     return(combine(x,y))
 }
+
+### combine lists or character strings
 combine <- function(x,y){
     UseMethod("combine")
 }

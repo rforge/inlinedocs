@@ -21,5 +21,5 @@ matter, and thus this should be a good robust unit test.}
 
 
 
-
+\seealso{\code{\link{save.test.result}}}
 

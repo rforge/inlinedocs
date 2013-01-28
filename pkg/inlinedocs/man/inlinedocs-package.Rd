@@ -1,5 +1,6 @@
 \name{inlinedocs-package}
 \alias{inlinedocs-package}
+\alias{inlinedocs}
 \docType{package}
 \title{Convert inline comments to documentation}
 \description{Generates Rd files from R source code with comments,
