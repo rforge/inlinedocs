@@ -28,7 +28,8 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
  ...
 ### Parameters to pass to Parser Functions.
  ){
-  ##alias<< inlinedocs	 
+  ## This causes a warning on R CMD check TDH 28 Jan 2013.
+  ##alias< < inlinedocs
 	 
   chdir <- file.path(pkgdir,"R")
   if(!file.exists(chdir))stop("need pkgdir/R, tried ",chdir)
@@ -387,7 +388,7 @@ code
       eval(i, e)
   }
   g=file(,open="w+")#anonymous file
-  showMethods(class=name,printTo=g,where=e)
+  showMethods(classes=name,printTo=g,where=e)
   lines=readLines(g)
   close(g)
   ind=grep("Function",lines)

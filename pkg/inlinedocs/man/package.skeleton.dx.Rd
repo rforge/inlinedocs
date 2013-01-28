@@ -1,6 +1,5 @@
 \name{package.skeleton.dx}
 \alias{package.skeleton.dx}
-\alias{inlinedocs	 }
 \title{Package skeleton deluxe}
 \description{Generates Rd files for a package based on R code and DESCRIPTION
 metadata. After inspecting the specified R code files to find
