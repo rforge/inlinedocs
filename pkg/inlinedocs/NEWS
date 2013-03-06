@@ -1,6 +1,10 @@
 == TODO
 
-Rd generation for "[.class" as in quadmod.
+As of R 3.0, the "parser now incorporates code from Romain Francois'
+parser package, to support more detailed computation on the code, such
+as syntax highlighting, comment-based documentation, etc. Functions
+getParseData() and getParseText() access the data." We should exploit
+this in inlinedocs Parser Functions.
 
 Attempt doc list to Rd list conversion, so we can generate Rd using
 tools:::print.Rd. See code in etc/parseRd.R
@@ -12,6 +16,11 @@ Rd generation for attrSetter<- functions?
 
 Functions with {} as default arguments => error. See
 etc/default-function.R
+
+== 1.9.3 --- 6 March 2013
+
+Rd generation for "[.class" as in quadmod... this currently works but
+since when?
 
 == 1.9.2 --- 28 Jan 2013
 

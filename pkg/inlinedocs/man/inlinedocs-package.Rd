@@ -11,11 +11,10 @@ Repeat Yourself principle.}
 \tabular{ll}{Package: \tab inlinedocs\cr
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
-Version: \tab 1.9.2\cr
-Date: \tab 2012-04-11\cr
+Version: \tab 1.9.3\cr
 Author: \tab Inlinedocs development team
 <inlinedocs-support@lists.r-forge.r-project.org>\cr
-Maintainer: \tab Toby Dylan Hocking <toby.hocking@inria.fr>\cr
+Maintainer: \tab Toby Dylan Hocking <toby@sg.cs.titech.ac.jp>\cr
 URL: \tab http://inlinedocs.r-forge.r-project.org\cr
 Depends: \tab methods, utils, R (>= 2.9)\cr
 License: \tab GPL-3\cr
