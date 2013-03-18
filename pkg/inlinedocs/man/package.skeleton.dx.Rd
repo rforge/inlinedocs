@@ -23,8 +23,9 @@ default.parsers.}
   \item{namespace}{A logical indicating whether a NAMESPACE file should be generated
 for this package. If \code{TRUE}, all objects whose name starts
 with a letter, plus all S4 methods and classes are exported.}
-  \item{excludePattern}{A regular expression matching the files that are not to be processed e.g. because 
-inlinedocs can not handle them yet (like generic function definitions)}
+  \item{excludePattern}{A regular expression matching the files that are not to be
+processed e.g. because inlinedocs can not handle them yet (like
+generic function definitions)}
   \item{\dots}{Parameters to pass to Parser Functions.}
 }
 

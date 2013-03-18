@@ -22,9 +22,9 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
 ### for this package. If \code{TRUE}, all objects whose name starts
 ### with a letter, plus all S4 methods and classes are exported.
  excludePattern=FALSE,
-### A regular expression matching the files that are not to be processed e.g. because 
-### inlinedocs can not handle them yet (like generic function definitions)
-# codefiles,
+### A regular expression matching the files that are not to be
+### processed e.g. because inlinedocs can not handle them yet (like
+### generic function definitions)
  ...
 ### Parameters to pass to Parser Functions.
  ){
