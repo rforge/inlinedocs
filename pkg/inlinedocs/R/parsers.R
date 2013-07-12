@@ -823,7 +823,7 @@ extract.file.parse <- function # File content analysis
                                 parent=parent,
                                 code=paste(chunks[[k]],sep=""),
                                 description=default.description)
-    } else if ( expr.type == "setMethodS3" ){
+    } else if ( expr.type == "setMethodS3" || expr.type ==  "R.methodsS3::setMethodS3"){
       ##details<< The \code{setMethodS3} calls introduce additional
       ## complexity: they will define an additional S3 generic (which
       ## needs documentation to avoid warnings at package build time)
