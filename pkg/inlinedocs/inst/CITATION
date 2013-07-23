@@ -1,6 +1,6 @@
 citHeader("To cite inlinedocs in publications, please use:")
 
-bibentry(entry = "article",
+bibentry("article",
   title="Sustainable, Extensible Documentation Generation using inlinedocs",
   author="Toby Dylan Hocking and Thomas Wutzler and Keith Ponting and Philippe Grosjean",
   journal="Journal of Statistical Software",
