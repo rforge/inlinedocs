@@ -231,41 +231,34 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   
   unlink(name,recursive=TRUE)
 },ex=function(){
-  library(inlinedocs)
-
   owd <- setwd(tempdir())
-  ##owd <- setwd("~")
   
   ## get the path to the silly example package that is provided with
   ## package inlinedocs
-  testPackagePath=file.path( system.file(package="inlinedocs"),"silly" )
+  testPackagePath <- file.path(system.file(package="inlinedocs"),"silly")
   ## copy example project to the current unlocked workspace that can
   ## be modified
   file.copy(testPackagePath,".",recursive=TRUE)
   
-  ## generate documentation rd-Files for this package
+  ## generate documentation .Rd files for this package
   package.skeleton.dx("silly")
   
-  ## display source file and the generated Rd file  
-  file.show( c(file.path("silly","R","silly.R"),
-               file.path("silly","man","silly.example.Rd") ),
-            header=c("source","rd") )
-
   ## check the package to see if generated documentation passes
-  ## without WARNINGs
-  cmd <- sprintf("%s CMD check --as-cran silly",file.path(R.home("bin"), "R"))
-  print(cmd)
-  checkLines <- system(cmd,intern=TRUE)
-  warnLines <- grep("WARNING",checkLines,value=TRUE)
-  if(length(warnLines)>0){
-    writeLines(checkLines)
-    cat("\n\nLines with WARNING:\n")
-    print(warnLines)
-    ## disable due to bug in R CMD check:
-    ## https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14875
-    ##stop("WARNING encountered in package check!")
-  }
-  
+  ## without WARNINGs.
+  if(interactive()){
+    cmd <- sprintf("%s CMD check --as-cran silly",file.path(R.home("bin"), "R"))
+    print(cmd)
+    checkLines <- system(cmd,intern=TRUE)
+    warnLines <- grep("WARNING",checkLines,value=TRUE)
+    if(length(warnLines)>0){
+      writeLines(checkLines)
+      cat("\n\nLines with WARNING:\n")
+      print(warnLines)
+      ## disable due to bug in R CMD check:
+      ## https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14875
+      ##stop("WARNING encountered in package check!")
+    }
+  }  
   ## cleanup: remove the test package from current workspace again
   unlink("silly",recursive=TRUE)
   setwd(owd)

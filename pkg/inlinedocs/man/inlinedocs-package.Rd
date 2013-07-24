@@ -3,15 +3,17 @@
 \alias{inlinedocs}
 \docType{package}
 \title{Convert inline comments to documentation}
-\description{Generates Rd files from R source code with comments,
-providing for quick, sustainable package development. The syntax keeps
-code and documentation close together, and is inspired by the Don't
-Repeat Yourself principle.}
+\description{Generates Rd files from R source code with comments.
+The main features of the default syntax are that
+(1) docs are defined in comments near the relevant code,
+(2) function argument names are not repeated in comments, and
+(3) examples are defined in R code, not comments.
+It is also easy to define a new syntax.}
 \details{
 \tabular{ll}{Package: \tab inlinedocs\cr
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
-Version: \tab 1.9.3\cr
+Version: \tab 2013.7.23\cr
 Author: \tab Inlinedocs development team
 <inlinedocs-support@lists.r-forge.r-project.org>\cr
 Maintainer: \tab Toby Dylan Hocking <toby@sg.cs.titech.ac.jp>\cr

@@ -17,6 +17,9 @@ Rd generation for attrSetter<- functions?
 Functions with {} as default arguments => error. See
 etc/default-function.R
 
+2013.7.23 citation bugfix and if(interactive()) in
+package.skeleton.dx() examples to reduce check time.
+
 == 1.9.3 --- 6 March 2013
 
 Rd generation for "[.class" as in quadmod... this currently works but
