@@ -19,7 +19,7 @@ Author: \tab Inlinedocs development team
 Maintainer: \tab Toby Dylan Hocking <toby@sg.cs.titech.ac.jp>\cr
 URL: \tab http://inlinedocs.r-forge.r-project.org\cr
 Depends: \tab methods, utils, R (>= 2.9)\cr
-License: \tab GPL-3\cr
+License: \tab GPL-2 | GPL-3\cr
 LazyLoad: \tab yes\cr}
 }
 \author{Inlinedocs development team
