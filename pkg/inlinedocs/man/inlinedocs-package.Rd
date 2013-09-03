@@ -14,7 +14,8 @@ It is also easy to define a new syntax.}
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
 Version: \tab 2013.9.3\cr
-Author@R: \tab c(person("Toby","Hocking",role=c("aut","cre")),
+Authors@R: \tab c(person("Toby","Hocking",role=c("aut","cre"),
+email="toby@sg.cs.titech.ac.jp"),
 person("Keith","Ponting",role="aut"),
 person("Thomas","Wutzler",role="aut"),
 person("Philippe","Grosjean",role="aut"),
@@ -25,7 +26,8 @@ Maintainer: \tab Toby Dylan Hocking <toby@sg.cs.titech.ac.jp>\cr
 URL: \tab http://inlinedocs.r-forge.r-project.org\cr
 Depends: \tab methods, utils, R (>= 2.9)\cr
 License: \tab GPL-2 | GPL-3\cr
-LazyLoad: \tab yes\cr}
+LazyLoad: \tab yes\cr
+Encoding: \tab UTF-8\cr}
 }
 \author{Inlinedocs development team with contributions from R Core Team}
 
