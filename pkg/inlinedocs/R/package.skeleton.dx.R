@@ -73,6 +73,13 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
 
   ## Read description and check for errors
   desc <- read.dcf(descfile)
+  ## TDH 3 Sept 2013 need to support Authors@R for CRAN.
+  if("Authors@R" %in% colnames(desc)){
+    author <- paste(eval(parse(text=desc[,"Authors@R"])), collapse=", ")
+    desc <- cbind(desc,
+                  Author=author,
+                  Maintainer=author)
+  }
   if(any(f <- !sapply(fields,is.element,colnames(desc))))
     stop("Need ", paste(names(f)[f], collapse = ", "), " in ", descfile)
     #PhG: corrected from stop("Need ",names(f)[f]," in ",descfile)

@@ -2,15 +2,13 @@ Package: inlinedocs
 Title: Convert inline comments to documentation
 Type: Package
 Version: 2013.9.3
-Authors@R: c(person("Toby","Hocking",role=c("aut","cre"),
+Authors@R: c(person("Toby Dylan","Hocking",role=c("aut","cre"),
 	   email="toby@sg.cs.titech.ac.jp"),
 	  person("Keith","Ponting",role="aut"),
 	  person("Thomas","Wutzler",role="aut"),
 	  person("Philippe","Grosjean",role="aut"),
 	  person("Markus","Müller",role="aut"),
 	  person("R Core Team",role=c("ctb","cph")))
-Author: Inlinedocs development team with contributions from R Core Team
-Maintainer: Toby Dylan Hocking <toby@sg.cs.titech.ac.jp>
 Description: Generates Rd files from R source code with comments.
  The main features of the default syntax are that
  (1) docs are defined in comments near the relevant code,

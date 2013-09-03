@@ -66,7 +66,7 @@ all open describe blocks.}
 name N we will look for N\{...\} in the Rd file and replace it
 with the string in this list (implemented in modify.Rd.file).}
 
-\author{Inlinedocs development team with contributions from R Core Team}
+\author{Toby Dylan Hocking <toby@sg.cs.titech.ac.jp> [aut, cre], Keith Ponting [aut], Thomas Wutzler [aut], Philippe Grosjean [aut], Markus Müller [aut], R Core Team [ctb, cph]}
 \note{\code{alias} extras are automatically split at new lines.
 
 \code{keyword} extras are automatically split at white space,
