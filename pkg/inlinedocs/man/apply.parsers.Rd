@@ -14,8 +14,7 @@ documentation list.}
 
 \value{A list of extracted documentation from code.}
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team with contributions from R Core Team}
 
 
 

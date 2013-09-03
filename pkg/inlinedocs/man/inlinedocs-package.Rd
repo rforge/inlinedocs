@@ -13,17 +13,21 @@ It is also easy to define a new syntax.}
 \tabular{ll}{Package: \tab inlinedocs\cr
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
-Version: \tab 2013.8.22\cr
-Author: \tab Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>\cr
+Version: \tab 2013.9.3\cr
+Author@R: \tab c(person("Toby","Hocking",role=c("aut","cre")),
+person("Keith","Ponting",role="aut"),
+person("Thomas","Wutzler",role="aut"),
+person("Philippe","Grosjean",role="aut"),
+person("Markus","Müller",role="aut"),
+person("R Core Team",role=c("ctb","cph")))\cr
+Author: \tab Inlinedocs development team with contributions from R Core Team\cr
 Maintainer: \tab Toby Dylan Hocking <toby@sg.cs.titech.ac.jp>\cr
 URL: \tab http://inlinedocs.r-forge.r-project.org\cr
 Depends: \tab methods, utils, R (>= 2.9)\cr
 License: \tab GPL-2 | GPL-3\cr
 LazyLoad: \tab yes\cr}
 }
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team with contributions from R Core Team}
 
 \keyword{ package }
 

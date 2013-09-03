@@ -11,8 +11,7 @@ should not be generated.}
 \value{A Parser Function that will delete items from the outer
 Documentation List.}
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team with contributions from R Core Team}
 
 
 

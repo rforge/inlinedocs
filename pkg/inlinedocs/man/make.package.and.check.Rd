@@ -13,8 +13,7 @@ or warnings.}
 
 
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team with contributions from R Core Team}
 
 
 

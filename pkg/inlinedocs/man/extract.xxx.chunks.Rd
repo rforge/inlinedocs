@@ -66,8 +66,7 @@ all open describe blocks.}
 name N we will look for N\{...\} in the Rd file and replace it
 with the string in this list (implemented in modify.Rd.file).}
 
-\author{Inlinedocs development team
-<inlinedocs-support@lists.r-forge.r-project.org>}
+\author{Inlinedocs development team with contributions from R Core Team}
 \note{\code{alias} extras are automatically split at new lines.
 
 \code{keyword} extras are automatically split at white space,
