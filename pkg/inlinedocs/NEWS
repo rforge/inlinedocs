@@ -17,6 +17,9 @@ Rd generation for attrSetter<- functions?
 Functions with {} as default arguments => error. See
 etc/default-function.R
 
+2013.9.3 copy utils code to utils.R so we do not have to use utils:::
+and so we can now pass R CMD check for R-devel on CRAN.
+
 2013.8.22 citation for JSS paper.
 
 2013.7.23 citation bugfix and if(interactive()) in
