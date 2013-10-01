@@ -586,9 +586,11 @@ forall.parsers <-
              }
              ## Eliminate leading and trailing code
              ex <- ex[-c(1, length(ex))]
-             if(ex[1]=="{")ex <- ex[-1]
-             ## all the prefixes
-             ex <- kill.prefix.whitespace(ex)
+             if( length(ex) ){  # avoid error on yet empty example
+                 if(ex[1]=="{")ex <- ex[-1]
+                 ## all the prefixes
+                 ex <- kill.prefix.whitespace(ex)
+             }
              ## Add an empty line before and after example
              ex <- c("", ex, "")
            }
@@ -640,7 +642,7 @@ extra.code.docs <- function # Extract documentation from code chunks
   extract.docs.try <- function(o,on)
     {
       ## Note: we could use parsed information here too, but that
-      ## would produce different results for setMethodS3 etc.
+      ## would produce different results for R.methodsS3::setMethodS3 etc.
       doc <- list()
       if ( !is.null(parsed[[on]]) ){
         if ( !is.na(parsed[[on]]@code[1]) ){ # no code given for generics
@@ -649,7 +651,7 @@ extra.code.docs <- function # Extract documentation from code chunks
         if(!"description"%in%names(doc) && !is.na(parsed[[on]]@description) ){
           doc$description <- parsed[[on]]@description
         }
-        ## if ( "setMethodS3" == parsed[[on]]@created ){
+        ## if ( "R.methodsS3::setMethodS3" == parsed[[on]]@created ){
         ##   gen <- leadingS3generic(on,topenv())
         ##   if ( 0 < length(gen) ){
         ##     doc$.s3method <- gen$.s3method
@@ -765,7 +767,7 @@ extract.file.parse <- function # File content analysis
 ### Using the base \code{parse} function, analyse the file to link
 ### preceding "prefix" comments to each active chunk. Those comments form
 ### the default description for that chunk. The analysis also looks for
-### S4 class "setClass" calls and R.oo setConstructorS3 and setMethodS3
+### S4 class "setClass" calls and R.oo setConstructorS3 and R.methodsS3::setMethodS3
 ### calls in order to link the documentation of those properly.
 (code
 ### Lines of R source code in a character vector - note that any
@@ -801,7 +803,7 @@ extract.file.parse <- function # File content analysis
     ## \item{assignment (<-)}{Ordinary assignment of value/function;}
     ## \item{setClass}{Definition of S4 class;}
     ## \item{setConstructorS3}{Definition of S3 class using R.oo package;}
-    ## \item{setMethodS3}{Definition of method for S3 class using R.oo package.}}
+    ## \item{R.methodsS3::setMethodS3}{Definition of method for S3 class using R.oo package.}}
     ## Additionally, the value may be a name of a function defined elsewhere,
     ## in which case the documentation should be copied from that other definition.
     ## This is handled using the concept of documentation links.
@@ -823,8 +825,8 @@ extract.file.parse <- function # File content analysis
                                 parent=parent,
                                 code=paste(chunks[[k]],sep=""),
                                 description=default.description)
-    } else if ( expr.type == "setMethodS3" || expr.type ==  "R.methodsS3::setMethodS3"){
-      ##details<< The \code{setMethodS3} calls introduce additional
+    } else if ( expr.type == "R.methodsS3::setMethodS3" || expr.type ==  "R.methodsS3::R.methodsS3::setMethodS3"){
+      ##details<< The \code{R.methodsS3::setMethodS3} calls introduce additional
       ## complexity: they will define an additional S3 generic (which
       ## needs documentation to avoid warnings at package build time)
       ## unless one already exists. This also is handled by "linking"
