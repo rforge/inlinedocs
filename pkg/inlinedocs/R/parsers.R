@@ -1,3 +1,5 @@
+#
+# vim:set ff=unix expandtab ts=2 sw=2:
 do.not.generate <- structure(function
 ### Make a Parser Function used to indicate that certain Rd files
 ### should not be generated.
@@ -165,6 +167,37 @@ print.allfun <- function(x,...){
 
 ### For each function in the package, do something.
 forfun <- function(FUN)forall(FUN,is.function)
+
+forGeneric<- function(
+  FUN  ### Function to apply to each method in the package (usually FUN is a parser)
+  ,
+  env
+  ,
+  gens
+  ){
+    #pe(quote(getwd()),environment()) 
+  force(FUN)
+	f <- function(objs,docs,...){
+    genericFuncNames=names(gens)
+	  L <- list()
+    for(genName in genericFuncNames){
+      fg=gens[[genName]]
+      meths=findMethods(fg,where=env)
+      signatureStrings=names(meths)
+      pp("signatureStrings",environment())
+	    on.exit(cat(sprintf("Parser Function failed on %s\n",N)))
+      for ( sig in signatureStrings){
+	      method <- meths[[sig]]
+        src=getSource(method)
+        N <- paste(genName,"-method-#",sig,sep="")
+        L[[N]]  <-  FUN(src=src,objs=meths,name=N,...)
+      }
+	    on.exit()## remove warning message
+    }
+    L
+  }
+  f
+}
 
 kill.prefix.whitespace <- function
 ### Figure out what the whitespace preceding the example code is, and
@@ -524,19 +557,57 @@ leadingS3generic <- function # check whether function name is an S3 generic
   list()
 }
 
+definition.from.source=function(doc,src,...){
+  def <- doc$definition
+  is.empty <- function(x)is.null(x)||x==""
+  if(is.empty(def) && !is.empty(src))
+    list(definition=src)
+  else list()
+}
+## title from first line of function def
+title.from.firstline=function(src,...){
+  first <- src[1]
+  if(!is.character(first))return(list())
+  if(!grepl("#",first))return(list())
+  list(title=gsub("[^#]*#\\s*(.*)","\\1",first,perl=TRUE))
+}
+############
+mm.examples.from.testfile=function(name,...){
+  pp("name",environment())
+  tsubdir <- getOption("inlinedocs.exampleDir")
+  trunk<- getOption("inlinedocs.exampleRegExpression")
+  if (is.null(tsubdir)) return(list())# do nothing 
+  #pe(quote(getwd()),environment())
+  #pp("tsubdir",environment())
+  p <- paste(trunk,name,"\\.R$",sep="")
+  #pp("p",environment())
+  allfiles=dir(tsubdir)
+  #pp("allfiles",environment())
+  L<- allfiles[grepl(pattern=p,allfiles)]
+  #pp("L",environment())
+  path=function(l){file.path(tsubdir,l)}
+  paths=lapply(L,path)
+  print(lapply(paths,file.exists))
+
+  if(length(L)>0){
+    exampleTexts= lapply(paths,readLines)
+    #pp("exampleTexts",environment())
+    combinedText <- unlist(exampleTexts)
+
+      return(list(examples=combinedText))
+      #pp("combinedTexts",environment())
+  }
+  else{
+    list()
+  } 
+}
 ### Parsers for each function that are constructed automatically. This
 ### is a named list, and each element is a parser function for an
 ### individual object.
 forfun.parsers <-
   list(prefixed.lines=prefixed.lines,
        extract.xxx.chunks=extract.xxx.chunks,
-       ## title from first line of function def
-       title.from.firstline=function(src,...){
-         first <- src[1]
-         if(!is.character(first))return(list())
-         if(!grepl("#",first))return(list())
-         list(title=gsub("[^#]*#\\s*(.*)","\\1",first,perl=TRUE))
-       },
+       title.from.firstline=title.from.firstline,
        ## PhG: it is tests/FUN.R!!! I would like more flexibility here
        ## please, let me choose which dir to use for examples!
        ## Get examples for FUN from the file tests/FUN.R
@@ -544,18 +615,172 @@ forfun.parsers <-
          tsubdir <- getOption("inlinedocs.exdir")
          if (is.null(tsubdir)) tsubdir <- "tests"	# Default value
          tfile <- file.path("..",tsubdir,paste(name,".R",sep=""))
-         if(file.exists(tfile))
+	 print(file.exists(tfile))
+         if(file.exists(tfile)){
            list(examples=readLines(tfile))
+	 }
          else list()
        },
-       definition.from.source=function(doc,src,...){
-         def <- doc$definition
-         is.empty <- function(x)is.null(x)||x==""
-         if(is.empty(def) && !is.empty(src))
-           list(definition=src)
-         else list()
-       })
+       mm.examples.from.testfile=mm.examples.from.testfile,
+       definition.from.source=definition.from.source
+       )
 
+extract.docs<-function(parsed,objs,on){
+  #pp("on",environment())
+  extract.docs.try <-function(o,on)
+    {
+      ## Note: we could use parsed information here too, but that
+      ## would produce different results for R.methodsS3::setMethodS3 etc.
+      doc <- list()
+      if ( !is.null(parsed[[on]]) ){
+        if ( !is.na(parsed[[on]]@code[1]) ){ # no code given for generics
+          doc$definition <- paste(parsed[[on]]@code)
+        }
+        if(!"description"%in%names(doc) && !is.na(parsed[[on]]@description) ){
+          doc$description <- parsed[[on]]@description
+        }
+        ## if ( "R.methodsS3::setMethodS3" == parsed[[on]]@created ){
+        ##   gen <- leadingS3generic(on,topenv())
+        ##   if ( 0 < length(gen) ){
+        ##     doc$.s3method <- gen$.s3method
+        ##     cat("S3method(",gen$.s3method[1],",",gen$.s3method[2],")\n",sep="")
+        ##   }
+        ## }
+      }
+      if("title" %in% names(doc) && !"description" %in% names(doc) ){
+        ## For short functions having both would duplicate, but a
+        ## description is required. Therefore automatically copy title
+        ## across to avoid errors at package build time.
+        doc$description <- doc$title
+      }
+      doc
+    }
+    res <- try({o <- objs[[on]]
+                extract.docs.try(o, on)},FALSE)
+    if(class(res)=="try-error"){
+      cat("Failed to extract docs for: ",on,"\n\n")
+      list()
+    } else if(0 == length(res) && inherits(objs[[on]],"standardGeneric")){
+      NULL
+    } else if(0 == length(res) && "function" %in% class(o)
+              && 1 == length(osource <- getSource(o))
+              && grepl(paste("UseMethod(",on,")",sep="\""),osource)
+              ){
+      ## phew - this should only pick up R.oo S3 generic definitions like:
+      ## attr(*, "source")= chr "function(...) UseMethod(\"select\")"
+      NULL
+    } else res
+  }
+
+inherit.docs <- function(
+  parsed, ##<< a list of doc.link objects
+  res,    ##<< the list of documentation to be extended
+  childName      ##<< the name of the object who possibly inherits
+  ){
+  in.res <- res[[childName]] #start with the present 
+  #pp("in.res",environment())
+  childsDocLink <-parsed[[childName]] 
+  if ( !is.null(childsDocLink) ){
+    for ( parent in childsDocLink@parent ){
+      if ( !is.na(parent) ){
+        #pp("parent",environment())
+        #pe(quote(names(res)),environment())
+        #pe(quote(parent %in% names(res)),environment())
+        if ( is.null(in.res) ){
+          in.res <- res[[parent]]
+        } else if ( parent %in% names(res) ){
+          parent.docs <- res[[parent]]
+          for ( nn in names(parent.docs) ){
+            if ( !nn %in% names(in.res) ){
+              in.res[[nn]] <- parent.docs[[nn]]
+            }
+          }
+      }
+    }
+    }
+  }
+  invisible(in.res)
+  ### the possibly extended list of documentation
+}
+extra.class.docs <- function # Extract documentation from code chunks
+### Parse R code to extract inline documentation from comments around
+### each class 
+### looking at the "source" attribute. This is a Parser Function that
+### can be used in the parser list of package.skeleton.dx(). TODO:
+(code,
+### Code lines in a character vector containing multiple R objects to
+### parse for documentation.
+objs,
+### The objects defined in the code.
+env, 
+### The environment they inhibit (needed to pass on)
+...
+### ignored
+ ){
+  doc.names <- names(objs)
+  parsed <- extract.file.parse(code,env)
+  res=list()
+  for ( nn in names(parsed) ){
+    if ( parsed[[nn]]@created == "setClass" ){
+      S4class.docs <- extract.docs.setClass(parsed[[nn]])
+      docname <- paste(nn,"class",sep="-")
+      if ( is.null(res[[docname]]) ){
+        res[[docname]] <- S4class.docs
+        doc.names <- c(doc.names,docname)
+      } else {
+        stop(nn," appears as both S4 class and some other definition")
+      }
+    }
+  }
+  all.done <- FALSE
+  while ( !all.done ){
+    res1 <- sapply(doc.names,inherit.docs,parsed=parsed,res=res,simplify=FALSE)
+    all.done <- identical(res1,res)
+    res <- res1
+  }
+  res
+### named list of lists, one for each object to document.
+}
+extra.code.docs <- function # Extract documentation from code chunks
+### Parse R code to extract inline documentation from comments around
+### each function. These are not able to be retreived simply by
+### looking at the "source" attribute. This is a Parser Function that
+### can be used in the parser list of package.skeleton.dx(). TODO:
+### Modularize this into separate Parsers Functions for S4 classes,
+### prefixes, ##<<blocks, etc. Right now it is not very clean!
+(code,
+### Code lines in a character vector containing multiple R objects to
+### parse for documentation.
+ objs,
+### The objects defined in the code.
+env, # the environment 
+ ...
+### ignored
+ ){
+  parsed <- extract.file.parse(code,env)
+  doc.names <- names(objs)
+  res <- sapply(doc.names,extract.docs,parsed=parsed,objs=objs,simplify=FALSE)
+  all.done <- FALSE
+  while ( !all.done ){
+    res1 <- sapply(doc.names,inherit.docs,parsed=parsed,res=res,simplify=FALSE)
+    all.done <- identical(res1,res)
+    res <- res1
+  }
+  ## now strip out any generics (which have value NULL in res):
+  res.not.null <- sapply(res,function(x){!is.null(x)})
+  if ( 0 < length(res.not.null) && length(res.not.null) < length(res) ){
+    res <- res[res.not.null]
+  }
+  res
+### named list of lists, one for each object to document.
+}
+forMethod.parsers<-
+  list(
+    prefixed.lines=prefixed.lines,
+    extract.xxx.chunks=extract.xxx.chunks,
+    title.from.firstline=title.from.firstline,
+    mm.examples.from.testfile
+  )
 ### List of Parser Functions that can be applied to any object.
 forall.parsers <-
   list(## Fill in author from DESCRIPTION and titles.
@@ -623,120 +848,12 @@ lonely <- structure(c(forall.parsers,forfun.parsers),ex=function(){
   lonely$prefixed.lines(src)
 })
 
-extra.code.docs <- function # Extract documentation from code chunks
-### Parse R code to extract inline documentation from comments around
-### each function. These are not able to be retreived simply by
-### looking at the "source" attribute. This is a Parser Function that
-### can be used in the parser list of package.skeleton.dx(). TODO:
-### Modularize this into separate Parsers Functions for S4 classes,
-### prefixes, ##<<blocks, etc. Right now it is not very clean!
-(code,
-### Code lines in a character vector containing multiple R objects to
-### parse for documentation.
- objs,
-### The objects defined in the code.
- ...
-### ignored
- ){
-  parsed <- extract.file.parse(code)
-  extract.docs.try <- function(o,on)
-    {
-      ## Note: we could use parsed information here too, but that
-      ## would produce different results for R.methodsS3::setMethodS3 etc.
-      doc <- list()
-      if ( !is.null(parsed[[on]]) ){
-        if ( !is.na(parsed[[on]]@code[1]) ){ # no code given for generics
-          doc$definition <- paste(parsed[[on]]@code)
-        }
-        if(!"description"%in%names(doc) && !is.na(parsed[[on]]@description) ){
-          doc$description <- parsed[[on]]@description
-        }
-        ## if ( "R.methodsS3::setMethodS3" == parsed[[on]]@created ){
-        ##   gen <- leadingS3generic(on,topenv())
-        ##   if ( 0 < length(gen) ){
-        ##     doc$.s3method <- gen$.s3method
-        ##     cat("S3method(",gen$.s3method[1],",",gen$.s3method[2],")\n",sep="")
-        ##   }
-        ## }
-      }
-      if("title" %in% names(doc) && !"description" %in% names(doc) ){
-        ## For short functions having both would duplicate, but a
-        ## description is required. Therefore automatically copy title
-        ## across to avoid errors at package build time.
-        doc$description <- doc$title
-      }
-      doc
-    }
-  extract.docs <- function(on){
-    res <- try({o <- objs[[on]]
-                extract.docs.try(o, on)},FALSE)
-    if(class(res)=="try-error"){
-      cat("Failed to extract docs for: ",on,"\n\n")
-      list()
-    } else if(0 == length(res) && inherits(objs[[on]],"standardGeneric")){
-      NULL
-    } else if(0 == length(res) && "function" %in% class(o)
-              && 1 == length(osource <- getSource(o))
-              && grepl(paste("UseMethod(",on,")",sep="\""),osource)
-              ){
-      ## phew - this should only pick up R.oo S3 generic definitions like:
-      ## attr(*, "source")= chr "function(...) UseMethod(\"select\")"
-      NULL
-    } else res
-  }
-  doc.names <- names(objs)
-  res <- sapply(doc.names,extract.docs,simplify=FALSE)
-  ## Special processing for S4 classes as they do not appear in normal ls()
-  for ( nn in names(parsed) ){
-    if ( parsed[[nn]]@created == "setClass" ){
-      S4class.docs <- extract.docs.setClass(parsed[[nn]])
-      docname <- paste(nn,"class",sep="-")
-      if ( is.null(res[[docname]]) ){
-        res[[docname]] <- S4class.docs
-        doc.names <- c(doc.names,docname)
-      } else {
-        stop(nn," appears as both S4 class and some other definition")
-      }
-    }
-  }
-  inherit.docs <- function(on){
-    in.res <- res[[on]]
-    if ( !is.null(parsed[[on]]) ){
-      for ( parent in parsed[[on]]@parent ){
-        if ( !is.na(parent) ){
-          if ( is.null(in.res) ){
-            in.res <- res[[parent]]
-          } else if ( parent %in% names(res) ){
-            parent.docs <- res[[parent]]
-            for ( nn in names(parent.docs) ){
-              if ( !nn %in% names(in.res) ){
-                in.res[[nn]] <- parent.docs[[nn]]
-              }
-            }
-          }
-        }
-      }
-    }
-    invisible(in.res)
-  }
-  all.done <- FALSE
-  while ( !all.done ){
-    res1 <- sapply(doc.names,inherit.docs,simplify=FALSE)
-    all.done <- identical(res1,res)
-    res <- res1
-  }
-  ## now strip out any generics (which have value NULL in res):
-  res.not.null <- sapply(res,function(x){!is.null(x)})
-  if ( 0 < length(res.not.null) && length(res.not.null) < length(res) ){
-    res <- res[res.not.null]
-  }
-  res
-### named list of lists, one for each object to document.
-}
 
 ### List of parsers to use by default with package.skeleton.dx.
 default.parsers <-
-  c(extra.code.docs=extra.code.docs, ## TODO: cleanup!
+  c(
+    extra.code.docs=extra.code.docs, ## TODO: cleanup!
+    extra.class.docs=extra.class.docs, ## TODO: cleanup!
     sapply(forfun.parsers,forfun),
     edit.package.file=function(desc,...){
       in.details <- setdiff(colnames(desc),"Description")
@@ -767,12 +884,16 @@ extract.file.parse <- function # File content analysis
 ### Using the base \code{parse} function, analyse the file to link
 ### preceding "prefix" comments to each active chunk. Those comments form
 ### the default description for that chunk. The analysis also looks for
-### S4 class "setClass" calls and R.oo setConstructorS3 and R.methodsS3::setMethodS3
-### calls in order to link the documentation of those properly.
-(code
+### S4 class "setClass" ,R.oo setConstructorS3  R.methodsS3::setMethodS3
+### or S4 setMethod calls in order to link the documentation of those properly.
+(code,
 ### Lines of R source code in a character vector - note that any
 ### nested \code{source} statements are \emph{ignored} when scanning
 ### for class definitions.
+ env
+ ### the environment in which the code has been evaluated before.
+ ### This is e.g. iportant to make sure that we can evaluate expressions 
+ ### like signature definitions for methods 
  ){
   res <- list()
   old.opt <- options(keep.source=TRUE)
@@ -802,6 +923,7 @@ extract.file.parse <- function # File content analysis
     ## determined by expression type: \describe{
     ## \item{assignment (<-)}{Ordinary assignment of value/function;}
     ## \item{setClass}{Definition of S4 class;}
+    ## \item{setMethod}{Definition of a method of a S4 generic;}
     ## \item{setConstructorS3}{Definition of S3 class using R.oo package;}
     ## \item{R.methodsS3::setMethodS3}{Definition of method for S3 class using R.oo package.}}
     ## Additionally, the value may be a name of a function defined elsewhere,
@@ -812,7 +934,7 @@ extract.file.parse <- function # File content analysis
     expr.type <- chars[1]
     parent <- NA_character_
 
-    if ( expr.type == "<-" || expr.type == "setConstructorS3" || expr.type == "setClass" ){
+    if ( expr.type == "<-" || expr.type == "setConstructorS3" ){
       object.name <- chars[2]
       ## If the function definition is not embedded within the call, then
       ## the parent is that function. Test whether the the third value
@@ -825,34 +947,43 @@ extract.file.parse <- function # File content analysis
                                 parent=parent,
                                 code=paste(chunks[[k]],sep=""),
                                 description=default.description)
-    } else if ( expr.type == "R.methodsS3::setMethodS3" || expr.type ==  "R.methodsS3::R.methodsS3::setMethodS3"){
+    } else if ( expr.type == "setClass" ){
+      object.name <- chars[2]
+      res[[object.name]] <- new("DocLink",name=object.name,
+                                created=expr.type,
+                                parent=parent,
+                                code=paste(chunks[[k]],sep=""),
+                                description=default.description)
+
+    }
+    else if ( expr.type == "R.methodsS3::setMethodS3" || expr.type ==  "R.methodsS3::R.methodsS3::setMethodS3"){
       ##details<< The \code{R.methodsS3::setMethodS3} calls introduce additional
       ## complexity: they will define an additional S3 generic (which
       ## needs documentation to avoid warnings at package build time)
       ## unless one already exists. This also is handled by "linking"
-      ## documentation. A previously unseen generic is linked to the
-      ## first defining instances, subsequent definitions of that generic
+      ## documentation. A previously unseen S3generic is linked to the
+      ## first defining instances, subsequent definitions of that S3generic
       ## also link back to the first defining instance.
-      generic.name <- chars[2]
-      object.name <- paste(generic.name,chars[3],sep=".")
-      if ( is.null(res[[generic.name]]) ){
-        ## TDH 9 April 2012 Do NOT add \\link in generic.desc below,
+      S3generic.name <- chars[2]
+      object.name <- paste(S3generic.name,chars[3],sep=".")
+      if ( is.null(res[[S3generic.name]]) ){
+        ## TDH 9 April 2012 Do NOT add \\link in S3generic.desc below,
         ## since it causes problems on R CMD check.
         ##* checking Rd cross-references ... WARNING
         ##Error in find.package(package, lib.loc) : 
         ##  there is no package called ‘MASS’
         ##Calls: <Anonymous> -> lapply -> FUN -> find.package
 
-        generic.desc <-
+        S3generic.desc <-
           paste("Generic method behind \\code{",object.name,"}",sep="")
-        res[[generic.name]] <- new("DocLink",
-                                   name=generic.name,
+        res[[S3generic.name]] <- new("DocLink",
+                                   name=S3generic.name,
                                    created=expr.type,
                                    parent=object.name,
                                    code=NA_character_,
-                                   description=generic.desc)
+                                   description=S3generic.desc)
       } else {
-        parent <- res[[generic.name]]@parent
+        parent <- res[[S3generic.name]]@parent
       }
       ## If the function definition is not embedded within the call, then
       ## the parent is that function. Test whether the the fourth value
@@ -865,8 +996,59 @@ extract.file.parse <- function # File content analysis
                                 parent=parent,
                                 code=paste(chunks[[k]],sep=""),
                                 description=default.description)
-    } else {
-      ## Not sure what to do with these yet. Need to deal with setMethod, setAs etc.
+    } else if (expr.type == "setMethod" ) {
+      pp("lang",environment())
+      pp("chars",environment())
+      
+      ## Since we do not know if the arguments in the call to setMethod are given with
+      ## keywords, partially matching keywords as an ordered list ore any 
+      ## combination of it, we use the same function as R  (match.arg ) 
+      ## to rewrite our argumentlist to a (pair)list from which
+      ## we can extract the information easily
+      KeyWords=c("f","signature","definition","where")
+      NamedArgs=list() # the new argument list
+      args=lang[2:length(lang)]
+      argNames=names(args)
+      pp("args",environment())
+      pp("argNames",environment())
+      for (i in seq_along(lang[2:length(lang)])){
+         argName=argNames[[i]]
+         if(argNames[[i]]==""){ # no keyword=value given for this arg 
+           NamedArgs[[KeyWords[[i]]]] <- args[[i]] #determining the keyword  by position
+         }else{
+          newName=try(match.arg(argNames[[i]],KeyWords))
+          if (class(newName)=="try-error") {
+            stop(paste("could not match the argument with name : " ,argNames[[i]]," to a formal argument of setMethod",sep=""))
+          }else{
+           NamedArgs[[newName]] <- args[[i]]
+         }
+        }
+      }
+      pp("NamedArgs",environment())
+      genName=NamedArgs[["f"]]
+      sigexp=NamedArgs[["signature"]]
+      pp("sigexp",environment())
+      sig=eval(sigexp,env)
+      pp("sig",environment())
+      sigString <- paste(sig,collapse="#")
+      N=paste(genName,"-method-#",sigString,sep="")
+      object.name <- N
+      pp("object.name",environment())
+
+      ## If the function definition is not embedded within the call, then
+      ## the parent is that function. Test whether the value for "definition"
+      ## looks like a funktion name and add it to parents if so.
+      def=paste(as.character(NamedArgs[["definition"]]),collapse="\n")
+      if ( grepl("^[\\._\\w]+$",def,perl=TRUE) ){
+        parent <- def
+      }
+      res[[object.name]] <- new("DocLink",name=object.name,
+                                created=expr.type,
+                                parent=parent,
+                                code=paste(chunks[[k]],sep=""),
+                                description=default.description)
+    }else { 
+      ## Not sure what to do with these yet. Need to deal with setAs etc.
     }
   }
   invisible(res)
@@ -932,19 +1114,10 @@ extract.docs.setClass <- function # S4 class inline documentation
   }
   invisible(docs)
 }
-
-apply.parsers <- function
-### Parse code to r objs, then run all the parsers and return the
-### documentation list.
-(code,
-### Character vector of code lines.
- parsers=default.parsers,
-### List of Parser Functions.
- verbose=FALSE,
-### Echo names of Parser Functions?
- ...
-### Additional arguments to pass to Parser Functions.
- ){
+createObjects <- function(code){
+  # this is factored out to make writing tests easier
+  # since we often need the objects and the environment 
+  # they inhabit 
   e <- new.env()
   ## KMP 2011-03-09 fix problem with DocLink when inlinedocs ran on itself
   ## Error in assignClassDef(Class, classDef, where) :
@@ -962,27 +1135,88 @@ apply.parsers <- function
   for (i in exprs){
       eval(i, e)
   }
-  objs <- sapply(ls(e),get,e,simplify=FALSE)
+  objs <- sapply(ls(e),get,e,simplify=FALSE) # note that ls will not find S4 classes nor methods for generic functions
+  list(objs=objs,env=e,exprs=exprs)
+}
 
+
+apply.parsers<- function
+### Parse code to r objs, then run all the parsers and return the
+### documentation list.
+(code,
+### Character vector of code lines.
+ parsers=default.parsers,
+### List of Parser Functions.
+ verbose=FALSE,
+### Echo names of Parser Functions?
+ ...
+### Additional arguments to pass to Parser Functions.
+ ){
+#  #####################################
+#  e <- new.env()
+#  ## KMP 2011-03-09 fix problem with DocLink when inlinedocs ran on itself
+#  ## Error in assignClassDef(Class, classDef, where) :
+#  ##   Class "DocLink" has a locked definition in package "inlinedocs"
+#  ## Traced to "where" argument in setClassDef which defaults to topenv()
+#  ## which in turn is inlinedocs when processing inlinedocs package, hence
+#  ## the clash. The following works (under R 2.12.2), so that the topenv()
+#  ## now finds e before finding the inlinedocs environment.
+#  old <- options(keep.source=TRUE,topLevelEnvironment=e)
+#  on.exit(options(old))
+#  exprs <- parse(text=code)
+#  ## TDH 2011-04-07 set this so that no warnings about creating a fake
+#  ## package when we try to process S4 classes defined in code
+#  e$.packageName <- "inlinedocs.processor"
+#  for (i in exprs){
+#      eval(i, e)
+#  }
+#  objs <- sapply(ls(e),get,e,simplify=FALSE) # note that ls will not find S4 classes nor methods for generic functions
+  l=createObjects(code)
+  objs=l[["objs"]] 
+  e=l[["env"]] 
+  exprs=l[["exprs"]] 
+  # since th method definitions do not appear in ls() so are not represented in obs
+  # so we have to find them in the parsed code
+  glo=list()
+  for ( k in 1:length(exprs)){
+    lang <- exprs[[k]]
+    chars <- as.character(lang)
+    #pp("chars",environment())
+    expr.type <- chars[[1]]
+    object.name <- chars[[2]]
+    if (expr.type == "setMethod"){glo=c(glo,object.name)}
+  }
+  gloFuncs=unlist(sapply(glo,getGeneric,where=e))
+  #####################################
   docs <- list()
+  # now find generic Functions that are defined in the code
+  # since those lead to entries in objs we can find them
+  pe(quote(length(names(objs))),environment())
+  if (length(names(objs))!=0){ 
+    definedGenerics=objs[sapply(names(objs),isGeneric,e)]
+  }else{
+    definedGenerics=list()
+  }
+  #gens=unique(c(definedGenerics,gloFuncs))
+  gens=definedGenerics
+  #gens=gloFuncs
+  # gens=glo
+  pp("gens",environment())
+  
 
   ## apply parsers in sequence to code and objs
   if(verbose)cat("Applying parsers:\n")
   for(i in seq_along(parsers)){
     N <- names(parsers[i])
-    #mm if(verbose){
+    if(verbose){
       if(is.character(N) && N!=""){
         cat(" this is parser:",N,"\n",sep="")
       }else cat('.\n')
-    #mm }
+    }
     p <- parsers[[i]]
     ## This is the argument list that each parser receives:
     L <- p(code=code,objs=objs,docs=docs,env=e,...)
-    # print("mm point1")
-    #save(docs,L,file="/home/mm/SoilR/scripts/docs_L.RData")
-    #print(paste(L,"\n"))
-    #if(N=="exclude")browser()
-    docs <- combine(docs,L) #mm
+    docs <- combine(docs,L) 
   }
   ## post-process to collapse all character vectors
   for(i in seq_along(docs)){
@@ -992,7 +1226,21 @@ apply.parsers <- function
     }
  }
   if(verbose)cat("\n")
-  return(docs)
+  ## mm I added a second parser loop here for my method parsers 
+  ## It would perhaps be possible to integrate the new parsers in the 
+  ## main loop above
+  docs2 <- list()
+  parsersForMethods=sapply(forMethod.parsers,forGeneric,env=e,gens=gens)
+  for(i in seq_along(parsersForMethods)){
+    N <- names(parsersForMethods[[i]])
+    p <- parsersForMethods[[i]]
+    cat(" this is parser:",N,"\n",sep="")
+    L <- p(code=code,objs=objs,docs=docs2,env=e,...)
+    #pp("L",environment())
+    docs2 <- combine(docs2,L) 
+  }
+
+  return(list(docs=combine(docs,docs2),env=e,objs=objs,gens=gens))
 ### A list of extracted documentation from code.
 }
 
@@ -1018,7 +1266,7 @@ extract.docs.file <- structure(function
 ### Other arguments to pass to Parser Functions.
  ){
   if(is.null(parsers))parsers <- nondesc.parsers
-  apply.parsers(readLines(f),parsers,verbose=FALSE,...)
+  apply.parsers(readLines(f),parsers,verbose=FALSE,...)[["docs"]]
 },ex=function(){
   f <- system.file("silly","R","silly.R",package="inlinedocs")
   extract.docs.file(f)
