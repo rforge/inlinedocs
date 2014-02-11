@@ -13,7 +13,7 @@ It is also easy to define a new syntax.}
 \tabular{ll}{Package: \tab inlinedocs\cr
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
-Version: \tab 2013.9.3\cr
+Version: \tab 2014.2.11\cr
 Authors@R: \tab c(person("Toby Dylan","Hocking",role=c("aut","cre"),
 email="toby@sg.cs.titech.ac.jp"),
 person("Keith","Ponting",role="aut"),

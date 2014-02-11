@@ -17,6 +17,11 @@ Rd generation for attrSetter<- functions?
 Functions with {} as default arguments => error. See
 etc/default-function.R
 
+2014.2.11
+
+attr(o, "ex", exact=TRUE) to avoid taking other attributes with
+similar names when in fact no examples are present.
+
 2013.9.3 copy utils code to utils.R so we do not have to use utils:::
 and so we can now pass R CMD check for R-devel on CRAN.
 

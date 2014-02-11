@@ -798,7 +798,7 @@ forall.parsers <-
        },
        ## PhG: here is what I propose for examples code in the 'ex' attribute
        examples.in.attr =  function (name, o, ...) {
-         ex <- attr(o, "ex")
+         ex <- attr(o, "ex", exact=TRUE)
          if (!is.null(ex)) {
            ## Special case for code contained in a function
            if (inherits(ex, "function")) {

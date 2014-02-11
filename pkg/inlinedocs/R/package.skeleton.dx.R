@@ -466,7 +466,7 @@ modify.Rd.file <- function
  pkg,
 ### Package name.
  docs
-### Named list of documentation in racted comments.
+### Named list of documentation in extracted comments.
  ){
   # PhG: for functions like 'obj<-', package.skeleton creates files like 'obj_-'
   # => rework names the same way, .e., using the same function from utils package
