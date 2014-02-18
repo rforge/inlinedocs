@@ -97,7 +97,7 @@ test.A(){
 	print(isGeneric("GenericFunc"))
 } 
 '
-	cat(file=file.path(TestDir,"examples.GenericFunc-method-#A#numeric.R"),text=testCodeA)
+	cat(file=file.path(TestDir,"example.GenericFunc_method__A_numeric.R"),text=testCodeA)
   testCodeB='
 test.B(){
         reqire("RUnit")
@@ -106,92 +106,22 @@ test.B(){
 	print(isGeneric("GenericFunc"))
 } 
 '
-	cat(file=file.path(TestDir,"examples.GenericFunc-method-#B#character.R"),text=testCodeB)
-	options("inlinedocs.exampleRegExpression"="^examples\\.")
+	cat(file=file.path(TestDir,"example.GenericFunc_method__B_character.R"),text=testCodeB)
 	
   parsers=NULL
-	options("inlinedocs.exampleDir"=TestDir)
-	result <- extract.docs.file(f,parsers)
-	#pp("result",environment())
-	checkTrue(CompareTrimmedNonEmptyLines(result[["GenericFunc-method-#A#numeric"]]$examples,testCodeA))
-	checkTrue(CompareTrimmedNonEmptyLines(result[["GenericFunc-method-#B#character"]]$examples,testCodeB))
+	result <- extract.docs.file(
+    f,
+    parsers,
+    inlinedocs.exampleDir=TestDir,
+    inlinedocs.exampleTrunk="example."
+  )
+  ex <- result[["GenericFunc_method__A_numeric"]]$examples
+	#pp("ex",environment())
+	checkTrue(CompareTrimmedNonEmptyLines(result[["GenericFunc_method__A_numeric"]]$examples,testCodeA))
+	checkTrue(CompareTrimmedNonEmptyLines(result[["GenericFunc_method__B_character"]]$examples,testCodeB))
 }
 ############################################################################################################################
-test.MethodDescription=function(){
-    require("stringr")
-    code='  
-########################################################
-require("methods")
-setGeneric(
-  name="GenericFunc",
-  def=function(# A short description of the generic function
-    ### This function is generic
-    .Object, ##<< d2 
-    num 
-    ){standardGeneric("GenericFunc")
-  ##value<< d3
-  }
-)
-########################################################
-########################################################
-setClass(# b1 
-    ### b2
-    Class="A",
-    slots=c(name="character") # slot
-   )
-########################################################
-setMethod(
-    f="GenericFunc",
-    signature=c("A","numeric"),
-    definition=function(# A short description of the method for class A
-        ### This method deals with objects of class A
-       .Object, ##<< an object of class "A"
-       num ##<< a number
-       ){
-       return(.Object@name) 
-       ##value<< d3
-    }
-)
-########################################################
-########################################################
-setClass(# b1 
-    ### b2
-    Class="B",
-    slots=c(name="character") # slot
-   )
-########################################################
-setMethod(
-    f="GenericFunc",
-    signature=c("B","character"),
-    definition=function(# A short description of the method for class B
-        ### This method deals with objects of class B
-       .Object, ##<< an object of class "B"
-       num 
-       ){
-       return(.Object@name) 
-       ##value<< f3
-    }
-)
-    '
-  fn="source.R"
-  writeLines(code,con=fn)
-	#
-  parsers=NULL
-	result <- extract.docs.file(fn,parsers)
-#	
-#  
-#	#pp("result",environment())
-#
-#	checkEquals(result[["GenericFunc-method-#A#numeric"]][["description"]],"This method deals with objects of class A")
-#	checkEquals(result[["GenericFunc-method-#B#character"]][["description"]],"This method deals with objects of class B")
-#	checkEquals(result[["GenericFunc-method-#A#numeric"]][["description"]],"This method deals with objects of class A")
-#	checkEquals(result[["GenericFunc-method-#B#character"]][["description"]],"This method deals with objects of class B")
-#	checkEquals(result[["GenericFunc-method-#A#numeric"]][["title"]],"A short description of the method for class A")
-#	checkEquals(result[["GenericFunc-method-#B#character"]][["title"]],"A short description of the method for class B")
-}
-############################################################################################################################
-test.ExtraMethodDocumentationFile=function(){
-  require("stringr")
+test.AddExampleCodeForMethodsFromExternalTestIntoRdFile=function(){
 	pkgDir="pkg"
 	RDir=file.path(pkgDir,"R")
 	TestDir=file.path(pkgDir,"inst","tests")
@@ -278,66 +208,57 @@ setMethod(
 )
 '
   f=file.path(RDir,"source.R")
-	cat(file=f,srcCode)
-desc <-'
-Package:MethodDoc 
-Title: example of inlinedocs Documentation of Methods
-Type: Package
-Version: 1.0
-Date:Mo 18. Nov 15:08:00 CET 2013 
-Author: Markus Müller
-Maintainer: Markus Müller <mamueller.bgc-jena.mpg.de>
-Description: Attempt to exercise method documentation
-URL: http://inlinedocs.r-forge.r-project.org
-License: GPL-3
-LazyLoad: yes
-Depends: methods
+	
+  cat(file=f,srcCode)
+  testCodeA='
+test.A(){
+        reqire("RUnit")
+	o=new("A","myname")
+	print(GenericFunc(o,4))
+	print(isGeneric("GenericFunc"))
+} 
 '
+pkgName='NamespaceExample'  
+pkgVersion='0.0-1'  
+desc <-paste("
+Package:",pkgName," 
+Title: Examples to test the possibilities of Namespaces  
+Version:",pkgVersion,"
+Date: 2013-03-4
+Author:  Markus Mueller <mamueller@bgc-jena.mpg.de>
+Maintainer: Markus Mueller <mamueller@bgc-jena.mpg.de>
+Description: This package contains some functions to be tested
+License: GPL-3
+Depends:methods,RUnit 
+",sep="")
+
   descFilePath=file.path(pkgDir,"DESCRIPTION")
 	cat(file=descFilePath,text=desc)
-	parsers=NULL
-  manDir=file.path(pkgDir,"man")
-  pp("manDir",environment())
-  unlink(paste(manDir,"/*",sep=""),recursive=TRUE)
-  #pwd=setwd(d)
-  #tryCatch(package.skeleton.dx("MethodDoc"),finally=setwd(pwd))
-  tryCatch(package.skeleton.dx(pkgDir))
-  strA <- '
-\\name{GenericFunc-method-#A#numeric}
-\\alias{GenericFunc-method-#A#numeric}
-\\title{A short description of the method for class A}
-\\description{This method deals with objects of class A}
-\\usage{fff(.Object, num)}
-\\arguments{
-  \\item{.Object}{an object of class "A"}
-  \\item{num}{
-}
-}
+	cat(file=file.path(TestDir,"example.GenericFunc_method__A_numeric.R"),text=testCodeA)
+  testCodeB='
+test.B(){
+        reqire("RUnit")
+	o=new("B",1)
+	print(GenericFunc(o,"blub"))
+	print(isGeneric("GenericFunc"))
+} 
 '
-  
-  strB <- '
-\\name{GenericFunc-method-#B#character}
-\\alias{GenericFunc-method-#B#character}
-\\title{A short description of the method for class B}
-\\description{This method deals with objects of class B}
-\\usage{fff(.Object, num)}
-\\arguments{
-  \\item{.Object}{an object of class "B"}
-  \\item{num}{
+	TestDir=file.path(pkgDir,"inst","tests")
+	cat(file=file.path(TestDir,"example.GenericFunc_method__B_character.R"),text=testCodeB)
+	
+  package.skeleton.dx(
+    pkgDir,
+    inlinedocs.exampleDir=TestDir,
+    inlinedocs.exampleTrunk="example."
+  )
+  #stop("the examples do not show up in the Rd file although they are extracted")
 }
-}
-  '
-  refB=unlist(str_split(strB,"\n"))
-  checkTrue(file.exists(file.path(manDir,"GenericFunc-method-#A#numeric.Rd")))
-  checkTrue(file.exists(file.path(manDir,"GenericFunc-method-#B#character.Rd")))
-  checkTrue(CompareTrimmedNonEmptyLines(readLines(file.path(manDir,"GenericFunc-method-#A#numeric.Rd")),strA))
-  checkTrue(CompareTrimmedNonEmptyLines(readLines(file.path(manDir,"GenericFunc-method-#B#character.Rd")),refB))
-}
-
-##########################################################################
-test.forGeneric=function(){
-    require("stringr")
-    code='  
+############################################################################################################################
+test.MethodDescription=function(){
+  require("stringr")
+	pkgDir="pkg"
+	TestDir=file.path(pkgDir,"inst","tests")
+  code='  
 ########################################################
 require("methods")
 setGeneric(
@@ -390,51 +311,248 @@ setMethod(
        ##value<< f3
     }
 )
-'
-e=new.env()
-old <- options(keep.source=TRUE,topLevelEnvironment=e)
-## ex=function(old){
-##   print('stuff')
-##   print(topenv())
-##   options(topLevelEnvironment=te)
-##   print(topenv())
-## }
-#  on.exit(ex(old))
-exprs <- parse(text=code,keep.source=TRUE)
-    for (i in exprs){
-          print(i)
-          eval(i, env=e)
-    }
-#pe(quote(ls(e)),environment())
-objs <- sapply(ls(e),get,e,simplify=FALSE) 
-gens=objs[sapply(names(objs),isGeneric,e)]
-#pp("gens",environment())
-# now take a parser used for single objects
-f_single <- extract.xxx.chunks
-# show the interface of f_single
-fg=objs[["GenericFunc"]]
-meths=findMethods(fg,where=e)
-o=meths[[1]]
-src=getSource(o)
-#pp("src",environment())
-n=names(o)
-#pe(quote(f_single(src)),environment())
-resSingle=f_single(src)
-checkEquals(resSingle[["item{.Object}"]],"an object of class \"A\"")
-checkEquals(resSingle[["value"]],"d3")
+    '
+  fn="source.R"
+  writeLines(code,con=fn)
+	#
+  parsers=NULL
+	result <- extract.docs.file(
+    fn,
+    parsers,
+    inlinedocs.exampleDir=TestDir,
+    inlinedocs.exampleTrunk="example."
+  )
+	
+  
+	#pp("result",environment())
 
-# create an iterator 
-f_funs <- forGeneric(f_single,env=e,gens=gens)
-# show the interface of the iterator
-res=f_funs(objs=objs,docs=list())
-pp("res",environment())
-checkEquals(res[["GenericFunc-method-#A#numeric"]][["item{.Object}"]],"an object of class \"A\"")
-checkEquals(res[["GenericFunc-method-#B#character"]][["item{.Object}"]],"an object of class \"B\"")
-checkEquals(res[["GenericFunc-method-#A#numeric"]][["value"]],"d3")
-checkEquals(res[["GenericFunc-method-#B#character"]][["value"]],"f3")
+	checkEquals(result[["GenericFunc_method__A_numeric"]][["description"]],"This method deals with objects of class A")
+	checkEquals(result[["GenericFunc_method__B_character"]][["description"]],"This method deals with objects of class B")
+	checkEquals(result[["GenericFunc_method__A_numeric"]][["description"]],"This method deals with objects of class A")
+	checkEquals(result[["GenericFunc_method__B_character"]][["description"]],"This method deals with objects of class B")
+	checkEquals(result[["GenericFunc_method__A_numeric"]][["title"]],"A short description of the method for class A")
+	checkEquals(result[["GenericFunc_method__B_character"]][["title"]],"A short description of the method for class B")
 }
+############################################################################################################################
+test.ExtraMethodDocumentationFile=function(){
+  require("stringr")
+	pkgDir="pkg"
+	RDir=file.path(pkgDir,"R")
+	TestDir=file.path(pkgDir,"inst","tests")
+	dir.create(RDir,recursive=TRUE)
+	dir.create(TestDir,recursive=TRUE)
+	srcCode='
+# Minimum code exampe to test method documentation
+# vim:set ff=unix expandtab ts=2 sw=2:
+########################################################
+require("methods")
+nonGenricFunc=function(# fsd
+  ### fld
+  x ##<< fa1
+  )
+{
+  x
+  ##<< fv
+}
+setGeneric(
+  name="GenericFunc",
+  def=function(# A short description of the generic function
+    ### This function is generic
+    .Object, ##<< d2 
+    num 
+    ){standardGeneric("GenericFunc")
+  ##value<< d3
+  }
+)
+########################################################
+########################################################
+setClass(# b1 
+    ### b2
+    Class="A",
+    slots=c(name="character") # slot
+   )
+########################################################
+setMethod(
+    f="initialize",
+    signature="A",
+    definition=function # constructor
+    (.Object,name){
+      .Object@name <- name
+      return(.Object)
+    }
+)
+########################################################
+setMethod(
+    f="GenericFunc",
+    signature=c("A","numeric"),
+    definition=function(# A short description of the method for class A
+        ##description<<   This method deals with objects of class A
+                        
+       .Object, ##<< an object of class "A"
+       num
+       ){
+       return(.Object@name) 
+    }
+)
+########################################################
+########################################################
+setClass(# b1 
+    ### b2
+    Class="B",
+    slots=c(name="character") # slot
+   )
+########################################################
+setMethod(
+    f="initialize",
+    signature="B",
+    definition=function # a constructor for Class B
+    ### This constructor allows the creation of objects of class B 
+    (
+    .Object, ##<< an object of class B
+    name, ##<< an string
+    value ##<< a number
+    ){
+      .Object@name <- name
+      return(.Object)
+      ### The desired object of class B
+    }
+)
+#########################################################
+setMethod(
+    f="GenericFunc",
+    signature=c("B","character"),
+    definition=function(# A short description of the method for class B
+        ### This method deals with objects of class B
+       .Object, ##<< an object of class "B"
+       num 
+       ){
+       return(.Object@name) 
+    }
+)
+'
+  f=file.path(RDir,"source.R")
+	cat(file=f,srcCode)
+desc <-'
+Package:MethodDoc 
+Title: example of inlinedocs Documentation of Methods
+Type: Package
+Version: 1.0
+Date:Mo 18. Nov 15:08:00 CET 2013 
+Author: Markus Müller
+Maintainer: Markus Müller <mamueller.bgc-jena.mpg.de>
+Description: Attempt to exercise method documentation
+URL: http://inlinedocs.r-forge.r-project.org
+License: GPL-3
+LazyLoad: yes
+Depends: methods
+'
+  descFilePath=file.path(pkgDir,"DESCRIPTION")
+	cat(file=descFilePath,text=desc)
+  ## create a NAMESPACE FIle since one has to be present.
+namesp <- '
+exportGenerics(
+       GenericFunc
+)
+'
+  NamespaceFilePath=file.path(pkgDir,"NAMESPACE")
+	cat(file=NamespaceFilePath,text=namesp)
+	parsers=NULL
+  manDir=file.path(pkgDir,"man")
+  pp("manDir",environment())
+  unlink(paste(manDir,"/*",sep=""),recursive=TRUE)
+  tryCatch(package.skeleton.dx(pkgDir))
+  strA <- '
+\\name{GenericFunc_method__A_numeric}
+\\alias{GenericFunc_method__A_numeric}
+\\title{A short description of the method for class A}
+
+\\description{This method deals with objects of class A}
+\\arguments{
+  \\item{.Object}{an object of class "A"}
+  \\item{num}{
+}
+}
+\\author{Markus Müller}
+'
+  iniB <- '
+\\name{initialize_method__B}
+\\alias{initialize_method__B}
+\\title{a constructor for Class B}
+\\description{This constructor allows the creation of objects of class B }
+\\arguments{
+  \\item{.Object}{an object of class B}
+  \\item{name}{an string}
+  \\item{value}{a number}
+}                                                                         
+                                                                          
+\\value{The desired object of class B}
+                                                                          
+\\author{Markus Müller}
+'
+  
+  strB <- '
+\\name{GenericFunc_method__B_character}
+\\alias{GenericFunc_method__B_character}
+\\title{A short description of the method for class B}
+\\description{This method deals with objects of class B}
+\\arguments{
+  \\item{.Object}{an object of class "B"}
+  \\item{num}{
+}
+}
+
+\\author{Markus Müller}
+  '
+  strZ <- '\\name{GenericFunc-methods}
+\\docType{methods}
+\\alias{GenericFunc-methods}
+\\alias{GenericFunc,A,numeric-method}
+\\alias{GenericFunc,B,character-method}
+\\title{ ~~ Methods for Function \\code{GenericFunc}  ~~}
+\\description{
+ ~~ Methods for function \\code{GenericFunc} ~~
+}
+\\section{Methods}{
+  \\describe{
+    \\item{\\code{signature(.Object = \"A\", num = \"numeric\")}}{
+      \\code{\\link{GenericFunc_method__A_numeric}}   
+    }
+    \\item{\\code{signature(.Object = \"B\", num = \"character\")}}{
+      \\code{\\link{GenericFunc_method__B_character}}   
+    }
+
+  }
+}
+\\keyword{methods}
+\\keyword{ ~~ other possible keyword(s) ~~ } '
+
+  zpath     <- file.path(manDir,"GenericFunc-methods.Rd")
+  APath     <- file.path(manDir,"GenericFunc_method__A_numeric.Rd")
+  BPath     <- file.path(manDir,"GenericFunc_method__B_character.Rd")
+  iniAPath  <- file.path(manDir,"initialize_method__A.Rd")
+  iniBPath  <- file.path(manDir,"initialize_method__B.Rd")
+  #refB=unlist(str_split(strB,"\n"))
+  checkTrue(file.exists(APath))
+  checkTrue(file.exists(BPath))
+  checkTrue(file.exists(zpath))
+  checkTrue(file.exists(iniAPath))
+  checkTrue(file.exists(iniBPath))
+  #pe(quote(readLines(file.path(manDir,"GenericFunc_method__A_numeric.Rd"))),environment())
+  #pe(quote(readLines(file.path(manDir,"initialize_method__B.Rd"))),environment())
+  checkTrue(CompareTrimmedNonEmptyLines(readLines(APath),strA))
+  checkTrue(CompareTrimmedNonEmptyLines(readLines(BPath),strB))
+  checkTrue(CompareTrimmedNonEmptyLines(readLines(iniBPath),iniB))
+  if(!CompareTrimmedNonEmptyLines(readLines(zpath),strZ)){
+    refZpath=paste(zpath,".Ref",sep="")
+    unlink(refZpath)
+    cat(file=refZpath,strZ)
+    system(paste("gvimdiff",refZpath,zpath,"&"))
+    stop()
+  }
+}
+
 ##########################################################################
-test.ParsersOnSingleFiles=function(){
+test.ParsersOnSingleMethods=function(){
 require("stringr")
 definition='function(# A short description of the method for class A
         ### This method deals with objects of class A
@@ -474,44 +592,63 @@ setMethod(
     definition,
     ')',
 sep="")
-e=new.env()
-old <- options(keep.source=TRUE,topLevelEnvironment=e)
-exprs <- parse(text=code,keep.source=TRUE)
-    for (i in exprs){
-          print(i)
-          eval(i, env=e)
-    }
-objs <- sapply(ls(e),get,e,simplify=FALSE) 
-gens=objs[sapply(names(objs),isGeneric,e)]
-#pp("gens",environment())
-# now take a parser used for single objects
-fg=objs[["GenericFunc"]]
-meths=findMethods(fg,where=e)
-o=meths[[1]]
-src=getSource(o)
-res=extract.xxx.chunks(src)
-ref=list()
-ref[["item{.Object}"]]="an object of class \"A\""
-ref[["item{num}"]]="a number"
-ref[["value"]]="d3"
-ref[["GenericFunc-method-#A#numeric"]]
-checkEquals(ref,res)
-###
-res=prefixed.lines(src)
-#pp("res",environment())
-ref=list()
-ref[["description"]]="This method deals with objects of class A"
-ref[["item{.Object}"]]="a further comment on the first argument"
-ref[["value"]]="valuecomment"
-checkEquals(ref,res)
-###
-res=title.from.firstline(src)
-ref=list()
-ref[["title"]]="A short description of the method for class A"
-checkEquals(ref,res)
+  l=createObjects(code)# note that ls will not find S4 classes nor methods for generic functions
+  objs=l[["objs"]] 
+  e=l[["env"]] 
+  exprs=l[["exprs"]] 
+  gens=objs[sapply(names(objs),isGeneric,e)]
+  #pp("gens",environment())
+  # now take a parser used for single objects
+  fg=objs[["GenericFunc"]]
+  meths=findMethods(fg,where=e)
+  o=meths[[1]]
+  src=getSource(o)
+  pe(quote(class(src)),environment())
+  res.extract.xxx.chunks=extract.xxx.chunks(src)
+  ref.extract.xxx.chunks=list()
+  ref.extract.xxx.chunks[["item{.Object}"]]="an object of class \"A\""
+  ref.extract.xxx.chunks[["item{num}"]]="a number"
+  ref.extract.xxx.chunks[["value"]]="d3"
+  ref.extract.xxx.chunks[["GenericFunc_method__A_numeric"]]
+  checkEquals(ref.extract.xxx.chunks,res.extract.xxx.chunks)
+  ###
+  res.prefixed.lines=prefixed.lines(src)
+  #pp("res.prefixed.lines",environment())
+  ref.prefixed.lines=list()
+  ref.prefixed.lines[["description"]]="This method deals with objects of class A"
+  ref.prefixed.lines[["item{.Object}"]]="a further comment on the first argument"
+  ref.prefixed.lines[["value"]]="valuecomment"
+  checkEquals(ref.prefixed.lines,res.prefixed.lines)
+  ###
+  res.title.from.firstline=title.from.firstline(src)
+  ref.title.from.firstline=list()
+  ref.title.from.firstline[["title"]]="A short description of the method for class A"
+  checkEquals(ref.title.from.firstline,res.title.from.firstline)
+  
+  ###
+  res.definition.from.source=definition.from.source(doc=list(definition=""),src=src) 
+  pp("res.definition.from.source",environment())
+  checkTrue(CompareTrimmedNonEmptyLines(str_split(definition,"\n")[[1]],res.definition.from.source$definition))
+  ### now we use another parser
+  ## first we create the doc links and find the ones created by setMethod
+  l= extract.file.parse(code,e)
+  doc.link=l[["GenericFunc_method__A_numeric"]]
+  src=getMethodSrc(doc.link,e)
+  pp("src",environment())
+  pe(quote(class(src)),environment())
+  res.extract.xxx.chunks=extract.xxx.chunks(src)
+  checkEquals(ref.extract.xxx.chunks,res.extract.xxx.chunks)
 
-###
-res=definition.from.source(doc=list(definition=""),src=src) 
-pp("res",environment())
-checkTrue(CompareTrimmedNonEmptyLines(str_split(definition,"\n")[[1]],res$definition))
+  res.prefixed.lines=prefixed.lines(src)
+  checkEquals(ref.prefixed.lines,res.prefixed.lines)
+  
+  res.title.from.firstline=title.from.firstline(src)
+  checkEquals(ref.title.from.firstline,res.title.from.firstline)
+  
+  res.definition.from.source=definition.from.source(doc=list(definition=""),src=src) 
+  pp("res.definition.from.source",environment())
+  checkTrue(CompareTrimmedNonEmptyLines(str_split(definition,"\n")[[1]],res.definition.from.source$definition))
+
+#res=extract.docs.setMethod(MethodDocLink,e)
+
 }

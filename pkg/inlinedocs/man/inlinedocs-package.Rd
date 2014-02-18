@@ -13,7 +13,7 @@ It is also easy to define a new syntax.}
 \tabular{ll}{Package: \tab inlinedocs\cr
 Title: \tab Convert inline comments to documentation\cr
 Type: \tab Package\cr
-Version: \tab 2014.2.11\cr
+Version: \tab 2014.2.17\cr
 Authors@R: \tab c(person("Toby Dylan","Hocking",role=c("aut","cre"),
 email="toby@sg.cs.titech.ac.jp"),
 person("Keith","Ponting",role="aut"),
@@ -22,7 +22,7 @@ person("Philippe","Grosjean",role="aut"),
 person("Markus","Müller",role="aut"),
 person("R Core Team",role=c("ctb","cph")))\cr
 URL: \tab http://inlinedocs.r-forge.r-project.org\cr
-Depends: \tab methods, utils, R (>= 2.9)\cr
+Depends: \tab methods, utils, stringr,R (>= 2.9)\cr
 License: \tab GPL-2 | GPL-3\cr
 LazyLoad: \tab yes\cr
 Encoding: \tab UTF-8\cr

@@ -2,8 +2,7 @@
 \alias{leadingS3generic}
 \title{check whether function name is an S3 generic}
 \description{Determines whether a function name looks like an S3 generic function}
-\usage{leadingS3generic(name, env, ...)}
-\arguments{
+\usage{leadingS3generic(name, env, ...)}\arguments{
   \item{name}{name of function}
   \item{env}{environment to search for additional generics}
   \item{\dots}{ignored here}

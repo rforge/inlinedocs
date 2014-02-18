@@ -3,8 +3,7 @@
 \title{kill prefix whitespace}
 \description{Figure out what the whitespace preceding the example code is, and
 then delete that from every line.}
-\usage{kill.prefix.whitespace(ex)}
-\arguments{
+\usage{kill.prefix.whitespace(ex)}\arguments{
   \item{ex}{character vector of example code lines.}
 }
 

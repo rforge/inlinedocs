@@ -6,8 +6,7 @@ preceding "prefix" comments to each active chunk. Those comments form
 the default description for that chunk. The analysis also looks for
 S4 class "setClass" ,R.oo setConstructorS3  R.methodsS3::setMethodS3
 or S4 setMethod calls in order to link the documentation of those properly.}
-\usage{extract.file.parse(code, env)}
-\arguments{
+\usage{extract.file.parse(code, env)}\arguments{
   \item{code}{Lines of R source code in a character vector - note that any
 nested \code{source} statements are \emph{ignored} when scanning
 for class definitions.}

@@ -79,6 +79,7 @@ fixPackageFileNames <- function(list){
   if (length(list) == 0L) 
     return(list)
   list0 <- gsub("[[:cntrl:]\"*/:<>?\\|]", "_", list)
+  #list0 <- gsub("#", "_", list0) #mm this was necessary to get rid of th "#" occuring in method signature strings as separator  
   wrong <- grep("^(con|prn|aux|clock\\$|nul|lpt[1-3]|com[1-4])(\\..*|)$", 
                 list0)
   if (length(wrong)) 

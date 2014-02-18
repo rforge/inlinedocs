@@ -1,5 +1,176 @@
 #
 # vim:set ff=unix expandtab ts=2 sw=2:
+
+#################################################################
+writePackageRdFile <- function(pkgDir,name,path){
+   
+   p=file.path(".")
+   promptPackage(
+     name, 
+     filename = file.path(path, sprintf("%s-package.Rd", name)), 
+     lib.loc = p
+   )
+
+}
+#################################################################
+writeFunctionRdFiles <- function(e,pkgDir,path,inlinedocs.documentNamespaceOnly){
+  ### At the moment only empty files are written (and later filled my modify.Rd.file) although the complete information is
+  ### already present at this stage. Future versions will finish the job right here, rendering modify.Rd file unnecassary
+  ### but only after all the other stuff can be written directly too.
+  objs <- sapply(ls(e),get,e,simplify=FALSE)
+  funs<- objs[unlist(sapply(objs,is.function))]
+  # note that ls will not find S4 methods for generic functions which are treated elsewhere
+  if (inlinedocs.documentNamespaceOnly){
+    fnames<- union(
+      exportedFunctions(pkgDir),
+      exportedGenerics(pkgDir)
+    )  
+    functionList  <- fnames
+  }else{
+    functionList<- names(funs)
+  }
+  list0 <- fixPackageFileNames(functionList)
+  names(list0) <- functionList
+  sapply(
+    functionList, 
+    function(item) {
+      fn <- file.path(path, paste(list0[[item]],".Rd",sep=""))
+      prompt(
+          #get(item, envir = e), 
+          funs[[item]],
+          name = item, 
+          filename = fn
+      )
+    }
+  )
+  
+  
+}
+#################################################################
+writeClassRdFiles <- function(environment,pkgDir,path,inlinedocs.documentNamespaceOnly){
+  if (inlinedocs.documentNamespaceOnly){
+    classesList<- exportedClasses(pkgDir)
+  }else{
+    classesList<- allClasses(environment)
+  }
+
+  classes0 <- fixPackageFileNames(classesList)
+  names(classes0) <- classesList
+  sapply(classesList, function(item) {
+    methods::promptClass(item, filename = file.path(path, 
+      sprintf("%s-class.Rd", classes0[item])), where = environment)
+  })
+}
+#################################################################
+writeMethodRdFiles <- function(e,pkgDir,path,inlinedocs.documentNamespaceOnly=FALSE){
+  ## add files that document a single method 
+  if(inlinedocs.documentNamespaceOnly){
+    #gens <- exportedDocumentableMeths(e,pkgdir)
+    gens <- exportedDocumentableMeths(e,pkgDir)
+  }else{
+    gens <- documentableMeths(e)
+  }
+
+  ##pp("gens",environment())
+  #####################################
+  
+  genericFuncNames=names(gens)
+  for(genName in genericFuncNames){
+      methDefs=gens[[genName]]
+      for ( method in methDefs){
+	      #method <- getMethod(genName,sig,where=e)
+        #src=getSource(method)
+        sig=methSig(method)
+        src=as.character(getSrcref(unRematchDefinition(method)))
+        N <- methodDocName(genName,sig)
+        # renaming of operator files like package.skeleton does
+        Nme <- fixPackageFileNames(N)
+
+        # check if the filename is compatible 
+        # this can be a problem for [[ $
+        #pp("N",environment())
+        ##pp("src", environment())
+        f=paste(Nme,".Rd",sep="")
+        fff <- eval(parse(text=str_split(src,"\n")))
+        #pe(quote(getwd()),environment())
+        # write docu to a list
+        l=prompt(fff,filename=NA)
+        #pp("l",environment())
+        l[["name"]]=paste("\\name{",N,"}",sep="")
+        l[["aliases"]]=paste("\\alias{",N,"}",sep="")
+        # in every section of the list replace fff by the name of the Generic
+        for (i in seq_along(l)){
+          l[[i]] <- gsub("fff",genName,l[[i]])
+        }
+        ## Note:
+        ## The usage section from the R generated method description causes a warning
+        ## about a missing alias.
+        ## For example:
+        ## If we have a generic function exampleGen with a mehthod for Class "A"
+        ## the "prompt" call and subsequent renameing above would set:
+        ## l[["alias"]] <- "exampleGen-method-#A"   while the usage section
+        ## l[["usage"]] <- "exampleGen(object)"
+        ## If this was written to the Rd file later R CMD check will WARN that it
+        ## did not find the name used in the usage section of the file as an alias in the same file.
+        ## "R CMD check" usually expects a usage section of the kind 
+        ## l[["usage"]] == "exampleGen-method-#A(object)" or
+        ## l[["usage"]] == "Alias1" or
+        ## l[["usage"]] == "Alias2" ...
+
+        ## But for a mehthod of a Generic the usage section should contain the name of that Generic.
+        ## The temptation is to set the alias to the name of the Generic,
+        ## but this would be a disaster:
+        ## A user typing ?exampleGen would not get either:
+        ## - the documentation of the generic function "exampleGen" or 
+        ## - the documentation of  one of the first method implementig "exampleGen" 
+        ## - the documentation of  one of the second method implementig "exampleGen" 
+        ## - ...
+        ## The last file sourced by R's help system containing an \alias{"exampleGen""}
+        ## would be shown.
+        ## So we could either ignore the (unfounded) WARNING or remove the usage section completely
+        ## from the method decription (which I will do here as default)
+
+        l <- l[setdiff(names(l),"usage")]
+        # we can also remove the alias since we do not need it.
+        #l <- l[setdiff(names(l),"aliases")]
+        p=file.path(path,f)
+        cat(unlist(l), file = p, sep = "\n")
+      }
+  }
+  
+}
+#################################################################
+writeMethodTableRdFiles <- function(e,pkgDir,path,inlinedocs.documentNamespaceOnly=FALSE){
+  gens <- documentableMeths(e) 
+  if(inlinedocs.documentNamespaceOnly){
+      exported=exportedDocumentableMeths(e,pkgDir)
+  }else{
+      exported=gens
+  }
+
+  ## we only look at generic which have methods we can document
+  #gens <- methodTable(exprs,e)
+  genericFuncNames=names(gens)
+  for (genName in genericFuncNames){
+
+    if(is.element(genName,names(exported))){
+       exportedMeths <- exported[[genName]]
+    }else{
+       exportedMeths=NULL
+    }
+    l <- mmPromptMethods(
+      genName=genName,filename=NA,
+      exportedMeths=exportedMeths,
+      where=e
+    )
+    f=fixPackageFileNames(paste(genName,"-methods.Rd",sep=""))
+    #pe(quote(getwd()),environment())
+    p=file.path(path,f)
+    #pp("p",environment())
+    cat(unlist(l), file = p, sep = "\n")
+  }
+}
+#################################################################
 package.skeleton.dx <- structure(function # Package skeleton deluxe
 ### Generates Rd files for a package based on R code and DESCRIPTION
 ### metadata. After inspecting the specified R code files to find
@@ -27,13 +198,23 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
 ### A regular expression matching the files that are not to be
 ### processed e.g. because inlinedocs can not handle them yet (like
 ### generic function definitions)
+inlinedocs.documentNamespaceOnly=FALSE,
+### A boolean flag indicating if documentation is only built for exported
+inlinedocs.exampleDir=file.path(pkgdir,"..","inst","tests"),
+### A string pointing to the location where inlinedocs should search for external examples
+inlinedocs.exampleTrunk="example.",
+### A string used to identify the files containing external examples in the example directory. All file names of external examples have to start with this string
  ...
 ### Parameters to pass to Parser Functions.
  ){
   ## This causes a warning on R CMD check TDH 28 Jan 2013.
   ##alias< < inlinedocs
-	 
+	oldLocation=getwd() 
   chdir <- file.path(pkgdir,"R")
+  ## adapt the possibly relative path to the examples to the new location
+  if (!grepl("^\\/",inlinedocs.exampleDir)){
+    inlinedocs.exampleDir=file.path(oldLocation,inlinedocs.exampleDir)
+  }
   if(!file.exists(chdir))stop("need pkgdir/R, tried ",chdir)
   old.wd <- setwd(chdir)
   on.exit(setwd(old.wd))
@@ -190,7 +371,6 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   ## use package.skeleton at all?)
   name <- desc[,"Package"]
   unlink(name,recursive=TRUE)
-  package.skeleton(name,code_files=code_files)
 
 #  # PhG: one must consider a potential Encoding field in DESCRIPTION file!
   # which is used also for .R files according to Writing R Extensions
@@ -200,46 +380,22 @@ package.skeleton.dx <- structure(function # Package skeleton deluxe
   }
   code <- do.call(c,lapply(code_files,readLines))
 #  #print(code)
-  L<- apply.parsers(code,parsers,verbose=TRUE,desc=desc)
+  L<- apply.parsers(code,parsers,verbose=TRUE,desc=desc,inlinedocs.exampleDir,inlinedocs.exampleTrunk)
   docs <- L[["docs"]]
   e <- L[["env"]]
   objs <- L[["objs"]]
-  gens<- L[["gens"]]
+  exprs<- L[["exprs"]]
 
-  ## add extra files not generated by package.skeleton such as
-  ## files that document a singe method of 
-  genericFuncNames=names(gens)
-  for(genName in genericFuncNames){
-      fg=gens[[genName]]
-      #pp("fg",environment())
-      meths=findMethods(fg,where=e)
-      #meths=findMethods(fg)
-      #pp("meths",environment())
-      signatureStrings=names(meths)
-      #pp("signatureStrings",environment())
-      for ( sig in signatureStrings){
-	      method <- meths[[sig]]
-        src=getSource(method)
-        N <- paste(genName,"-method-#",sig,sep="")
-        ##pp("N",environment())
-        #pp("src", environment())
-        f=paste(N,".Rd",sep="")
-        p=file.path(name,"man",f)
-        fff <- eval(parse(text=str_split(src,"\n")))
-        #file.create(p)
-        #pe(quote(getwd()),environment())
-        #prompt(fff,filename=p)
-        # write docu to a list
-        l=prompt(fff,filename=NA)
-        l[["name"]]=paste("\\name{",N,"}",sep="")
-        l[["aliases"]]=paste("\\alias{",N,"}",sep="")
-        cat(unlist(l), file = p, sep = "\n")
-        #pp("p",environment())
-#    #pe(quote(file.exists(p)),environment())
-      }
-  }
-
-
+  #mm.package.skeleton(name=name,code_files=code_files,environment=e)
+  p=file.path(name,"man")
+  dir.create(p,recursive=TRUE)
+  f="DESCRIPTION";file.copy(file.path("..",f),file.path(name,f))
+  #f="NAMESPACE";file.copy(file.path("..",f),file.path(name,f))
+  writeFunctionRdFiles(e,pkgDir="..",path=p,inlinedocs.documentNamespaceOnly)
+  writeMethodTableRdFiles(e,pkgDir="..",path=p,inlinedocs.documentNamespaceOnly)
+  writeMethodRdFiles(e,"..",path=p,inlinedocs.documentNamespaceOnly) 
+  writeClassRdFiles(e,pkgDir="..",path=p,inlinedocs.documentNamespaceOnly)
+  writePackageRdFile(pkgDir="..",name=name,path=p)
   cat("Modifying files automatically generated by package.skeleton:\n")
   ## documentation of generics may be duplicated among source files.
   dup.names <- duplicated(names(docs))
@@ -323,9 +479,16 @@ replace.one <- function
 ### text in which to search.
  ){
   ##if(grepl("Using the same conventions",REP))browser()
+
+  # sometimes torep might be the empty string "" which would lead to emptying the
+  # whole textbody due to the substitution rule.
+  # To avoid this we check:
+  if (torep==""){return(txt)}
+
   escape.backslashes <- function(x)gsub("\\\\","\\\\\\\\",x)
   cat(" ",torep,sep="")
   FIND1 <- escape.backslashes(torep)
+  ##pp("FIND1",environment())
   FIND <- gsub("([{}])","\\\\\\1",FIND1)
   FIND <- paste(FIND,"[{][^}]*[}]",sep="")
   REP.esc <- escape.backslashes(REP)
@@ -413,7 +576,7 @@ e
   # which occur in all ".*-class.Rd" files 
   # as aliases 
   # to find them we ask for those methods but 
-  # therefore have to readthe the code to be documented.
+  # therefore have to read the the code to be documented.
   # As the apply.parsers function we do this in a separate 
   # environment
   # mm:
@@ -488,28 +651,29 @@ modify.Rd.file <- function
   ## it's easy to get started.
   if((length(docs[[N]])<3) && file.exists(file.path("..","man",fb))){
      print(paste("mm object with no documentation available N=",N))
+     print(docs[[N]])
+     #writeLines(as.character(docs),con="/tmp/docs")
+     #stop()
     unlink(f)
     return()
   }
-  cat(N,":",sep="")
   d <- docs[[N]]
+  
+
+  if (Nme =="GenericFunc_method__B_character"){ 
+    #pp("d",environment()) 
+  }
   ## for some functions no documentatian file is created by package.skeleton
   ## for instance generic functions that are already defined in other packages
   ## like print or plot so there is still the possibillity that 
   ## f is missing altogether
   #####################################
-  if( grepl(".*-method-#.*",N)) {
-    #pp("Nme",environment())
-    #pp("f",environment())
-  }
-  #####################################
   if (!file.exists(f)) {
-  	print("mm missing file")
-    #pe(quote(getwd()),environment())
-	  print(f)
-	   return()
+	  #print(f)
+	  return()
 	}
   dlines <- readLines(f)
+  
 
   ## cut out alias line if we are in the package file and there is a
   ## matching function
@@ -629,6 +793,11 @@ modify.Rd.file <- function
   } else {
 	#tw: moved before parse
   }
+  ## package.skeleton brakes usage lines at 100 characters while 
+  ## R CMD check --as-cran complains when they are longer than
+  ## 90 characters
+  utxt=.widthCutter(utxt,89)
+  
   ## add another backslash due to bug in package.skeleton
   ## but only if not before % character due to another bug if % in usage
   ## arguments - see above

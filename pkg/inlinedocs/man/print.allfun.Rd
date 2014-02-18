@@ -2,8 +2,7 @@
 \alias{print.allfun}
 \title{print allfun}
 \description{Print method for functions constructed using forall.}
-\usage{\method{print}{allfun}(x, ...)}
-\arguments{
+\usage{\method{print}{allfun}(x, ...)}\arguments{
   \item{x}{
 }
   \item{\dots}{

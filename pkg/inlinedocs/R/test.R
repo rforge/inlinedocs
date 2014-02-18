@@ -39,6 +39,7 @@ test.file <- function
     if(length(show)){
       cat("\n")
       print(show)
+      print(result)#mm
       stop("extracted some unexpected docs!")
     }
   }

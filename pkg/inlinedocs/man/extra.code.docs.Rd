@@ -7,8 +7,7 @@ looking at the "source" attribute. This is a Parser Function that
 can be used in the parser list of package.skeleton.dx(). TODO:
 Modularize this into separate Parsers Functions for S4 classes,
 prefixes, ##<<blocks, etc. Right now it is not very clean!}
-\usage{extra.code.docs(code, objs, env, ...)}
-\arguments{
+\usage{extra.code.docs(code, objs, env, ...)}\arguments{
   \item{code}{Code lines in a character vector containing multiple R objects to
 parse for documentation.}
   \item{objs}{The objects defined in the code.}

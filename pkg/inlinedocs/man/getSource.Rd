@@ -2,8 +2,7 @@
 \alias{getSource}
 \title{getSource}
 \description{Extract a function's source code.}
-\usage{getSource(fun.obj)}
-\arguments{
+\usage{getSource(fun.obj)}\arguments{
   \item{fun.obj}{A function.}
 }
 

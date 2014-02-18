@@ -3,8 +3,7 @@
 \title{Extract documentation from a function}
 \description{Given source code of a function, return a list describing inline
 documentation in that source code.}
-\usage{extract.xxx.chunks(src, name.fun = "(unnamed function)", ...)}
-\arguments{
+\usage{extract.xxx.chunks(src, name.fun = "(unnamed function)", ...)}\arguments{
   \item{src}{The source lines of the function to examine, as a character
 vector.}
   \item{name.fun}{The name of the function/chunk to use in warning messages.}

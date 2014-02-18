@@ -10,8 +10,7 @@ collected as follows into documentation sections:\describe{
 \item{value}{group ending at the penultimate line of the code}}
 These may be added to by use of the \code{##<<} constructs
 described below.}
-\usage{prefixed.lines(src, ...)}
-\arguments{
+\usage{prefixed.lines(src, ...)}\arguments{
   \item{src}{
 }
   \item{\dots}{

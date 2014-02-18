@@ -4,8 +4,7 @@
 \description{Using the same conventions as for functions, definitions of S4 classes
 in the form \code{setClass("classname",\dots)} are also located and
 scanned for inline comments.}
-\usage{extract.docs.setClass(doc.link)}
-\arguments{
+\usage{extract.docs.setClass(doc.link)}\arguments{
   \item{doc.link}{DocLink object as created by \code{extract.file.parse}.
 Note that \code{source} statements are \emph{ignored} when scanning for
 class definitions.}

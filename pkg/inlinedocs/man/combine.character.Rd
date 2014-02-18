@@ -2,8 +2,7 @@
 \alias{combine.character}
 \title{combine character}
 \description{combine character strings by pasting them together}
-\usage{\method{combine}{character}(x, y)}
-\arguments{
+\usage{\method{combine}{character}(x, y)}\arguments{
   \item{x}{
 }
   \item{y}{

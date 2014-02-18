@@ -1,5 +1,389 @@
 #
+############################################################
+sigString <- function(sig){paste(sig,collapse="_")}
+############################################################
+methodDocName=function
+### creates the actual *.Rd filename for a method from its signature and the generic it implements
+(genName,sig){
+  N=paste(genName,"_method__",sigString(sig),sep="")
+  N
+}
 # vim:set ff=unix expandtab ts=2 sw=2:
+############################################################
+setMethod("[",
+    signature(x = "listOfMethods", i = "logical"),
+    function 
+    ### overload the [] operator for objects of class "listOfMethods"
+    (x, i, j, ..., drop = TRUE) 
+    {
+       fdef <- x@generic
+       object <- new("listOfMethods", arguments = fdef@signature)
+       object@generic <- fdef
+       object@signatures  <- x@signatures[i]
+       object@.Data       <-      x@.Data[i]
+       object@names       <-      x@names[i]
+       #pe(quote(class(object)),environment())
+       object
+       
+    }
+)
+############################################################
+mmPromptMethods <-  function (genName, filename = NULL, exportedMeths,where) 
+  ## this is a copy of R s own promptMehtods functions but
+  ## with an additional argument of the methods to be exported (and documented)
+{
+    
+    genExported  <- !is.null(exportedMeths)
+
+    escape <- function(txt) gsub("%", "\\\\%", txt)
+    packageString <- ""
+    fdef <- getGeneric(genName,where=where)
+    if (!isGeneric(f=genName ,where=where,fdef = fdef)) 
+        stop(gettextf("no generic function found corresponding to %s", 
+            sQuote(genName)), domain = NA)
+    methods <- findMethods(fdef,where=where)
+    
+    #where <- .genEnv(fdef, topenv(parent.frame()))
+    #if (!identical(where, .GlobalEnv)) 
+    #    packageString <- sprintf("in Package \\pkg{%s}", 
+    #        getPackageName(where))
+    fullName <- utils:::topicName("methods", genName)
+
+    n <- length(methods)
+    labels <- character(n)
+    aliases <- character(n)
+    signatures <- findMethodSignatures(methods = methods, target = TRUE)
+    args <- colnames(signatures)
+    for (i in seq_len(n)) {
+        sigi <- signatures[i, ]
+        labels[[i]] <- sprintf("\\code{signature(%s)}", paste(sprintf("%s = \"%s\"", 
+            args, escape(sigi)), collapse = ", "))
+        aliases[[i]] <- paste0("\\alias{", utils:::topicName("method", 
+            c(genName, signatures[i, ])), "}")
+    }
+    ####
+    if(genExported){
+      exportedSignatures <-findMethodSignatures(methods =exportedMeths, target = TRUE)
+     # #pp("exportedSignatures",environment())
+      n=nrow(exportedSignatures)
+      labels <- character(n)
+      items<- character(n)
+      args <- colnames(exportedSignatures)
+      for (i in seq_len(n)) {
+        sigi <- exportedSignatures[i, ]
+        N <- methodDocName(genName,sigi)
+        labels[[i]] <- sprintf("\\code{signature(%s)}", paste(sprintf("%s = \"%s\"", 
+            args, escape(sigi)), collapse = ", "))
+        items[[i]]<- paste0("    \\item{", labels[[i]], "}{\n      \\code{\\link{",N,"}}  \n    }")
+
+      }
+      des <- paste0(
+        "\\description{\n ~~ Methods for function",
+        " \\code{", genName, "}", 
+        sub("^in Package", "in package", packageString),
+        " ~~\n}"
+      )
+      
+      text <- c("\\section{Methods}{\n  \\describe{", items, "\n  }\n}")
+
+    }else{
+      des <- paste0(
+        "\\description{\n All methods for function",
+        " \\code{", genName, "} ", 
+        "are intended for internal use inside the package only. \n}"
+      )
+      #item<-'
+      #All methods for this generic are privat. (not exported into the namespace).
+      #To discourage use outside the package the documentation is truncated.
+      #'
+      #text <- c("\\section{Methods}{\n\\describe{", item, "}\n}")
+      text <- "" #no method section at all
+    }
+    aliasText <- c(paste0("\\alias{", escape(fullName), "}"), 
+        escape(aliases))
+    if (identical(filename, FALSE)) 
+        return(c(aliasText, text))
+    if (is.null(filename) || identical(filename, TRUE)) 
+        filename <- paste0(fullName, ".Rd")
+    Rdtxt <- list(name = paste0("\\name{", fullName, "}"), type = "\\docType{methods}", 
+        aliases = aliasText, title = sprintf("\\title{ ~~ Methods for Function \\code{%s} %s ~~}", 
+            genName, packageString), description = des 
+        , `section{Methods}` = text, 
+        keywords = c("\\keyword{methods}", "\\keyword{ ~~ other possible keyword(s) ~~ }"))
+    if (is.na(filename)) 
+        return(Rdtxt)
+    cat(unlist(Rdtxt), file = filename, sep = "\n")
+    print(paste("A shell of methods documentation has been written",filename))
+    invisible(filename)
+}
+
+############################################################
+removeComma <- function(str){
+  if(grepl(",",str)){
+     str <- strsplit(str,",")[[1]][[1]]
+  }
+  return(str)
+}
+############################################################
+exported=function
+### a helper soon to read the NAMESPACE file, soon to be replaced by Rs own function
+(pattern,tD){
+  ##pp("tD",environment())
+  #pe(quote(getwd()),environment())
+  # for simpler parsing we dont allow every possible 
+  # export statement but assume the form
+  # export(
+  #  firstFunc,
+  #  secondFunc
+  # )
+  ns=readLines(file.path(tD,"NAMESPACE"))
+  if(any(grepl(pattern,ns))){
+    fl=grep(pattern,ns)[[1]]
+    # start search for closing ")" at the opening one and
+    # use only the next ")" if there are several
+    ll= grep("\\)",ns[fl:length(ns)])[[1]]+fl-1
+    if (ll==fl+1){
+      return(NULL)
+    }else{
+      trunks= unlist(lapply(ns[(fl+1):(ll-1)],removeComma))
+      return(trunks)
+    }
+  }else{
+    return(NULL)
+  }
+}
+############################################################
+exportedFunctions=function
+### get the exported functions from the NAMESPACE file
+(tD){
+  funcNames=exported("export\\(",tD)
+  #pp("funcNames",environment())
+  return(funcNames)
+}
+############################################################
+exportedGenerics=function
+### get the exported generic functions from the NAMESPACE file
+(tD){
+  # note that there is only a exportMethods statement available
+  funcNames=exported("exportMethods",tD)
+  return(funcNames)
+}
+############################################################
+exportedClasses=function
+### get the exported Classes from the NAMESPACE file
+(tD){
+  classnames=exported("exportClasses",tD)
+  return(classnames)
+}
+############################################################
+methodTable <- function(exprs,e){
+  gens=list() ## a list of generic functions that are mentioned in setMethod statements within the code to be documented
+  for ( k in 1:length(exprs)){
+    lang <- exprs[[k]]
+    chars <- as.character(lang)
+    ##pp("chars",environment())
+    expr.type <- chars[[1]]
+    if (expr.type == "setMethod"){
+      NamedArgs=rewriteSetMethodArgs(lang)
+      nameOfGeneric<-NamedArgs[["f"]] 
+      methSig <- eval(NamedArgs[["signature"]],e)
+      gens[[nameOfGeneric]] <- unique(c(gens[[nameOfGeneric]],list(methSig)))
+    }
+  }
+  gens
+}
+############################################################
+allClasses <- function(env){
+  getClasses(where=env)
+}
+############################################################
+hiddenClasses <- function(env,pkgDir){
+  setdiff(allClasses(env),exportedClasses(pkgDir))
+}
+############################################################
+# now find all Generics whose src can be found
+GenHasSrc=function
+### This function tells us if we can find a src reference for this generic
+(genName,e)
+{!is.null(getSrcref(getGeneric(genName,where=e)))}
+
+
+# we now want to find all Generics that have at least one Method where we can get at the source
+############################################################
+methSrc=function
+### get at the src of a method given as  an MethodDefinition object
+(MethodDefinition){getSrcref(unRematchDefinition(MethodDefinition))}
+############################################################
+methSig=function
+### Extract the definition as text from an MethodDefinition object
+(MethodDefinition){attr(MethodDefinition,"defined")}
+############################################################
+MethodHasSrc=function(MethodDefinition)
+### This function tells if we can find a src reference for this method
+{!is.null(methSrc(MethodDefinition))}
+############################################################
+MethodSignatureHasOnlyExportedClasses=function(MethodDefinition,env,pkgDir)
+### check if all the classes in the signature are exported in the NAMESPACE file.
+### This information is needed to decide which Methods we want to document in cases
+### where the documentations is restricted to the exported NAMESPACE
+{
+  sigStr=as.character(methSig(MethodDefinition))
+  hiddCls <- hiddenClasses(env,pkgDir)
+  intersection <- intersect(sigStr,hiddCls)
+  res <- (length(intersection)==0)
+  res
+}
+############################################################
+MethodsWithSrcRefForGen=function
+### Not all methods for a Generic are defined in the src we want to document.
+### This function helps to find the methods we want.
+(genName,env){ 
+  l=findMethods(genName,where=env)[sapply(findMethods(genName,where=env),MethodHasSrc)]
+  #class(l)<-"methods"
+  l
+}
+############################################################
+GenHasAnyMethodWithSrc=function
+### function to check if we have a src reference for any of the methods of this generic
+### This helps to decide how the *-methods.Rd file should look like for this generic
+(genName,env){
+  methDefs <- findMethods(genName,where=env)
+  ##pp("methDefs)
+  any(sapply(
+    methDefs,
+    MethodHasSrc))
+}
+############################################################
+GenHasAnyExposedMethod=function
+### function used to check if a GenericFunction has any method where the whole signature consist of classes exported in the namespace
+(genName,env,pkgDir){
+  decide=function(MethodDescription){
+    MethodSignatureHasOnlyExportedClasses(MethodDescription,env,pkgDir)
+  }
+  hasExposedMethod <- any(
+      sapply(
+        findMethods(genName,where=env)
+        ,decide
+      )
+  )
+  #pp("genName",environment())
+  #pp("hasExposedMethod",environment())
+  hasExposedMethod
+}
+############################################################
+documentableMeths<- function(e){
+  # now find out which generics have any documentable methods
+  allGens=as.character(getGenerics(where=e))
+  ##pp("allGens",environment()) 
+  decide=function(genName){
+    GenHasAnyMethodWithSrc(genName,e) 
+  }
+  GensWithDocMethods=allGens[unlist(sapply(allGens,decide))]
+  ##pp("GensWithDocMethods",environment()) 
+  # now we can make a list of list
+  # containing the Methods we want to documents ordered after the name of there Generics
+  documentableMeths=list()
+  for (genName in GensWithDocMethods){
+  	documentableMeths[[genName]]<-MethodsWithSrcRefForGen(genName,e)
+  }
+  documentableMeths 
+}
+############################################################
+exportedDocumentableMeths<- function(e,pkgDir){
+  decide1=function(genName){
+     GenHasAnyExposedMethod(genName,e,pkgDir)
+  }
+  dm <- documentableMeths(e)
+  indices=unlist(sapply(names(dm),decide1))
+  #pp("indices",environment()) 
+  newGens <- dm[indices]
+  decide2 <-  function(MethodDescription){
+    MethodSignatureHasOnlyExportedClasses(MethodDescription,e,pkgDir)
+  }
+  for (genName in names(newGens)){
+     allMeths=newGens[[genName]]
+     newGens[[genName]] <- allMeths[sapply(allMeths,decide2)]
+  }
+  newGens
+
+}
+############################################################
+getMethodName <- function(doc.link,e){
+  method.name<- doc.link@name
+  method.name
+}
+############################################################
+getMethodSrc <- function(doc.link,e){
+  chunk.source <- doc.link@code
+  method.name<- doc.link@name
+  old.opt <- options(keep.source=TRUE)
+  parsed <- try(parse(text=chunk.source))
+  options(old.opt)
+  if ( inherits(parsed,"try-error") ){
+    stop("parse failed with error:\n",parsed)
+  }
+  lp <- length(parsed) 
+  ##pp("lp",environment())
+  ##pp("parsed",environment())
+  if(lp!=1){
+    stop("extract.docs.setMethod:the expected code should be a lingle setMethod expression")
+  }
+
+
+  NamedArgs=rewriteSetMethodArgs(parsed[[1]])
+  #pp("NamedArgs",environment())
+  s <- NamedArgs[["signature"]]
+  #pp("s",environment())
+  methodDef=getMethod(
+      f=NamedArgs[["f"]],
+      signature=eval(NamedArgs[["signature"]]),
+      where=e
+    )
+  #pp("methodDef",environment())
+  src=as.character(getSrcref(unRematchDefinition(methodDef)))
+  src
+}
+ rewriteSetMethodArgs=function(lang){
+   ### Since we do not know if the arguments in the call to setMethod are given with
+   ### keywords, partially matching keywords as an ordered list or any 
+   ### combination of it, we use the same function as R  (match.arg ) 
+   ### to rewrite our argumentlist to a (pair)list from which
+   ### we can extract the information easily
+   KeyWords=c("f","signature","definition","where")
+   NamedArgs=list() # the new argument list
+   args=lang[2:length(lang)]
+   argNames=names(args)
+   if(is.null(argNames)){ 
+     # in the  special case keyword=value pairs are not given at all
+     # we determine them by position
+     for (i in seq_along(args)){
+        #pp("i",environment())
+        NamedArgs[[KeyWords[[i]] ]] <- args[[i]]
+     }
+   }else{
+     # at least some keyword=value pairs are given 
+     # we determine them by match arg or by position
+     for (i in seq_along(args)){
+        argName=argNames[[i]]
+        if(argNames[[i]]==""){ # no keyword=value given for this arg 
+          NamedArgs[[KeyWords[[i]]]] <- args[[i]] #determining the keyword  by position
+        }else{
+         newName=try(match.arg(argNames[[i]],KeyWords))
+         if (class(newName)=="try-error") {
+           stop(paste("could not match the argument with name : " ,argNames[[i]]," to a formal argument of setMethod",sep=""))
+         }else{
+          NamedArgs[[newName]] <- args[[i]]
+        }
+       }
+     }
+   }
+   #NN <- names(NamedArgs)
+   ##pp("lang",environment())
+   ##pp("args",environment())
+   ##pp("argNames",environment())
+   ##pp("NN",environment())
+   NamedArgs
+ }
 do.not.generate <- structure(function
 ### Make a Parser Function used to indicate that certain Rd files
 ### should not be generated.
@@ -61,6 +445,11 @@ do.not.generate <- structure(function
 
 ### combine NULL objects.
 combine.NULL<-function(x,y){
+    if ((class(x) == "NULL")& (class(y) == "NULL")){
+        # print(paste("mm x=",x))
+        # print(paste("mm class(x)=",class(x)))
+	return(NULL)
+    }
     if (class(x) == "NULL"){
         # print(paste("mm x=",x))
         # print(paste("mm class(x)=",class(x)))
@@ -166,37 +555,30 @@ print.allfun <- function(x,...){
 }
 
 ### For each function in the package, do something.
-forfun <- function(FUN)forall(FUN,is.function)
-
-forGeneric<- function(
-  FUN  ### Function to apply to each method in the package (usually FUN is a parser)
-  ,
-  env
-  ,
-  gens
-  ){
-    #pe(quote(getwd()),environment()) 
-  force(FUN)
-	f <- function(objs,docs,...){
-    genericFuncNames=names(gens)
-	  L <- list()
-    for(genName in genericFuncNames){
-      fg=gens[[genName]]
-      meths=findMethods(fg,where=env)
-      signatureStrings=names(meths)
-      pp("signatureStrings",environment())
-	    on.exit(cat(sprintf("Parser Function failed on %s\n",N)))
-      for ( sig in signatureStrings){
-	      method <- meths[[sig]]
-        src=getSource(method)
-        N <- paste(genName,"-method-#",sig,sep="")
-        L[[N]]  <-  FUN(src=src,objs=meths,name=N,...)
-      }
-	    on.exit()## remove warning message
+forfun<- function
+### For each object in the package that satisfies the criterion
+### checked by subfun, parse source using FUN and return the resulting
+### documentation list.
+(FUN
+### Function to apply to each function in the package.
+ ){
+  FUN <- FUN
+  f <- function(objs,docs,...){
+    if(length(objs)==0)return(list())
+    objs <- objs[sapply(objs,is.function)]
+    L <- list()
+    on.exit(cat(sprintf("Parser Function failed on %s\n",N)))
+    for(N in names(objs)){
+      o <- objs[[N]]
+      L[[N]] <- FUN(src=getSource(o),
+                    name=N,objs=objs,o=o,docs=docs,doc=docs[[N]],...)
     }
+    on.exit()## remove warning message
     L
   }
+  class(f) <- c("allfun","function")
   f
+### A Parser Function.
 }
 
 kill.prefix.whitespace <- function
@@ -557,7 +939,9 @@ leadingS3generic <- function # check whether function name is an S3 generic
   list()
 }
 
-definition.from.source=function(doc,src,...){
+definition.from.source=function(doc,src,...)
+### small helper to extract the definition of a doc entry from a bit of src code
+{
   def <- doc$definition
   is.empty <- function(x)is.null(x)||x==""
   if(is.empty(def) && !is.empty(src))
@@ -565,41 +949,39 @@ definition.from.source=function(doc,src,...){
   else list()
 }
 ## title from first line of function def
-title.from.firstline=function(src,...){
+title.from.firstline=function
+### extract the title from the first line of a function definition
+(src,...){
   first <- src[1]
   if(!is.character(first))return(list())
   if(!grepl("#",first))return(list())
   list(title=gsub("[^#]*#\\s*(.*)","\\1",first,perl=TRUE))
 }
 ############
-mm.examples.from.testfile=function(name,...){
-  pp("name",environment())
-  tsubdir <- getOption("inlinedocs.exampleDir")
-  trunk<- getOption("inlinedocs.exampleRegExpression")
-  if (is.null(tsubdir)) return(list())# do nothing 
-  #pe(quote(getwd()),environment())
-  #pp("tsubdir",environment())
-  p <- paste(trunk,name,"\\.R$",sep="")
-  #pp("p",environment())
+mm.examples.from.testfile=function
+### extract examples from external files 
+(name,inlinedocs.exampleDir,inlinedocs.exampleTrunk,...){
+  tsubdir <-inlinedocs.exampleDir 
+  trunk<- inlinedocs.exampleTrunk 
+  if (is.null(tsubdir)) {
+    return(list())# do nothing 
+  }
+  p <- paste(trunk,name,".R",sep="")
   allfiles=dir(tsubdir)
-  #pp("allfiles",environment())
-  L<- allfiles[grepl(pattern=p,allfiles)]
-  #pp("L",environment())
+  L<- allfiles[grepl(pattern=p,allfiles,fixed=TRUE)]
   path=function(l){file.path(tsubdir,l)}
   paths=lapply(L,path)
   print(lapply(paths,file.exists))
 
+  res=list()
   if(length(L)>0){
     exampleTexts= lapply(paths,readLines)
-    #pp("exampleTexts",environment())
     combinedText <- unlist(exampleTexts)
+    res[["examples"]]=combinedText
+    ##pp("res",environment())
 
-      return(list(examples=combinedText))
-      #pp("combinedTexts",environment())
   }
-  else{
-    list()
-  } 
+  res
 }
 ### Parsers for each function that are constructed automatically. This
 ### is a named list, and each element is a parser function for an
@@ -615,18 +997,20 @@ forfun.parsers <-
          tsubdir <- getOption("inlinedocs.exdir")
          if (is.null(tsubdir)) tsubdir <- "tests"	# Default value
          tfile <- file.path("..",tsubdir,paste(name,".R",sep=""))
-	 print(file.exists(tfile))
+         print(file.exists(tfile))
          if(file.exists(tfile)){
            list(examples=readLines(tfile))
-	 }
+         }
          else list()
        },
        mm.examples.from.testfile=mm.examples.from.testfile,
        definition.from.source=definition.from.source
        )
 
-extract.docs<-function(parsed,objs,on){
-  #pp("on",environment())
+extract.docs<-function
+### produce doc link instances
+(parsed,objs,on){
+  ##pp("on",environment())
   extract.docs.try <-function(o,on)
     {
       ## Note: we could use parsed information here too, but that
@@ -673,17 +1057,18 @@ extract.docs<-function(parsed,objs,on){
   }
 
 inherit.docs <- function(
+### recursively add documentation inherited from doc.link parents 
   parsed, ##<< a list of doc.link objects
   res,    ##<< the list of documentation to be extended
   childName      ##<< the name of the object who possibly inherits
   ){
   in.res <- res[[childName]] #start with the present 
-  #pp("in.res",environment())
+  ##pp("in.res",environment())
   childsDocLink <-parsed[[childName]] 
   if ( !is.null(childsDocLink) ){
     for ( parent in childsDocLink@parent ){
       if ( !is.na(parent) ){
-        #pp("parent",environment())
+        ##pp("parent",environment())
         #pe(quote(names(res)),environment())
         #pe(quote(parent %in% names(res)),environment())
         if ( is.null(in.res) ){
@@ -702,6 +1087,52 @@ inherit.docs <- function(
   invisible(in.res)
   ### the possibly extended list of documentation
 }
+
+
+extra.method.docs <- function 
+### can be used in the parser list of package.skeleton.dx(). TODO:
+(code,
+### Code lines in a character vector containing multiple R objects to
+### parse for documentation.
+objs,
+### The objects defined in the code.
+env, 
+### The environment they inhibit (needed to pass on)
+inlinedocs.exampleDir,
+### A string pointing to the location where inlinedocs should search for external examples
+inlinedocs.exampleTrunk,
+### A string used to identify the files containing external examples in the example directory. All file names of external examples have to start with this string
+...
+### ignored
+ ){
+  doc.names <- names(objs)
+  parsed <- extract.file.parse(code,env)
+  res=list()
+  for ( nn in names(parsed) ){
+    dL=parsed[[nn]]
+    if ( dL@created == "setMethod" ){
+      S4Method.docs <- extract.docs.setMethod(dL,env,inlinedocs.exampleDir,inlinedocs.exampleTrunk)
+      docname <- dL@name
+      if ( is.null(res[[docname]]) ){
+        res[[docname]] <- S4Method.docs
+        doc.names <- c(doc.names,docname)
+      } else {
+        stop(nn," appears as both S4 method and some other definition")
+      }
+    }
+  }
+  all.done <- FALSE
+  while ( !all.done ){
+    res1 <- sapply(doc.names,inherit.docs,parsed=parsed,res=res,simplify=FALSE)
+    all.done <- identical(res1,res)
+    res <- res1
+  }
+  res
+### named list of lists, one for each object to document.
+}
+
+
+
 extra.class.docs <- function # Extract documentation from code chunks
 ### Parse R code to extract inline documentation from comments around
 ### each class 
@@ -774,13 +1205,6 @@ env, # the environment
   res
 ### named list of lists, one for each object to document.
 }
-forMethod.parsers<-
-  list(
-    prefixed.lines=prefixed.lines,
-    extract.xxx.chunks=extract.xxx.chunks,
-    title.from.firstline=title.from.firstline,
-    mm.examples.from.testfile
-  )
 ### List of Parser Functions that can be applied to any object.
 forall.parsers <-
   list(## Fill in author from DESCRIPTION and titles.
@@ -798,7 +1222,7 @@ forall.parsers <-
        },
        ## PhG: here is what I propose for examples code in the 'ex' attribute
        examples.in.attr =  function (name, o, ...) {
-         ex <- attr(o, "ex", exact=TRUE)
+         ex <- attr(o, "ex",exact=TRUE)
          if (!is.null(ex)) {
            ## Special case for code contained in a function
            if (inherits(ex, "function")) {
@@ -852,8 +1276,9 @@ lonely <- structure(c(forall.parsers,forfun.parsers),ex=function(){
 ### List of parsers to use by default with package.skeleton.dx.
 default.parsers <-
   c(
-    extra.code.docs=extra.code.docs, ## TODO: cleanup!
     extra.class.docs=extra.class.docs, ## TODO: cleanup!
+    extra.method.docs=extra.method.docs, ## TODO: cleanup!
+    extra.code.docs=extra.code.docs, ## TODO: cleanup!
     sapply(forfun.parsers,forfun),
     edit.package.file=function(desc,...){
       in.details <- setdiff(colnames(desc),"Description")
@@ -997,43 +1422,13 @@ extract.file.parse <- function # File content analysis
                                 code=paste(chunks[[k]],sep=""),
                                 description=default.description)
     } else if (expr.type == "setMethod" ) {
-      pp("lang",environment())
-      pp("chars",environment())
       
-      ## Since we do not know if the arguments in the call to setMethod are given with
-      ## keywords, partially matching keywords as an ordered list ore any 
-      ## combination of it, we use the same function as R  (match.arg ) 
-      ## to rewrite our argumentlist to a (pair)list from which
-      ## we can extract the information easily
-      KeyWords=c("f","signature","definition","where")
-      NamedArgs=list() # the new argument list
-      args=lang[2:length(lang)]
-      argNames=names(args)
-      pp("args",environment())
-      pp("argNames",environment())
-      for (i in seq_along(lang[2:length(lang)])){
-         argName=argNames[[i]]
-         if(argNames[[i]]==""){ # no keyword=value given for this arg 
-           NamedArgs[[KeyWords[[i]]]] <- args[[i]] #determining the keyword  by position
-         }else{
-          newName=try(match.arg(argNames[[i]],KeyWords))
-          if (class(newName)=="try-error") {
-            stop(paste("could not match the argument with name : " ,argNames[[i]]," to a formal argument of setMethod",sep=""))
-          }else{
-           NamedArgs[[newName]] <- args[[i]]
-         }
-        }
-      }
-      pp("NamedArgs",environment())
+      NamedArgs=rewriteSetMethodArgs(lang)
       genName=NamedArgs[["f"]]
       sigexp=NamedArgs[["signature"]]
-      pp("sigexp",environment())
       sig=eval(sigexp,env)
-      pp("sig",environment())
-      sigString <- paste(sig,collapse="#")
-      N=paste(genName,"-method-#",sigString,sep="")
+      N <- methodDocName(genName,sig)
       object.name <- N
-      pp("object.name",environment())
 
       ## If the function definition is not embedded within the call, then
       ## the parent is that function. Test whether the value for "definition"
@@ -1114,10 +1509,38 @@ extract.docs.setClass <- function # S4 class inline documentation
   }
   invisible(docs)
 }
+extract.docs.setMethod<- function # S4 mehtod inline documentation
+### Using the same conventions as for functions, definitions of S4 methods
+### in the form \code{setMethod(\dots)} are also located and
+### scanned for inline comments.
+
+(doc.link,
+### DocLink object as created by \code{extract.file.parse}.
+ env,
+ ### environment to find method source
+inlinedocs.exampleDir,
+### A string pointing to the location where inlinedocs should search for external examples
+inlinedocs.exampleTrunk
+### A regular expression used to identify the files containing external examples in the example directory
+ ){
+  funcSource=getMethodSrc(doc.link,env)
+  method.name=getMethodName(doc.link,env)
+  ##pp("funcSource",environment())
+  docs=list()
+  docs<- combine(docs,prefixed.lines(funcSource))
+  ##pp("docs",environment())
+  docs <- combine(docs,extract.xxx.chunks(funcSource,method.name))
+  ##pp("docs",environment())
+  docs <- combine(docs,title.from.firstline(funcSource,method.name))
+  ##pp("docs",environment())
+  docs <- combine(docs,mm.examples.from.testfile(method.name,inlinedocs.exampleDir,inlinedocs.exampleTrunk))
+  docs
+}
 createObjects <- function(code){
-  # this is factored out to make writing tests easier
-  # since we often need the objects and the environment 
-  # they inhabit 
+  ### the function creates the environment object lists and expression by parsing all the code files
+  ### Is is factored out to make writing tests easier
+  ### since we often need the objects and the environment 
+  ### they inhabit 
   e <- new.env()
   ## KMP 2011-03-09 fix problem with DocLink when inlinedocs ran on itself
   ## Error in assignClassDef(Class, classDef, where) :
@@ -1126,9 +1549,11 @@ createObjects <- function(code){
   ## which in turn is inlinedocs when processing inlinedocs package, hence
   ## the clash. The following works (under R 2.12.2), so that the topenv()
   ## now finds e before finding the inlinedocs environment.
-  old <- options(keep.source=TRUE,topLevelEnvironment=e)
+  
+  #old <- options(keep.source=TRUE,topLevelEnvironment=e)
+  old <- options(topLevelEnvironment=e)
   on.exit(options(old))
-  exprs <- parse(text=code)
+  exprs <- parse(text=code,keep.source=TRUE)
   ## TDH 2011-04-07 set this so that no warnings about creating a fake
   ## package when we try to process S4 classes defined in code
   e$.packageName <- "inlinedocs.processor"
@@ -1149,60 +1574,18 @@ apply.parsers<- function
 ### List of Parser Functions.
  verbose=FALSE,
 ### Echo names of Parser Functions?
+inlinedocs.exampleDir,
+### A string pointing to the location where inlinedocs should search for external examples
+inlinedocs.exampleTrunk,
+### A string used to identify the files containing external examples in the example directory. All file names of external examples have to start with this string
  ...
 ### Additional arguments to pass to Parser Functions.
  ){
-#  #####################################
-#  e <- new.env()
-#  ## KMP 2011-03-09 fix problem with DocLink when inlinedocs ran on itself
-#  ## Error in assignClassDef(Class, classDef, where) :
-#  ##   Class "DocLink" has a locked definition in package "inlinedocs"
-#  ## Traced to "where" argument in setClassDef which defaults to topenv()
-#  ## which in turn is inlinedocs when processing inlinedocs package, hence
-#  ## the clash. The following works (under R 2.12.2), so that the topenv()
-#  ## now finds e before finding the inlinedocs environment.
-#  old <- options(keep.source=TRUE,topLevelEnvironment=e)
-#  on.exit(options(old))
-#  exprs <- parse(text=code)
-#  ## TDH 2011-04-07 set this so that no warnings about creating a fake
-#  ## package when we try to process S4 classes defined in code
-#  e$.packageName <- "inlinedocs.processor"
-#  for (i in exprs){
-#      eval(i, e)
-#  }
-#  objs <- sapply(ls(e),get,e,simplify=FALSE) # note that ls will not find S4 classes nor methods for generic functions
-  l=createObjects(code)
+  l=createObjects(code)# note that ls will not find S4 classes nor methods for generic functions
   objs=l[["objs"]] 
   e=l[["env"]] 
   exprs=l[["exprs"]] 
-  # since th method definitions do not appear in ls() so are not represented in obs
-  # so we have to find them in the parsed code
-  glo=list()
-  for ( k in 1:length(exprs)){
-    lang <- exprs[[k]]
-    chars <- as.character(lang)
-    #pp("chars",environment())
-    expr.type <- chars[[1]]
-    object.name <- chars[[2]]
-    if (expr.type == "setMethod"){glo=c(glo,object.name)}
-  }
-  gloFuncs=unlist(sapply(glo,getGeneric,where=e))
-  #####################################
   docs <- list()
-  # now find generic Functions that are defined in the code
-  # since those lead to entries in objs we can find them
-  pe(quote(length(names(objs))),environment())
-  if (length(names(objs))!=0){ 
-    definedGenerics=objs[sapply(names(objs),isGeneric,e)]
-  }else{
-    definedGenerics=list()
-  }
-  #gens=unique(c(definedGenerics,gloFuncs))
-  gens=definedGenerics
-  #gens=gloFuncs
-  # gens=glo
-  pp("gens",environment())
-  
 
   ## apply parsers in sequence to code and objs
   if(verbose)cat("Applying parsers:\n")
@@ -1215,7 +1598,15 @@ apply.parsers<- function
     }
     p <- parsers[[i]]
     ## This is the argument list that each parser receives:
-    L <- p(code=code,objs=objs,docs=docs,env=e,...)
+    L <- p(
+	code=code,
+	objs=objs,
+	docs=docs,
+	env=e,
+	inlinedocs.exampleDir=inlinedocs.exampleDir,
+	inlinedocs.exampleTrunk=inlinedocs.exampleTrunk,
+	...
+	)
     docs <- combine(docs,L) 
   }
   ## post-process to collapse all character vectors
@@ -1226,21 +1617,8 @@ apply.parsers<- function
     }
  }
   if(verbose)cat("\n")
-  ## mm I added a second parser loop here for my method parsers 
-  ## It would perhaps be possible to integrate the new parsers in the 
-  ## main loop above
-  docs2 <- list()
-  parsersForMethods=sapply(forMethod.parsers,forGeneric,env=e,gens=gens)
-  for(i in seq_along(parsersForMethods)){
-    N <- names(parsersForMethods[[i]])
-    p <- parsersForMethods[[i]]
-    cat(" this is parser:",N,"\n",sep="")
-    L <- p(code=code,objs=objs,docs=docs2,env=e,...)
-    #pp("L",environment())
-    docs2 <- combine(docs2,L) 
-  }
 
-  return(list(docs=combine(docs,docs2),env=e,objs=objs,gens=gens))
+  return(list(docs=docs,env=e,objs=objs,exprs=exprs))
 ### A list of extracted documentation from code.
 }
 
@@ -1262,11 +1640,22 @@ extract.docs.file <- structure(function
  parsers=NULL,
 ### Parser Functions to use to parse the code and extract
 ### documentation.
+inlinedocs.exampleDir=file.path("..","..","inst","tests"),
+### A string pointing to the location where inlinedocs should search for external examples
+inlinedocs.exampleTrunk="example.",
+### A string used to identify the files containing external examples in the example directory. All file names of external examples have to start with this string
  ...
 ### Other arguments to pass to Parser Functions.
  ){
   if(is.null(parsers))parsers <- nondesc.parsers
-  apply.parsers(readLines(f),parsers,verbose=FALSE,...)[["docs"]]
+  apply.parsers(
+	readLines(f),
+	parsers,
+	verbose=FALSE,
+	inlinedocs.exampleDir,
+	inlinedocs.exampleTrunk,
+	...
+	)[["docs"]]
 },ex=function(){
   f <- system.file("silly","R","silly.R",package="inlinedocs")
   extract.docs.file(f)

@@ -2,8 +2,7 @@
 \alias{combine.NULL}
 \title{combine NULL}
 \description{combine NULL objects.}
-\usage{\method{combine}{NULL}(x, y)}
-\arguments{
+\usage{\method{combine}{NULL}(x, y)}\arguments{
   \item{x}{
 }
   \item{y}{

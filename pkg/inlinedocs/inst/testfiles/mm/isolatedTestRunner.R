@@ -6,18 +6,18 @@ summa=function(results){
   nt=0
   errorList=list()
   failList=list()
-  for (res in results){
-    if (res$nErr!=0){
-      ne=ne+res$nErr
-      name=res$testFuncRegexp
-      errorList[[name]] <- res
+  for (testFunName in names(results)){
+    result=results[[testFunName]]
+    errors=getErrors(result)
+    if (errors$nErr!=0){
+      ne=ne+errors$nErr
+      errorList[[testFunName]] <- errors
     }
-    if (res$nFail!=0){
-      nf=nf+res$nFail
-      name=res$testFuncRegexp
-      failList[[name]] <- res
+    if (errors$nFail!=0){
+      nf=nf+errors$nFail
+      failList[[testFunName]] <- errors
     }
-    nt=nt+res$nTestFunc
+    nt=nt+errors$nTestFunc
   }
   print(paste("The number of test function:",nt))
   if (ne >0){
@@ -33,59 +33,72 @@ summa=function(results){
 }
 ################################################
 runIsolatedTests <- function(
-  dirs,
+  srcDir, 
+  tmpDir="tmp",
+  dirs=".",
   testFileRegexp,
   testFuncRegexp
-){
+  ){
   require("RUnit")
+  require("parallel")
   e <- new.env()
-  #dirs="."
-  #testFileRegexp="^runit.MethodDoc.R"
-  #testFuncRegexp="^test.ExtraMethodDocumentationFile"
+
   testFiles <- list.files(dirs, pattern = testFileRegexp, full.names = TRUE)
   for (testFile in testFiles) {
     sys.source(testFile,e,keep.source=TRUE)
   }
   
   srcFileName="AutomaticTestSource.R"
-  prolog='require(methods)
+  prolog=paste('require(methods)
   require("RUnit")
-  prefix="../../../../../R"
+  prefix="',srcDir,'"
   auto_paths=Sys.glob(paste(prefix,"*.R",sep="/"))
   for (f in auto_paths){
       source(f,echo=FALSE)
-  }'
-  print(ls(e))
+  }',sep="")
+  #print(ls(e))
   results=list()
   testFunctions <- ls(pattern = testFuncRegexp, envir=e)
-  for (fun in testFunctions){
+  runSingleTest <- function(fun){
   	src=attr(e[[fun]],"srcref")
     testcode=paste(fun,"<-",paste(src,collapse="\n"),sep="")
     code=paste(prolog,testcode,sep="\n")
-    dir=file.path("tmp",fun)
+    dir=file.path(tmpDir,fun)
     unlink(dir,recursive=TRUE,force=TRUE)
     dir.create(dir,recursive=TRUE)
-    pwd=setwd(dir)
-    cat(code,file=srcFileName)
+    #pwd=setwd(dir)
+    cat(code,file=file.path(dir,srcFileName))
   	run=paste(
   	'require("RUnit")
+    setwd("',dir,'")
   	singleTest <- defineTestSuite(
   	   name="iso",
   	   dirs=".",
-  	   testFileRegexp ="', srcFileName,'",
+  	   testFileRegexp ="',srcFileName,'",
   	   testFuncRegexp = "',fun,'",
   	)
   	
   	testResult <- runTestSuite(singleTest)
   	save(testResult,file="testResult")
   	',sep="")
-  	cat(run,file="run.R")
-  	res=system("Rscript run.R")
-  	print(res)
+  	cat(run,file=file.path(dir,"run.R"))
+  	command <- paste(
+      "Rscript",
+      file.path(dir,"run.R"),
+      ">",
+      file.path(dir,"stdout"),
+      "2 >",
+      file.path(dir,"stderr"),
+      collapse=" "
+    )
+    print(command)
+    res <- system(command)
+  	#print(res)
   	checkEquals(res,0,"error in script")
-    load("testResult")
-    results=append(results,testResult)
-    setwd(pwd)
+    load(file.path(dir,"testResult"))
+    testResult
   }
+  results <- mclapply(testFunctions,runSingleTest,mc.cores=32)
+  names(results) <- testFunctions
   summa(results)
 }

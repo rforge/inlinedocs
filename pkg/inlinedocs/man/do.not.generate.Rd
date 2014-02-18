@@ -3,8 +3,7 @@
 \title{do not generate}
 \description{Make a Parser Function used to indicate that certain Rd files
 should not be generated.}
-\usage{do.not.generate(...)}
-\arguments{
+\usage{do.not.generate(...)}\arguments{
   \item{\dots}{Character strings indicating Rd files without the .Rd suffix.}
 }
 

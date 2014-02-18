@@ -108,7 +108,7 @@ setMethod(
   e=l[["env"]] 
   l= extract.file.parse(code,e)
   ## only the following objects are documented with a doclink object
-  checkEquals(names(l),c("ExposedClass","initialize-method-#ExposedClass"))
+  checkEquals(names(l),c("ExposedClass","initialize_method__ExposedClass"))
   ## At the moment class doc links have no parents
   Parent<- l$ExposedClass@parent
   pp("Parent",environment())
@@ -167,18 +167,18 @@ setMethod(
 )
 #################################################
 '
-  l=createObjects(code)
+  l<-createObjects(code)
   objs=l[["objs"]] 
   e=l[["env"]] 
   l= extract.file.parse(code,e)
  
   pp("l",environment())
   ## only the following objects are documented with a doclink object
-  checkEquals(names(l),c("ExposedClass", "$-method-#ExposedClass", "exposedGeneric-method-#ExposedClass"))
+  checkEquals(names(l),c("ExposedClass", "$_method__ExposedClass", "exposedGeneric_method__ExposedClass"))
   ## check that the parents are found
-  MethodParent<- l[["exposedGeneric-method-#ExposedClass"]]@parent
+  MethodParent<- l[["exposedGeneric_method__ExposedClass"]]@parent
   checkEquals(MethodParent,"getTime")
-  OperatorParent<- l[["$-method-#ExposedClass"]]@parent
+  OperatorParent<- l[["$_method__ExposedClass"]]@parent
   checkEquals(OperatorParent,"getSingleCol")
 }
 ############################################################################################################################
@@ -245,7 +245,7 @@ setMethod(
   doc.names=names(objs)
   pp("doc.names",environment())
   ## create a first result item with at least a definition field 
-  name="exposedGeneric-method-#ExposedClass"
+  name="exposedGeneric_method__ExposedClass"
   singleRes=extract.docs(parsed=l,objs=objs,on=name)
   pp("singleRes",environment())
   checkEquals(names(singleRes),"definition")
@@ -259,7 +259,14 @@ setMethod(
          cat(" this is parser:",N,"\n",sep="")
      }else cat('.\n')
      ## This is the argument list that each parser receives:
-     L <- p(code=code,objs=objs,docs=docs,env=e)
+     L <- p(
+     code=code,
+     objs=objs,
+     docs=docs,
+     env=e,
+     inlinedocs.exampleDir=".",
+     inlinedocs.exampleTrunk="example",
+     )
      docs <- combine(docs,L) 
    }
    ## post-process to collapse all character vectors
@@ -274,4 +281,133 @@ setMethod(
  # the functions which are its parents
  singleResNew <- inherit.docs(parsed=l,res=docs,childName=name)
  pp("singleResNew",environment())
+}
+#####################################################################
+test.NameSpaceParsing=function(){
+	pkgDir="pkg"
+	RDir=file.path(pkgDir,"R")
+	dir.create(RDir,recursive=TRUE)
+	#TestDir=file.path(pkgDir,"inst","tests")
+	#dir.create(TestDir,recursive=TRUE)
+ srcCode='
+#################################################
+#################################################
+# define classes with mehtods
+#################################################
+#################################################
+setClass(# HiddenClass
+   Class="HiddenClass",
+   representation=representation(
+        times="numeric"
+   )
+)
+#################################################
+setClass(#ExposedClass
+   Class="ExposedClass",
+   representation=representation(
+        times="numeric"
+   )
+)
+#################################################
+# overload the [[ operator which is done only for the HiddenClass 
+# but since the class is hidden the cooresponding Method desription file z-[[-methods would be empty
+# so preferably it should disappear completely
+# (template created by: method.skeleton("[[","HiddenClass")
+setMethod("[[",
+    signature(x = "HiddenClass"),
+    function # [[]] for Hidden Class
+    ### this method implements the [[]] for objects of "HiddenClass"
+    (x, i, j, ...) 
+    {
+        print("I am a hidden method because I belong to a class which is not exported in the NAMESPACE File")
+    }
+)
+#################################################
+# overload the $ operator for both classes
+setMethod("$",
+    signature(x = "HiddenClass"),
+    function # $ for Hidden Class
+    ### this method implements the  $ for objects of "HiddenClass"
+    (x,name) 
+    {
+        print("I am a hidden method because I belong to a class which is not exported in the NAMESPACE File")
+    }
+)
+setMethod("$",
+    signature(x = "ExposedClass"),
+    function # $ for Exposed Class
+    ### this method implements the  $ for objects of "ExposedClass"
+    (x,name) 
+    {
+        print("I am an exposed Method because my signature contains only Classes which are exported in the NAMESPACE File")
+    }
+)
+'
+  f=file.path(RDir,"source.R")
+	cat(file=f,srcCode)
+pkgName='NamespaceExample'  
+pkgVersion='0.0-1'  
+desc <-paste("
+Package:",pkgName," 
+Title: Examples to test the possibilities of Namespaces  
+Version:",pkgVersion,"
+Date: 2013-03-4
+Author:  Markus Mueller <mamueller@bgc-jena.mpg.de>
+Maintainer: Markus Mueller <mamueller@bgc-jena.mpg.de>
+Description: This package contains some functions to be tested
+License: GPL-3
+Depends:methods,RUnit 
+",sep="")
+
+  descFilePath=file.path(pkgDir,"DESCRIPTION")
+	cat(file=descFilePath,text=desc)
+namesp <- '
+exportClasses(
+ExposedClass
+)
+'
+  NamespaceFilePath=file.path(pkgDir,"NAMESPACE")
+	cat(file=NamespaceFilePath,text=namesp)
+	parsers=NULL
+  l=createObjects(srcCode)# note that ls will not find S4 classes nor methods for generic functions
+  objs=l[["objs"]] 
+  e=l[["env"]] 
+  exprs=l[["exprs"]] 
+  checkEquals(exportedClasses(pkgDir),c("ExposedClass"))
+  checkEquals(allClasses(e),c("ExposedClass","HiddenClass"))
+  checkEquals(hiddenClasses(e,pkgDir),c("HiddenClass"))
+  #checkEquals(hiddenMethodTable(e,pkgDir),list()
+  dM <- documentableMeths(e)
+  dMDB<- dM[["[["]]
+	cN<- as.character(class(dMDB))
+	pp("cN",environment())
+  checkEquals(cN,c("listOfMethods"))
+  
+  dMDBHC <- dM[["[["]][["HiddenClass"]]
+  result=MethodSignatureHasOnlyExportedClasses(dMDBHC,e,pkgDir)
+  checkTrue(!(MethodSignatureHasOnlyExportedClasses(dMDBHC,e,pkgDir)))
+  checkTrue(!(GenHasAnyExposedMethod("[[",e,pkgDir)))
+  
+  cN<-as.character(class(exportedDocumentableMeths(e,pkgDir)[["$"]]))
+  checkEquals(cN,c("listOfMethods"))
+
+  result <-names(exportedDocumentableMeths(e,pkgDir)[["$"]])
+  checkEquals(result,"ExposedClass")
+  
+  result <-findMethodSignatures(methods=exportedDocumentableMeths(e,pkgDir)[["$"]])
+	pp("result",environment())
+}
+#####################################################################
+test.BracketsForListOfMethods <- function(){
+  l <- findMethods("$")
+  checkEquals(length(l),3)
+  res <- as.character(class(l))
+  pp("res",environment())
+  checkEquals(res,"listOfMethods")
+  
+  l <- l[c(TRUE,FALSE,FALSE)]
+  checkEquals(length(l),1)
+  res <- as.character(class(l))
+  pp("l",environment())
+  checkEquals(res,"listOfMethods")
 }
