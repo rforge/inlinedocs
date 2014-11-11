@@ -837,7 +837,10 @@ modify.Rd.file <- function
   ## gsub(",",paste("\n",paste(rep(" ",l=nchar(N)-1),collapse="")),utxt)
 
   ## convert to dos line endings to avoid problems with svn
-  txt <- gsub("(?<!\r)\n","\r\n",txt,perl=TRUE)
+  # twutz: on windows cat automatically adds another \r before each \n
+  # so only add \r when running on unix
+    if(.Platform$OS.type == "unix")
+          txt <- gsub("(?<!\r)\n","\r\n",txt,perl=TRUE)
   cat(txt,file=f)
   cat("\n")
 }
