@@ -918,7 +918,8 @@ leadingS3generic <- function # check whether function name is an S3 generic
   ##
   parts <- strsplit(name, ".", fixed = TRUE)[[1]]
   l <- length(parts)
-  if (l > 1) {
+  # twutz 29 April 2015: added nzchar to handle non-S3 functions such as .myPrivateMethod
+  if (nzchar(parts[1]) && l > 1) {
     for (i in 1:(l - 1)) {
       ## Look for a generic function (known by the system or defined
       ## in the package) that matches that part of the function name
