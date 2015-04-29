@@ -349,8 +349,12 @@ inlinedocs.exampleTrunk="example.",
   # have .R, .S, .q, .r, or .s extension. However, it makes sense to restrict
   # this to .R only for inlinedocs, but a clear indication is required in the
   # man page!
-  code_files <- if(!"Collate"%in%colnames(desc))Sys.glob("*.R")
-  else strsplit(gsub("\\s+"," ",desc[,"Collate"]),split=" ")[[1]]
+  code_files <- if(!"Collate"%in%colnames(desc)) Sys.glob("*.R") else
+    strsplit(gsub("\\s+"," ",desc[,"Collate"]),split=" ")[[1]]
+  ## TW 29 April 2015 remove single quotes surrounding the filename 
+  # that are inserted by roxygen2 into collate field
+  # and that do not work with source
+  code_files <- sub("^'", "", sub("'$", "", code_files))
   code_files =grep(excludePattern,code_files,invert=TRUE,value=TRUE)
   ## TDH 28 Jan 2013, warn users such as Pierre Neuvial if they have
   ## comments on the last line of one input file. Sometimes comments
