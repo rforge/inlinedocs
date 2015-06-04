@@ -54,18 +54,20 @@ credit, the call graphs that roxygen makes are pretty cool).</li>
 yourself, just comment your code in natural places, and you get Rd
 files that pass R CMD check so you can publish that package and move
 on with your life. And when you make changes to that function, the
-docs are right next to the code so odds are you will update the docs
-if they need to be.</li>
+docs are right next to the code so it is easy to update the docs.</li>
 
 </ul>
 
 <img src="inlinedocs-demo.png" alt="simple example of inlinedocs usage" />
 
-<p>Then put your code in pkgdir/R/code.file.R, write a
-pkgdir/DESCRIPTION, start R, and do:</p>
+<p>Then put your code in pkgdir/R/code.file.R, write a pkgdir/DESCRIPTION,
+start R, and do:</p>
 
 <pre>
-install.packages("inlinedocs",repos="http://r-forge.r-project.org")
+## R-Forge and CRAN versions of inlinedocs are deprecated since 3 June 2014.
+## Instead, install from the updated version on GitHub:
+install.packages("devtools")
+devtools::install_github("tdhock/inlinedocs")
 library(inlinedocs)
 package.skeleton.dx("/path/to/your/pkgdir")
 </pre>
@@ -118,6 +120,12 @@ automatically break lines and add <tt>###</tt> prefixes.</li>
 <a href="https://r-forge.r-project.org/scm/viewvc.php/pkg/inlinedocs/inst/testfiles/description-before.R?view=markup&amp;revision=259&amp;root=inlinedocs">by
 adding a <tt>###</tt> comment on the line before the variable is first
 declared</a>.</li>
+
+<li>By default, R code in *.r files will not be used for inlinedocs.
+If you want to write some *.Rd files by hand then you do not want
+inlinedocs to overwrite those files, so put that code in *.r files. If
+you want inlinedocs to process *.r files, then you can specify
+package.skeleton.dx(excludePattern=NULL).</li>
 
 <li>The <tt>DESCRIPTION</tt> file is used by inlinedocs, so please
 fill in at least these fields: <tt>Package Version License Description
