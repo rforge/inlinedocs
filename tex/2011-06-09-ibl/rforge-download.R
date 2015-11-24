@@ -98,6 +98,16 @@ if(most.recent.project.id>last.id){
   }
 }
 sorted.projects <- project.stats[order(project.stats$id),]
+
+## Some projects still have NA registration timestamps, because their
+## registration time is not listed on the R-Forge project page,
+## e.g. https://r-forge.r-project.org/projects/texreg/ In those cases
+## I just manually edited the project.stats.csv file, giving a
+## registration time that is between the previous and next project
+## ids. These registration times are the only ones that end with
+## 00:00:00 so you can search for them if necessary.
+sum(is.na(sorted.projects$registered))
+
 write.csv(sorted.projects,"project.stats.csv",row.names=FALSE,quote=FALSE)
 
 write.csv(users,"project.users.csv",row.names=FALSE,quote=FALSE)
